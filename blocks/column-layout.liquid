@@ -1,0 +1,2495 @@
+{% doc %}
+  Renders a column-layout of blocks with configurable layout width, gap
+
+  All settings apply to only one dimension to reduce configuration complexity.
+
+  This component is a wrapper concerned only with rendering its children in
+  the specified layout direction with appropriate padding and alignment.
+
+  When "Swipeable columns" is enabled, the columns turn into a Swiper.js
+  carousel on mobile and tablet only (below 1024px). Desktop always keeps the
+  CSS Grid layout. Swiper's CSS/JS are loaded globally in layout/theme.liquid.
+  Autoplay uses the same options as assets/theme-slider.js.
+
+  @example
+  {% content_for 'block', type: 'column-layout', id: 'column-layout' %}
+{% enddoc %}
+
+{%- liquid
+  assign desktop_track_list = ''
+  for n in (1..block.settings.desktop_column_count)
+    assign key = 'desktop_column_' | append: n | append: '_width'
+    assign parts = block.settings[key] | split: '|'
+    assign desktop_track_list = desktop_track_list | append: parts[1] | append: 'fr '
+  endfor
+
+  # The plain share numbers (e.g. "40 60") are also kept for mobile and
+  # tablet: the swipe mode uses them as slide widths (share % of the row).
+  assign tablet_track_list = ''
+  assign tablet_shares = ''
+  for n in (1..block.settings.tablet_column_count)
+    assign key = 'tablet_column_' | append: n | append: '_width'
+    assign parts = block.settings[key] | split: '|'
+    assign tablet_track_list = tablet_track_list | append: parts[1] | append: 'fr '
+    assign tablet_shares = tablet_shares | append: parts[1] | append: ' '
+  endfor
+
+  assign mobile_track_list = ''
+  assign mobile_shares = ''
+  for n in (1..block.settings.mobile_column_count)
+    assign key = 'mobile_column_' | append: n | append: '_width'
+    assign parts = block.settings[key] | split: '|'
+    assign mobile_track_list = mobile_track_list | append: parts[1] | append: 'fr '
+    assign mobile_shares = mobile_shares | append: parts[1] | append: ' '
+  endfor
+
+  assign mobile_shares = mobile_shares | strip
+  assign tablet_shares = tablet_shares | strip
+  assign mobile_first_share = mobile_shares | split: ' ' | first | default: 100
+  assign tablet_first_share = tablet_shares | split: ' ' | first | default: 100
+
+  assign gap_classes = block.settings.mobile_gap_x | append: ' ' | append: block.settings.mobile_gap_y | append: ' ' | append: block.settings.tablet_gap_x | append: ' ' | append: block.settings.tablet_gap_y | append: ' ' | append: block.settings.desktop_gap_x | append: ' ' | append: block.settings.desktop_gap_y
+
+  # Swiper positions slides itself, so it needs the horizontal gap as a number
+  # (Tailwind spacing scale: 1 unit = 4px, e.g. "md:gap-x-4" -> 16).
+  assign mobile_gap_px = block.settings.mobile_gap_x | split: 'gap-x-' | last | times: 4
+  assign tablet_gap_px = block.settings.tablet_gap_x | split: 'gap-x-' | last | times: 4
+
+  assign padding_mobile_block_px = block.settings.mobile_padding_block
+  assign padding_desktop_block_px = block.settings.padding_block
+
+  assign padding_mobile_inline_px = block.settings.mobile_padding_inline
+  assign padding_desktop_inline_px = block.settings.padding_inline
+
+  assign is_swipeable = block.settings.swipe_columns_mobile
+  assign is_editor = false
+  if request.design_mode or request.visual_preview_mode
+    assign is_editor = true
+  endif  
+-%}
+
+<vt-column-layout
+  id="vt-column-layout-{{ block.id }}"
+  class="vt-column-layout"
+  data-swipe="{{ is_swipeable }}"
+  data-autoplay="{% if block.settings.autoplay != 'off' %}true{% else %}false{% endif %}"
+  data-autoplay-delay="{% if block.settings.autoplay != 'off' %}{{ block.settings.autoplay | times: 1000 }}{% endif %}"
+  data-editor="{{ is_editor }}"
+  data-mobile-shares="{{ mobile_shares }}"
+  data-tablet-shares="{{ tablet_shares }}"
+  data-mobile-gap="{{ mobile_gap_px }}"
+  data-tablet-gap="{{ tablet_gap_px }}"
+  data-label-carousel="{{ 'accessibility.column_layout.carousel_role_description' | t | escape }}"
+  data-label-slide-role="{{ 'accessibility.column_layout.slide_role_description' | t | escape }}"
+  data-label-slide="{{ 'accessibility.column_layout.slide_label' | t: index: '__index__', total: '__total__' | escape }}"
+  data-label-container="{{ 'accessibility.column_layout.aria_label' | t | escape }}"
+  style="--vt-padding-block: {% render 'fluid-clamp', min_px: padding_mobile_block_px, max_px: padding_desktop_block_px %}; --vt-padding-inline: {% render 'fluid-clamp', min_px: padding_mobile_inline_px, max_px: padding_desktop_inline_px %}; --vt-grid-mobile: {{ mobile_track_list }}; --vt-grid-tablet: {{ tablet_track_list }}; --vt-grid-desktop: {{ desktop_track_list }}; --vt-gap-mobile: {{ mobile_gap_px }}px; --vt-gap-tablet: {{ tablet_gap_px }}px; --vt-swipe-share-mobile: {{ mobile_first_share }}; --vt-swipe-share-tablet: {{ tablet_first_share }};"
+  role="group"
+  aria-label="{{ 'accessibility.column_layout.aria_label' | t }}"
+  {{ block.shopify_attributes }}  
+>
+  {%- comment -%}
+    The viewport becomes Swiper's ".swiper" and the list becomes its
+    ".swiper-wrapper" only while the carousel is active (see assets/theme-column-layout.js).
+    Padding lives on the outer element so Swiper's own "padding: 0" never
+    overrides it.
+  {%- endcomment -%}
+  <div class="vt-column-layout__viewport">
+    <div class="vt-column-layout__list grid {{ gap_classes }}" style="--vt-columns-position: {{ block.settings.vertical_alignment }};">
+      {%- if block.blocks.size > 0 -%}
+        {% content_for "blocks" %}
+      {%- elsif is_editor -%}
+        {%- comment -%}
+          No child blocks yet: show placeholders in the theme editor / AI visual
+          preview so the merchant can see the grid shape. Never rendered on the
+          live storefront. No width class needed here: the grid tracks defined
+          on the parent already size these placeholder divs correctly.
+        {%- endcomment -%}
+        {%- for i in (1..block.settings.desktop_column_count) -%}
+          <div class="vt-column-layout__placeholder" aria-hidden="true">
+            <span>{{ 'accessibility.column_layout.column_label' | t: number: i }}</span>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</vt-column-layout>
+
+{%- if is_swipeable -%}
+  <script src="{{ 'theme-column-layout.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-column-layout {
+    display: block;
+    width: 100%;
+    padding-block: var(--vt-padding-block, 0px);
+    padding-inline: var(--vt-padding-inline, 0px);
+    box-sizing: border-box;
+    --vt-gap: var(--vt-gap-mobile, 0px);
+  }
+
+  .vt-column-layout__list {    
+    grid-template-columns: var(--vt-grid-mobile, 1fr);
+    align-items: var(--vt-columns-position);
+  }
+
+  .vt-column-layout__list > * {
+    min-width: 0;
+    box-sizing: border-box;
+    --vt-slide-share: var(--vt-slide-share-mobile, var(--vt-swipe-share-mobile, 100));
+  }
+
+  /* Tablet breakpoint mirrors Tailwind's md: (>= 768px). */
+  @media (min-width: 768px) {
+    .vt-column-layout {
+      --vt-gap: var(--vt-gap-tablet, 0px);
+    }
+
+    .vt-column-layout__list {
+      grid-template-columns: var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr));
+    }
+
+    .vt-column-layout__list > * {
+      --vt-slide-share: var(--vt-slide-share-tablet, var(--vt-swipe-share-tablet, 100));
+    }
+  }
+
+  /* Desktop breakpoint mirrors Tailwind's lg: (>= 1024px). */
+  @media (min-width: 1024px) {
+    .vt-column-layout__list {
+      grid-template-columns: var(--vt-grid-desktop, var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr)));
+    }
+  }
+
+  /*
+    Swipe mode: mobile + tablet only (below 1024px). These rules also apply
+    before Swiper initialises, so the row already looks like the carousel
+    (no layout shift, and it degrades gracefully without JavaScript).
+    Slide width = share% of the row, compensated for the gap so that two
+    50% columns fit exactly and an 83% column leaves a peek of the next one.
+  */
+  @media (max-width: 1023.98px) {
+    .vt-column-layout[data-swipe='true'] .vt-column-layout__viewport {
+      overflow: hidden;
+    }
+
+    .vt-column-layout[data-swipe='true'] .vt-column-layout__list {
+      display: flex;
+      grid-template-columns: none;
+    }
+
+    .vt-column-layout[data-swipe='true'] .vt-column-layout__list > * {
+      flex: 0 0 auto;
+      width: calc((100% + var(--vt-gap)) * var(--vt-slide-share) / 100 - var(--vt-gap));
+    }
+
+    /* Swiper applies the gap itself (spaceBetween), so drop the CSS gap. */
+    .vt-column-layout[data-swipe='true'] .vt-column-layout__list.swiper-wrapper {
+      column-gap: 0;
+    }
+  }
+
+  .vt-column-layout__placeholder {
+    box-sizing: border-box;
+    min-height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: .0625rem solid rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 0.75rem;
+    background-color: rgba(0, 0, 0, 0.03);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Column layout",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Column count per device",
+      "info": "Pick the column count first. The width selects for each column will then appear below."
+    },    
+    {
+      "type": "range",
+      "id": "desktop_column_count",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Columns (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "tablet_column_count",
+      "min": 1,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "label": "Columns (tablet)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_column_count",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "label": "Columns (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Column width (desktop)"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_1_width",
+      "label": "Column 1",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/4|25"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_2_width",
+      "label": "Column 2",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/4|25",
+      "visible_if": "{{ block.settings.desktop_column_count >= 2 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_3_width",
+      "label": "Column 3",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/4|25",
+      "visible_if": "{{ block.settings.desktop_column_count >= 3 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_4_width",
+      "label": "Column 4",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/4|25",
+      "visible_if": "{{ block.settings.desktop_column_count >= 4 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_5_width",
+      "label": "Column 5",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 5 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_6_width",
+      "label": "Column 6",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 6 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_7_width",
+      "label": "Column 7",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 7 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_8_width",
+      "label": "Column 8",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 8 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_9_width",
+      "label": "Column 9",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 9 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_10_width",
+      "label": "Column 10",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 10 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_11_width",
+      "label": "Column 11",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 11 }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_12_width",
+      "label": "Column 12",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/3|33.3333",
+      "visible_if": "{{ block.settings.desktop_column_count >= 12 }}"
+    },
+    {
+      "type": "header",
+      "content": "Column width (tablet)"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_1_width",
+      "label": "Column 1",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_2_width",
+      "label": "Column 2",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 2 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_3_width",
+      "label": "Column 3",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 3 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_4_width",
+      "label": "Column 4",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 4 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_5_width",
+      "label": "Column 5",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 5 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_6_width",
+      "label": "Column 6",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 6 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_7_width",
+      "label": "Column 7",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 7 }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_8_width",
+      "label": "Column 8",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ block.settings.tablet_column_count >= 8 }}"
+    },
+    {
+      "type": "header",
+      "content": "Column width (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "mobile_column_1_width",
+      "label": "Column 1",
+      "options": [
+        {
+          "value": "w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "w-full|100"
+    },
+    {
+      "type": "select",
+      "id": "mobile_column_2_width",
+      "label": "Column 2",
+      "options": [
+        {
+          "value": "w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "w-full|100",
+      "visible_if": "{{ block.settings.mobile_column_count >= 2 }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_column_3_width",
+      "label": "Column 3",
+      "options": [
+        {
+          "value": "w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "w-full|100",
+      "visible_if": "{{ block.settings.mobile_column_count >= 3 }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_column_4_width",
+      "label": "Column 4",
+      "options": [
+        {
+          "value": "w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "w-full|100",
+      "visible_if": "{{ block.settings.mobile_column_count >= 4 }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_columns_mobile",
+      "label": "Swipeable columns on mobile and tablet",
+      "info": "Turns the columns into a swipeable carousel below 1024px. Desktop keeps the grid layout.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "info": "Pauses on hover and keyboard focus.",
+      "options": [
+        { "value": "off", "label": "Off" },
+        { "value": "3", "label": "Every 3 seconds" },
+        { "value": "5", "label": "Every 5 seconds" },
+        { "value": "7", "label": "Every 7 seconds" },
+        { "value": "10", "label": "Every 10 seconds" }
+      ],
+      "default": "off",
+      "visible_if": "{{ block.settings.swipe_columns_mobile }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap between columns"
+    },
+    {
+      "type": "select",
+      "id": "desktop_gap_x",
+      "label": "Horizontal gap (desktop)",
+      "options": [
+        {
+          "value": "lg:gap-x-0",
+          "label": "0px"
+        },
+        {
+          "value": "lg:gap-x-1",
+          "label": "4px"
+        },
+        {
+          "value": "lg:gap-x-2",
+          "label": "8px"
+        },
+        {
+          "value": "lg:gap-x-3",
+          "label": "12px"
+        },
+        {
+          "value": "lg:gap-x-4",
+          "label": "16px"
+        },
+        {
+          "value": "lg:gap-x-5",
+          "label": "20px"
+        },
+        {
+          "value": "lg:gap-x-6",
+          "label": "24px"
+        },
+        {
+          "value": "lg:gap-x-8",
+          "label": "32px"
+        },
+        {
+          "value": "lg:gap-x-10",
+          "label": "40px"
+        },
+        {
+          "value": "lg:gap-x-12",
+          "label": "48px"
+        },
+        {
+          "value": "lg:gap-x-16",
+          "label": "64px"
+        },
+        {
+          "value": "lg:gap-x-20",
+          "label": "80px"
+        },
+        {
+          "value": "lg:gap-x-24",
+          "label": "96px"
+        }
+      ],
+      "default": "lg:gap-x-8"
+    },
+    {
+      "type": "select",
+      "id": "desktop_gap_y",
+      "label": "Vertical gap (desktop)",
+      "options": [
+        {
+          "value": "lg:gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "lg:gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "lg:gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "lg:gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "lg:gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "lg:gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "lg:gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "lg:gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "lg:gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "lg:gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "lg:gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "lg:gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "lg:gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "lg:gap-y-8"
+    },
+    {
+      "type": "select",
+      "id": "tablet_gap_x",      
+      "label": "Horizontal gap (tablet)",
+      "options": [
+        {
+          "value": "md:gap-x-0",
+          "label": "0px"
+        },
+        {
+          "value": "md:gap-x-1",
+          "label": "4px"
+        },
+        {
+          "value": "md:gap-x-2",
+          "label": "8px"
+        },
+        {
+          "value": "md:gap-x-3",
+          "label": "12px"
+        },
+        {
+          "value": "md:gap-x-4",
+          "label": "16px"
+        },
+        {
+          "value": "md:gap-x-5",
+          "label": "20px"
+        },
+        {
+          "value": "md:gap-x-6",
+          "label": "24px"
+        },
+        {
+          "value": "md:gap-x-8",
+          "label": "32px"
+        },
+        {
+          "value": "md:gap-x-10",
+          "label": "40px"
+        },
+        {
+          "value": "md:gap-x-12",
+          "label": "48px"
+        },
+        {
+          "value": "md:gap-x-16",
+          "label": "64px"
+        },
+        {
+          "value": "md:gap-x-20",
+          "label": "80px"
+        },
+        {
+          "value": "md:gap-x-24",
+          "label": "96px"
+        }
+      ],
+      "default": "md:gap-x-4"
+    },
+    {
+      "type": "select",
+      "id": "tablet_gap_y",      
+      "label": "Vertical gap (tablet)",
+      "options": [
+        {
+          "value": "md:gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "md:gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "md:gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "md:gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "md:gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "md:gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "md:gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "md:gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "md:gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "md:gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "md:gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "md:gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "md:gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "md:gap-y-4"
+    },
+    {
+      "type": "select",
+      "id": "mobile_gap_x",      
+      "label": "Horizontal gap (mobile)",
+      "options": [
+        {
+          "value": "gap-x-0",
+          "label": "0px"
+        },
+        {
+          "value": "gap-x-1",
+          "label": "4px"
+        },
+        {
+          "value": "gap-x-2",
+          "label": "8px"
+        },
+        {
+          "value": "gap-x-3",
+          "label": "12px"
+        },
+        {
+          "value": "gap-x-4",
+          "label": "16px"
+        },
+        {
+          "value": "gap-x-5",
+          "label": "20px"
+        },
+        {
+          "value": "gap-x-6",
+          "label": "24px"
+        },
+        {
+          "value": "gap-x-8",
+          "label": "32px"
+        },
+        {
+          "value": "gap-x-10",
+          "label": "40px"
+        },
+        {
+          "value": "gap-x-12",
+          "label": "48px"
+        },
+        {
+          "value": "gap-x-16",
+          "label": "64px"
+        },
+        {
+          "value": "gap-x-20",
+          "label": "80px"
+        },
+        {
+          "value": "gap-x-24",
+          "label": "96px"
+        }
+      ],
+      "default": "gap-x-2"
+    },
+    {
+      "type": "select",
+      "id": "mobile_gap_y",      
+      "label": "Vertical gap (mobile)",
+      "options": [
+        {
+          "value": "gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "gap-y-2"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "label": "Vertical (desktop)"       
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "label": "Horizontal (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_block",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Vertical (mobile)"      
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_inline",      
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Horizontal (mobile)"      
+    },
+    {
+      "type": "header",
+      "content": "Align columns",
+      "info": "Choose how columns align vertically"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",      
+      "options": [
+        {
+          "value": "stretch",
+          "label": "Stretch (equal height)"
+        },
+        {
+          "value": "flex-start",
+          "label": "Top (natural height)"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "flex-start"
+    }    
+  ],
+  "blocks": [{ "type": "card" }, { "type": "heading-group" }, { "type": "stack" }],
+  "presets": [        
+    {
+      "name": "t:general.column",
+      "category": "t:general.layout",
+      "settings": {
+        "desktop_column_count": 3,
+        "tablet_column_count": 2,
+        "mobile_column_count": 1,
+        "desktop_column_1_width": "lg:w-1/3|33.3333",
+        "desktop_column_2_width": "lg:w-1/3|33.3333",
+        "desktop_column_3_width": "lg:w-1/3|33.3333",
+        "tablet_column_1_width": "md:w-1/2|50",
+        "tablet_column_2_width": "md:w-1/2|50",
+        "mobile_column_1_width": "w-full|100"
+      }
+    },    
+    {
+      "name": "t:general.row",
+      "category": "t:general.layout",
+      "settings": {
+        "desktop_column_count": 1,
+        "tablet_column_count": 1,
+        "mobile_column_count": 1,
+        "desktop_column_1_width": "lg:w-full|100",
+        "tablet_column_1_width": "md:w-full|100",        
+        "mobile_column_1_width": "w-full|100"
+      }
+    }        
+  ]
+}
+{% endschema %}

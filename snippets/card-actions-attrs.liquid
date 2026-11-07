@@ -1,0 +1,23 @@
+{%- doc -%}
+ 
+  @param {string} desktop_alignment - left | center | right
+  @param {string} mobile_alignment - left | center | right
+  @param {number} [gap_desktop] - px (default 16)
+  @param {number} [gap_mobile] - px (default 12)
+  @param {number} [inset_desktop] - Distance from the image edge in px (default 24)
+  @param {number} [inset_mobile] - px (default 12)
+
+  @example
+  <div {% render 'card-actions-attrs', desktop_alignment: 'center', mobile_alignment: 'left' %}>...</div>
+{%- enddoc -%}
+
+{%- liquid
+  assign vt_classes = 'vt-card-actions vt-card-actions--d-' | append: desktop_alignment
+  assign vt_classes = vt_classes | append: ' vt-card-actions--m-' | append: mobile_alignment
+
+  assign vt_gap_d = gap_desktop | default: 12
+  assign vt_gap_m = gap_mobile | default: 12
+  assign vt_inset_d = inset_desktop | default: 24
+  assign vt_inset_m = inset_mobile | default: 12
+-%}
+class="{{ vt_classes }}" style="--vt-card-actions-gap: {% render 'fluid-clamp', min_px: vt_gap_m, max_px: vt_gap_d %}; --vt-card-actions-inset: {% render 'fluid-clamp', min_px: vt_inset_m, max_px: vt_inset_d %};"

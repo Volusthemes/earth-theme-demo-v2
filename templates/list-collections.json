@@ -1,0 +1,262 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "collections",
+      "blocks": {
+        "vt-collection-card": {
+          "type": "collection-card",          
+          "settings": {
+            "collection": "{{ closest.collection }}",
+            "position": "content-between",
+            "alignment": "justify-items-start",
+            "aspect_ratio_desktop": "square",
+            "aspect_ratio_mobile": "square",
+            "text_color": "#F8F9DC",
+            "background_style": "gradient",
+            "background_color": "#224E09",
+            "overlay_opacity": 40,
+            "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
+            "gap_desktop": 32,
+            "gap_mobile": 16,
+            "padding_vertical": 25,
+            "padding_horizontal": 25,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 20,
+            "padding_horizontal_mobile": 20,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5,
+            "enable_hover": true
+          },
+          "blocks": {
+            "collection-card-badges": {
+              "type": "collection-card-badges",
+              "settings": {
+                "gap_desktop": 8,
+                "gap_mobile": 6,
+                "width": "fit"
+              },
+              "blocks": {
+                "collection-badge": {
+                  "type": "collection-badge",
+                  "settings": {
+                    "radius": "3.125rem",
+                    "badge_size": "vt-paragraph-extra-small",
+                    "width": "fit",
+                    "gap": 6,
+                    "bg_color": "#F8F9DC",
+                    "text_color": "#003225",
+                    "border_color": "#F8F9DC",
+                    "text": "Metaobjects",
+                    "show_border": false,
+                    "font_size": 16,
+                    "width_custom": 100,
+                    "border_size": 1,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              },
+              "block_order": [
+                "collection-badge"
+              ]
+            },
+            "collection-card-content": {
+              "type": "collection-card-content",
+              "settings": {
+                "gap_desktop": 8,
+                "gap_mobile": 6,
+                "width": "fit",
+                "width_custom": 50
+              },
+              "blocks": {
+                "collection-title": {
+                  "type": "collection-title",
+                  "settings": {
+                    "heading": "Collection title",
+                    "heading_size": "vt-heading-h3",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "heading_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "heading_max_width": 600,
+                    "show_index": false,
+                    "gap": 8,
+                    "gap_mobile": 6,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                "collection-paragraph": {
+                  "type": "collection-paragraph",
+                  "settings": {
+                    "text": "<p>Collection description</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_max_width": 800,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                "collection-button": {
+                  "type": "collection-button",
+                  "settings": {
+                    "button_label": "Shop collection",
+                    "button_link": "",
+                    "open_in_new_tab": false,
+                    "button_style": "link-light",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              },
+              "block_order": [
+                "collection-title",
+                "collection-paragraph",
+                "collection-button"
+              ]
+            }
+          },
+          "block_order": [
+            "collection-card-badges",
+            "collection-card-content"
+          ],
+          "static": true
+        },
+        "stack_block": {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fill",
+            "min_height": 450,
+            "gap_desktop": 16,
+            "gap_mobile": 10,       
+            "enable_padding": false
+          },
+          "blocks":{
+            "breadcrumbs_block": {
+              "type": "breadcrumbs",
+              "settings": {
+                "show_home": true,
+                "show_previous_icon": true,
+                "previous_icon": "arrow",
+                "show_separator_icon": true,
+                "separator_icon": "chevron",
+                "icon_size": 14,
+                "text_size": "vt-paragraph-medium",
+                "gap_desktop": 12,
+                "gap_mobile": 10,
+                "truncate_style": "mobile",
+                "max_width_mobile": 250,
+                "max_width_desktop": 600,                
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            "heading_block": {
+              "type": "heading",
+              "settings": {
+                "heading": "Collections",
+                "heading_size": "vt-heading-h1",
+                "heading_alignment": "text-inherit",
+                "heading_tag": "h1",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            "paragraph_block": {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Thoughtfully made collections, designed for everyday wear and a lighter footprint.</p>",
+                "paragraph_size": "vt-paragraph-medium",                                        
+                "paragraph_alignment": "text-inherit",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1,
+                "animation_delay": 0.3,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            }
+          },
+          "block_order": [        
+            "breadcrumbs_block",
+            "heading_block",
+            "paragraph_block"
+          ]
+        }
+      },
+      "block_order": [        
+        "stack_block"
+      ],
+      "settings": {
+        "sort_collections": "a_z",
+        "grid_desktop": "3",
+        "grid_mobile": "1",
+        "column_gap_desktop": 32,
+        "column_gap_mobile": 20,
+        "gap": 64,
+        "gap_mobile": 40,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

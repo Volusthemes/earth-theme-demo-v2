@@ -1,0 +1,412 @@
+{% # theme-check-disable UndefinedObject %}
+
+{% doc %}
+  Static pagination block. Renders the `pagination-controls` snippet and maps
+  merchant settings to its --vt-pagination-* custom properties. Colors left
+  empty fall back to the theme color palette.
+
+  Render it inside a {% paginate %} tag and pass the paginate object.
+  Nothing is output when there is only one page.
+
+  @param {object} paginate - The paginate object from the parent section
+  @param {string} [aria_label] - Accessible name for the nav landmark, e.g. "Collections pagination". Defaults to "Pagination".
+
+  @example
+  {%- paginate collection.products by 24 -%}
+    ...
+    {% content_for 'block', type: 'pagination', id: 'vt-pagination', paginate: paginate %}
+  {%- endpaginate -%}
+{% enddoc %}
+
+{%- if paginate.pages > 1 -%}
+  {%- liquid
+    assign vt_s = block.settings
+    assign vt_id = 'vt-pagination-' | append: section.id | append: '-' | append: block.id
+
+    # -----------------------------------------------------------------
+    # 1. Animation classes. Skipped inside the theme editor visual
+    #    preview so the block stays fully visible there.
+    # -----------------------------------------------------------------
+    assign vt_animation_type = vt_s.animation_type
+    assign vt_anim_classes = ''
+
+    unless vt_animation_type == 'none' or request.visual_preview_mode
+      assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type
+
+      if vt_animation_type == 'slide' or vt_animation_type == 'reveal'
+        assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: vt_s.animation_direction
+      endif
+    endunless
+
+    assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    case vt_s.animation_easing
+      when 'linear'
+        assign vt_easing_value = 'linear'
+      when 'ease-in-sine'
+        assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)'
+      when 'ease-in-out-sine'
+        assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)'
+      when 'ease-in-cubic'
+        assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)'
+      when 'ease-out-cubic'
+        assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)'
+      when 'ease-in-out-cubic'
+        assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    endcase
+
+    # -----------------------------------------------------------------
+    # 2. Class list (assign + append, no capture needed)
+    # -----------------------------------------------------------------
+    assign vt_class_list = vt_s.text_size
+    if vt_anim_classes != blank
+      assign vt_class_list = vt_class_list | append: ' ' | append: vt_anim_classes
+    endif
+  -%}
+
+  {%- comment -%}
+    Sizes and spacing are written once as mobile -> desktop fluid values,
+    so no breakpoint media queries are needed. Colors are only output when
+    set, otherwise the snippet falls back to the color palette.
+  {%- endcomment -%}
+  {%- style -%}
+    #{{ vt_id }} {
+      --vt-pagination-justify: {{ vt_s.alignment }};
+      --vt-pagination-size: {% render 'fluid-clamp', min_px: vt_s.item_size_mobile, max_px: vt_s.item_size_desktop %};
+      --vt-pagination-icon-size: {% render 'fluid-clamp', min_px: vt_s.icon_size_mobile, max_px: vt_s.icon_size_desktop %};
+      --vt-pagination-gap: {% render 'fluid-clamp', min_px: vt_s.gap_mobile, max_px: vt_s.gap_desktop %};
+      --vt-pagination-padding-block-start: {% render 'fluid-clamp', min_px: vt_s.padding_top_mobile, max_px: vt_s.padding_top_desktop %};
+      --vt-pagination-padding-block-end: {% render 'fluid-clamp', min_px: vt_s.padding_bottom_mobile, max_px: vt_s.padding_bottom_desktop %};
+      --vt-pagination-radius: {% render 'fluid-clamp', min_px: vt_s.border_radius, max_px: vt_s.border_radius %};
+      --vt-pagination-border-width: {% render 'fluid-clamp', min_px: vt_s.border_width, max_px: vt_s.border_width %};
+      {%- if vt_s.text_color != blank %}
+        --vt-pagination-color: {{ vt_s.text_color }};
+      {%- endif -%}
+      {%- if vt_s.border_color != blank %}
+        --vt-pagination-border-color: {{ vt_s.border_color }};
+      {%- endif -%}
+      {%- if vt_s.hover_background != blank %}
+        --vt-pagination-hover-bg: {{ vt_s.hover_background }};
+      {%- endif -%}
+      {%- if vt_s.hover_text_color != blank %}
+        --vt-pagination-hover-color: {{ vt_s.hover_text_color }};
+      {%- endif -%}
+      {%- if vt_s.active_background != blank %}
+        --vt-pagination-active-bg: {{ vt_s.active_background }};
+      {%- endif -%}
+      {%- if vt_s.active_text_color != blank %}
+        --vt-pagination-active-color: {{ vt_s.active_text_color }};
+      {%- endif -%}
+      {%- if vt_anim_classes != blank %}
+        --vt-duration: {{ vt_s.animation_duration }}s;
+        --vt-delay: {{ vt_s.animation_delay }}s;
+        {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' or vt_animation_type == 'blur' %}
+          --vt-easing: {{ vt_easing_value }};
+        {%- endif -%}
+        {%- if vt_animation_type == 'blur' %}
+          --vt-blur: {{ vt_s.animation_blur_intensity }}px;
+        {%- endif -%}
+      {%- endif %}
+    }
+  {%- endstyle -%}
+
+  {% render 'pagination-controls',
+    paginate: paginate,
+    id: vt_id,
+    class: vt_class_list,
+    attributes: block.shopify_attributes,
+    aria_label: aria_label,
+    icon: vt_s.icon
+  %}
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:blocks.pagination.name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:blocks.pagination.settings.header_layout.content"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:blocks.pagination.settings.alignment.label",
+      "options": [
+        { "value": "flex-start", "label": "t:blocks.pagination.settings.alignment.options__1.label" },
+        { "value": "center", "label": "t:blocks.pagination.settings.alignment.options__2.label" },
+        { "value": "flex-end", "label": "t:blocks.pagination.settings.alignment.options__3.label" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:blocks.pagination.settings.icon.label",
+      "options": [
+        { "value": "chevron", "label": "t:blocks.pagination.settings.icon.options__1.label" },
+        { "value": "arrow", "label": "t:blocks.pagination.settings.icon.options__2.label" }
+      ],
+      "default": "chevron"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "t:blocks.pagination.settings.text_size.label",
+      "options": [
+        { "value": "vt-paragraph-extra-small", "label": "t:blocks.pagination.settings.text_size.options__1.label" },
+        { "value": "vt-paragraph-small", "label": "t:blocks.pagination.settings.text_size.options__2.label" },
+        { "value": "vt-paragraph-medium", "label": "t:blocks.pagination.settings.text_size.options__3.label" },
+        { "value": "vt-paragraph-large", "label": "t:blocks.pagination.settings.text_size.options__4.label" }
+      ],
+      "default": "vt-paragraph-medium"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.pagination.settings.header_size.content"
+    },
+    {
+      "type": "range",
+      "id": "item_size_desktop",
+      "label": "t:blocks.pagination.settings.item_size_desktop.label",
+      "min": 24,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "item_size_mobile",
+      "label": "t:blocks.pagination.settings.item_size_mobile.label",
+      "info": "t:blocks.pagination.settings.item_size_mobile.info",
+      "min": 24,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "icon_size_desktop",
+      "label": "t:blocks.pagination.settings.icon_size_desktop.label",
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "t:blocks.pagination.settings.icon_size_mobile.label",
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "t:blocks.pagination.settings.border_radius.label",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "t:blocks.pagination.settings.border_width.label",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.pagination.settings.header_spacing.content"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:blocks.pagination.settings.gap_desktop.label",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:blocks.pagination.settings.gap_mobile.label",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "t:blocks.pagination.settings.padding_top_desktop.label",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "t:blocks.pagination.settings.padding_top_mobile.label",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "t:blocks.pagination.settings.padding_bottom_desktop.label",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "t:blocks.pagination.settings.padding_bottom_mobile.label",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.pagination.settings.header_color.content",
+      "info": "t:blocks.pagination.settings.header_color.info"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:blocks.pagination.settings.text_color.label"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:blocks.pagination.settings.border_color.label",
+      "visible_if": "{{ block.settings.border_width > 0 }}"
+    },
+    {
+      "type": "color",
+      "id": "hover_background",
+      "label": "t:blocks.pagination.settings.hover_background.label"
+    },
+    {
+      "type": "color",
+      "id": "hover_text_color",
+      "label": "t:blocks.pagination.settings.hover_text_color.label"
+    },
+    {
+      "type": "color",
+      "id": "active_background",
+      "label": "t:blocks.pagination.settings.active_background.label"
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "t:blocks.pagination.settings.active_text_color.label"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.heading.settings.animation_type.options__4.label" },
+        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ]
+}
+{% endschema %}
+
+{% # theme-check-enable UndefinedObject %}

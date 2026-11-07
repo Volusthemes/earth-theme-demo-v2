@@ -1,0 +1,41 @@
+{% comment %}
+  Collection page (e.g. /collections/all): title, products grid and pagination.
+  The grid and pagination are static blocks; the section owns pagination and
+  passes the current page of products to the products-list block.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+{% endcomment %}
+
+<h1>{{ collection.title }}</h1>
+
+{%- assign vt_products_per_page = section.settings.products_per_page | default: 24 -%}
+
+{% paginate collection.products by vt_products_per_page %}
+  {% content_for 'block',
+    type: 'products-list',
+    id: 'products-list',
+    products: collection.products,
+    aria_label: collection.title
+  %}
+
+  {% content_for 'block', type: 'pagination', id: 'vt-pagination', paginate: paginate %}
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "t:general.collection",
+  "tag": "section",
+  "class": "collection-products-section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "t:sections.collection.settings.products_per_page.label",
+      "min": 4,
+      "max": 48,
+      "step": 4,
+      "default": 24
+    }
+  ]
+}
+{% endschema %}

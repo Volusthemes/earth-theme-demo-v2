@@ -1,0 +1,159 @@
+{% doc %}
+  Page transition and scroll animations, controlled from Theme settings > Animations.
+  Render it in the head: the inline script hides animated elements before they paint.
+
+  Elements are only hidden once the script below runs, so the content stays
+  visible if JavaScript is off, the setting is off or reduced motion is on.
+
+  @example
+  {% render 'animate' %}
+{% enddoc %}
+
+{%- if settings.enable_page_transition -%}
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      @view-transition {
+        navigation: auto;
+      }
+    }
+  </style>
+{%- endif -%}
+
+{%- if settings.enable_scroll_animations -%}
+  <script>
+    (() => {
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reducedMotion || !('IntersectionObserver' in window)) return;
+
+      document.documentElement.classList.add('vt-animations');
+
+      /* Back to the element's own styles, so no layer or stacking context is left behind */
+      const finish = (element) => {
+        const animateClasses = [...element.classList].filter((name) => name.startsWith('vt-animate'));
+        element.classList.remove(...animateClasses, 'vt-in-view');
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const targets = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target);
+
+          /* Read every timing first, then write, to avoid recalculating styles per element */
+          const timings = targets.map((target) => {
+            const styles = getComputedStyle(target);
+            const duration = parseFloat(styles.getPropertyValue('--vt-duration')) || 0;
+            const delay = parseFloat(styles.getPropertyValue('--vt-delay')) || 0;
+            return (duration + delay) * 1000;
+          });
+
+          targets.forEach((target, index) => {
+            observer.unobserve(target);
+            target.classList.add('vt-in-view');
+            setTimeout(() => finish(target), timings[index] + 100);
+          });
+        },
+        { threshold: 0.15 }
+      );
+
+      const observe = (root) => {
+        root.querySelectorAll('.vt-animate:not(.vt-in-view)').forEach((element) => observer.observe(element));
+      };
+
+      document.addEventListener('DOMContentLoaded', () => observe(document));
+      document.addEventListener('shopify:section:load', (event) => observe(event.target));
+    })();
+  </script>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-animate {
+    --vt-duration: 1.2s;
+    --vt-delay: 0s;
+    --vt-easing: cubic-bezier(0.61, 1, 0.88, 1);
+    --vt-blur: 5px;
+    --vt-offset: 40px;
+    --vt-reveal-offset: 24px;
+  }
+
+  /* Direction, shared by Slide and Reveal */
+  .vt-animate--dir-from-bottom {
+    --vt-from-x: 0;
+    --vt-from-y: 1;
+    --vt-reveal-clip: inset(100% -2rem -2rem);
+  }
+
+  .vt-animate--dir-from-top {
+    --vt-from-x: 0;
+    --vt-from-y: -1;
+    --vt-reveal-clip: inset(-2rem -2rem 100%);
+  }
+
+  .vt-animate--dir-from-left {
+    --vt-from-x: -1;
+    --vt-from-y: 0;
+    --vt-reveal-clip: inset(-2rem 100% -2rem -2rem);
+  }
+
+  .vt-animate--dir-from-right {
+    --vt-from-x: 1;
+    --vt-from-y: 0;
+    --vt-reveal-clip: inset(-2rem -2rem -2rem 100%);
+  }
+
+  /* Fade */
+  .vt-animations .vt-animate--fade {
+    opacity: 0;
+    transition: opacity var(--vt-duration) ease var(--vt-delay);
+  }
+
+  /* Slide */
+  .vt-animations .vt-animate--slide {
+    opacity: 0;
+    transform: translate(calc(var(--vt-from-x) * var(--vt-offset)), calc(var(--vt-from-y) * var(--vt-offset)));
+    transition: opacity var(--vt-duration) var(--vt-easing) var(--vt-delay),
+      transform var(--vt-duration) var(--vt-easing) var(--vt-delay);
+  }
+
+  /*
+    Reveal: wipes open from the chosen side while the element settles into place.
+    The transform keeps it on its own layer, so the wipe doesn't repaint its content.
+    The negative inset leaves room for shadows and text that overflow the element.
+    It waits behind opacity because a clip-path would hide it from IntersectionObserver.
+  */
+  @keyframes vt-reveal {
+    from {
+      clip-path: var(--vt-reveal-clip);
+      transform: translate(
+        calc(var(--vt-from-x) * var(--vt-reveal-offset)),
+        calc(var(--vt-from-y) * var(--vt-reveal-offset))
+      );
+    }
+
+    to {
+      clip-path: inset(-2rem);
+      transform: translate(0, 0);
+    }
+  }
+
+  .vt-animations .vt-animate--reveal {
+    opacity: 0;
+  }
+
+  /* Blur */
+  .vt-animations .vt-animate--blur {
+    opacity: 0;
+    filter: blur(var(--vt-blur));
+    transition: opacity var(--vt-duration) var(--vt-easing) var(--vt-delay),
+      filter var(--vt-duration) var(--vt-easing) var(--vt-delay);
+  }
+
+  /* In view */
+  .vt-animations .vt-animate.vt-in-view {
+    opacity: 1;
+    transform: translate(0, 0);
+    filter: blur(0);
+  }
+
+  .vt-animations .vt-animate--reveal.vt-in-view {
+    animation: vt-reveal var(--vt-duration) var(--vt-easing) var(--vt-delay) both;
+  }
+{% endstylesheet %}

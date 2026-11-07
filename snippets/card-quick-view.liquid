@@ -1,0 +1,36 @@
+{%- doc -%}
+  Quick view icon button for product cards: opens the product in the quick
+  modal. Desktop only (hidden below 990px).
+  Used by snippets/card-actions.
+  Behaviour: assets/quick-add.js (module, runs once per page).
+
+  @param {object} product - The product
+  @param {string} [bg_color] - Button background override (default: color palette)
+  @param {string} [icon_color] - Icon color override
+  @param {string} [attributes] - Extra attributes for the wrapper
+
+  @example
+  {% render 'card-quick-view', product: product %}
+{%- enddoc -%}
+
+{%- if product != blank -%}
+  {%- liquid
+    assign vt_style = ''
+    if bg_color != blank
+      assign vt_style = vt_style | append: '--vt-card-action-bg: ' | append: bg_color | append: ';'
+    endif
+    if icon_color != blank
+      assign vt_style = vt_style | append: '--vt-card-action-fg: ' | append: icon_color | append: ';'
+    endif
+
+    assign vt_label = 'products.product.quick_view' | t
+    assign vt_aria = 'products.product.quick_view_label' | t: title: product.title
+    assign vt_attrs = 'data-vt-quick-add data-product-url="' | append: product.url | append: '" aria-haspopup="dialog"'
+  -%}
+
+  <div class="vt-product-qv" {% if vt_style != blank %}style="{{ vt_style }}"{% endif %} {{ attributes }}>
+    {% render 'card-action-button', label: vt_label, aria_label: vt_aria, icon: 'eye', attributes: vt_attrs, desktop_only: true %}
+  </div>
+
+  <script src="{{ 'quick-add.js' | asset_url }}" type="module"></script>  
+{%- endif -%}

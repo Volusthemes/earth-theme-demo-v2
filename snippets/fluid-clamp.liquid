@@ -1,0 +1,103 @@
+{%- liquid
+  # Mobile value at 375px, desktop value from 990px (the theme's desktop breakpoint) up
+  assign min_bp = min_bp | default: 375
+  assign max_bp = max_bp | default: 990
+  assign min_px = min_px | default: 0
+  assign max_px = max_px | default: 0
+  assign unit = unit | default: 'rem'
+
+  assign use_three_point = false
+  if mid_bp != blank and mid_px != blank
+    assign use_three_point = true
+  endif
+-%}
+
+{%- if use_three_point -%}
+  {%- liquid
+    comment
+      min_bp -> mid_bp
+    endcomment
+    assign bp_diff_1 = mid_bp | minus: min_bp
+    if bp_diff_1 == 0
+      assign bp_diff_1 = 1
+    endif
+    assign px_diff_1 = mid_px | minus: min_px
+    assign slope_1 = px_diff_1 | times: 1.0 | divided_by: bp_diff_1
+    assign slope_vw_1 = slope_1 | times: 100 | round: 4
+    assign slope_times_min_bp_1 = slope_1 | times: min_bp
+    assign intercept_px_1 = min_px | minus: slope_times_min_bp_1
+
+    comment
+      mid_bp -> max_bp
+    endcomment
+    assign bp_diff_2 = max_bp | minus: mid_bp
+    if bp_diff_2 == 0
+      assign bp_diff_2 = 1
+    endif
+    assign px_diff_2 = max_px | minus: mid_px
+    assign slope_2 = px_diff_2 | times: 1.0 | divided_by: bp_diff_2
+    assign slope_vw_2 = slope_2 | times: 100 | round: 4
+    assign slope_times_mid_bp_2 = slope_2 | times: mid_bp
+    assign intercept_px_2 = mid_px | minus: slope_times_mid_bp_2
+
+    
+    assign combinator = 'max'
+    if slope_1 > slope_2
+      assign combinator = 'min'
+    endif
+
+    assign overall_min_px = min_px | at_most: mid_px | at_most: max_px
+    assign overall_max_px = min_px | at_least: mid_px | at_least: max_px
+  -%}
+
+  {%- if unit == 'px' -%}
+    {%- liquid
+      assign intercept_1_out = intercept_px_1 | round: 4
+      assign intercept_2_out = intercept_px_2 | round: 4
+      assign min_out = overall_min_px | round: 4
+      assign max_out = overall_max_px | round: 4
+    -%}
+clamp({{ min_out }}px, {{ combinator }}({{ intercept_1_out }}px + {{ slope_vw_1 }}vw, {{ intercept_2_out }}px + {{ slope_vw_2 }}vw), {{ max_out }}px)
+  {%- else -%}
+    {%- liquid
+      assign intercept_rem_1 = intercept_px_1 | divided_by: 16.0 | round: 4
+      assign intercept_rem_2 = intercept_px_2 | divided_by: 16.0 | round: 4
+      assign overall_min_rem = overall_min_px | divided_by: 16.0 | round: 4
+      assign overall_max_rem = overall_max_px | divided_by: 16.0 | round: 4
+    -%}
+clamp({{ overall_min_rem }}rem, {{ combinator }}({{ intercept_rem_1 }}rem + {{ slope_vw_1 }}vw, {{ intercept_rem_2 }}rem + {{ slope_vw_2 }}vw), {{ overall_max_rem }}rem)
+  {%- endif -%}
+
+{%- else -%}
+  {%- liquid
+    assign bp_diff = max_bp | minus: min_bp
+    if bp_diff == 0
+      assign bp_diff = 1
+    endif
+
+    assign px_diff = max_px | minus: min_px
+    assign slope = px_diff | times: 1.0 | divided_by: bp_diff
+    assign slope_vw = slope | times: 100 | round: 4
+    assign slope_times_min_bp = slope | times: min_bp
+    assign intercept_px = min_px | minus: slope_times_min_bp
+
+    assign min_px_sorted = min_px | at_most: max_px
+    assign max_px_sorted = min_px | at_least: max_px
+  -%}
+
+  {%- if unit == 'px' -%}
+    {%- liquid
+      assign intercept_out = intercept_px | round: 4
+      assign min_out = min_px_sorted | round: 4
+      assign max_out = max_px_sorted | round: 4
+    -%}
+clamp({{ min_out }}px, {{ intercept_out }}px + {{ slope_vw }}vw, {{ max_out }}px)
+  {%- else -%}
+    {%- liquid
+      assign intercept_rem = intercept_px | divided_by: 16.0 | round: 4
+      assign min_rem = min_px_sorted | divided_by: 16.0 | round: 4
+      assign max_rem = max_px_sorted | divided_by: 16.0 | round: 4
+    -%}
+clamp({{ min_rem }}rem, {{ intercept_rem }}rem + {{ slope_vw }}vw, {{ max_rem }}rem)
+  {%- endif -%}
+{%- endif -%}

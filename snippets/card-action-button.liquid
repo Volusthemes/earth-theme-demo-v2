@@ -1,0 +1,35 @@
+{%- doc -%}
+  Round icon button with a tooltip, used on product card images
+  (Add to cart, Quick add, Quick view).
+
+  @param {string} label - Tooltip text, e.g. "Add to cart"
+  @param {string} aria_label - Accessible name, e.g. "Add to cart: Organic Tee"
+  @param {string} icon - Icon key from the icons snippet
+  @param {string} [type] - button (default) | submit
+  @param {string} [attributes] - Extra attributes, e.g. data-* hooks for JS
+  @param {boolean} [disabled] - Disabled state (e.g. sold out)
+  @param {boolean} [desktop_only] - Hide below 990px (e.g. Quick view)
+
+  @example
+  {% render 'card-action-button', label: 'Quick view', aria_label: 'Quick view: Tee', icon: 'eye', desktop_only: true %}
+{%- enddoc -%}
+
+<button
+  type="{{ type | default: 'button' }}"
+  class="vt-card-action{% if desktop_only %} vt-card-action--desktop-only{% endif %}"
+  aria-label="{{ aria_label | escape }}"
+  {% if disabled %}
+    disabled
+  {% endif %}
+  {{ attributes }}
+>
+  <span class="vt-card-action__icon" aria-hidden="true">
+    {%- render 'icons', icon: icon -%}
+  </span>
+  <span class="vt-card-action__icon vt-card-action__icon--done" aria-hidden="true">
+    {%- render 'icons', icon: 'check' -%}
+  </span>  
+  {%- unless disabled -%}
+    <span class="vt-card-action__tooltip vt-paragraph-extra-small" aria-hidden="true">{{ label | escape }}</span>
+  {%- endunless -%}
+</button>

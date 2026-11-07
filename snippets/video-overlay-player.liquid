@@ -1,0 +1,79 @@
+{%- doc -%}
+
+  @param {string} video_source - 'shopify', 'external' or 'mp4'
+  @param {object} video - Shopify video, video_url value, or MP4 link (string)
+  @param {string} [modifier] - 'desktop' or 'mobile' when two players are rendered
+  @param {boolean} [muted] - Start without sound
+  @param {boolean} [loop] - Repeat the video
+  @param {string} [alt] - Description for screen readers
+
+  @example
+  {% render 'video-overlay-player', video_source: 'mp4', video: '//example.com/video.mp4', muted: true, loop: true %}
+{%- enddoc -%}
+
+{%- liquid
+  assign player_classes = 'vt-video-overlay__player'
+  if modifier != blank
+    assign player_classes = player_classes | append: ' vt-video-overlay__player--' | append: modifier
+  endif
+-%}
+
+{%- if video_source == 'external' -%}
+  {%- liquid
+    if video.type == 'youtube'
+      assign embed_url = '//www.youtube-nocookie.com/embed/' | append: video.id | append: '?autoplay=1&controls=0&disablekb=1&fs=0&iv_load_policy=3&modestbranding=1&playsinline=1&rel=0&enablejsapi=1'
+      if muted
+        assign embed_url = embed_url | append: '&mute=1'
+      endif
+      if loop
+        assign embed_url = embed_url | append: '&loop=1&playlist=' | append: video.id
+      endif
+    else
+      assign embed_url = '//player.vimeo.com/video/' | append: video.id | append: '?autoplay=1&controls=0&title=0&byline=0&portrait=0&playsinline=1&autopause=0&dnt=1'
+      if muted
+        assign embed_url = embed_url | append: '&muted=1'
+      endif
+      if loop
+        assign embed_url = embed_url | append: '&loop=1'
+      endif
+    endif
+
+    assign embed_title = 'accessibility.background_video' | t
+    if alt != blank
+      assign embed_title = alt
+    endif
+  -%}
+  <iframe
+    class="{{ player_classes }} vt-video-overlay__player--embed"
+    title="{{ embed_title | escape }}"
+    data-video-player
+    data-src="{{ embed_url }}"
+    allow="autoplay; encrypted-media; picture-in-picture"
+    tabindex="-1"
+  ></iframe>
+{%- else -%}
+  <video  
+    class="{{ player_classes }}"
+    data-video-player
+    playsinline
+    preload="none"
+    tabindex="-1"
+    {% if muted %}
+      muted
+    {% endif %}
+    {% if loop %}
+      loop
+    {% endif %}
+    {% if alt != blank %}
+      aria-label="{{ alt | escape }}"
+    {% endif %}
+  >
+    {%- if video_source == 'shopify' -%}
+      {%- for source in video.sources -%}
+        <source src="{{ source.url }}" type="{{ source.mime_type }}">
+      {%- endfor -%}
+    {%- else -%}
+      <source src="{{ video | escape }}" type="video/mp4">
+    {%- endif -%}
+  </video>
+{%- endif -%}

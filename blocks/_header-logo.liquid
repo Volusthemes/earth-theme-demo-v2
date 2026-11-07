@@ -1,0 +1,70 @@
+{% doc %}
+  Logo of the header, linking to the home page. Uses the logo from theme settings
+  and falls back to the shop name. Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-logo', id: 'logo' %}
+{% enddoc %}
+
+<a
+  class="vt-header__logo"
+  href="{{ routes.root_url }}"
+  style="--vt-logo-width-desktop: {{ block.settings.width_desktop }}px; --vt-logo-width-mobile: {{ block.settings.width_mobile }}px;"
+  {{ block.shopify_attributes }}
+>
+  {%- if settings.logo != blank -%}
+    {%- liquid
+      assign logo_alt = settings.logo.alt | default: shop.name
+      assign width_desktop = block.settings.width_desktop
+      assign width_mobile = block.settings.width_mobile
+      assign largest_width = width_desktop | at_least: width_mobile | times: 2
+      assign logo_widths = width_mobile | append: ',' | append: width_desktop | append: ',' | append: largest_width
+      assign logo_sizes = '(min-width: 990px) ' | append: width_desktop | append: 'px, ' | append: width_mobile | append: 'px'
+    -%}
+    {{
+      settings.logo
+      | image_url: width: largest_width
+      | image_tag: alt: logo_alt, widths: logo_widths, sizes: logo_sizes, loading: 'eager', class: 'vt-header__logo-image'
+    }}
+  {%- else -%}
+    <span class="vt-header__logo-text">{{ shop.name | escape }}</span>
+  {%- endif -%}
+</a>
+
+{% schema %}
+{
+  "name": "Logo",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Edit logo in [theme settings](/editor?context=theme&category=logo%20and%20favicon)"
+    },
+    {
+      "type": "range",
+      "id": "width_desktop",
+      "label": "Width (desktop)",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "width_mobile",
+      "label": "Width (mobile)",
+      "min": 30,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo"
+    }
+  ]
+}
+{% endschema %}

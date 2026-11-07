@@ -1,0 +1,139 @@
+{% doc %}
+  Main content wrapper inside a collection card.
+  Contains title, paragraph, and button blocks.
+{% enddoc %}
+
+<div
+  class="vt-collection-card__main vt-collection-card__main--width-{{ block.settings.width }}"
+  style="{% render 'collection-stack-style', block: block %}"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+
+
+{% schema %}
+{
+  "name": "Card content",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:labels.gap_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:labels.gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit",    "label": "Fit" },
+        { "value": "fill",   "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "min": 1, "max": 100, "step": 1, "unit": "%",
+      "label": "Custom width",
+      "default": 50,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    }
+  ],
+  "blocks": [
+    { "type": "collection-title" },
+    { "type": "collection-paragraph" },
+    { "type": "collection-button" }
+  ],
+  "presets": [
+    {
+      "name": "Card content",
+      "category": "Collection stack",
+      "settings": {
+        "gap_desktop": 8,
+        "gap_mobile": 6,
+        "width": "fit",
+        "width_custom": 50
+      },
+      "blocks": [
+        { 
+          "type": "collection-title", 
+          "settings": {
+            "heading": "Collection title",
+            "heading_size": "vt-heading-h3",
+            "heading_alignment": "text-inherit",
+            "heading_tag": "h2",
+            "heading_width": "fit",
+            "width_custom": 100,
+            "enable_max_width": false,
+            "heading_max_width": 600,
+            "show_index": false,
+            "animation_type": "none",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        { 
+          "type": "collection-paragraph",
+          "settings": {
+            "text": "<p>Collection description</p>",
+            "paragraph_size": "vt-paragraph-medium",
+            "paragraph_alignment": "text-inherit",
+            "paragraph_max_width": 800,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        { 
+          "type": "collection-button",
+          "settings": {
+            "button_label": "Shop collection",
+            "button_link": "",
+            "open_in_new_tab": false,
+            "button_style": "link",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          } 
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

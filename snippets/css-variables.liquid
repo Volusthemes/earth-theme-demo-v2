@@ -1,0 +1,703 @@
+{% style %}  
+	{% # Loads all font variantions with display: swap %}
+	{{ settings.heading_font_family | font_face: font_display: 'swap' }}
+	{{ settings.heading_font_family | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+	{{ settings.heading_font_family | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+	{{ settings.heading_font_family | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+
+	{% if settings.type_body_font and settings.type_body_font.family != settings.heading_font_family.family %}
+		{{ settings.type_body_font | font_face: font_display: 'swap' }}
+		{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
+		{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+		{{ settings.type_body_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+	{% endif %}
+  
+
+    {% comment %}
+    ==========================================
+    FLUID TYPOGRAPHY
+    Mobile endpoint: 375px
+    Desktop endpoint: 1440px
+    ==========================================
+    {% endcomment %}
+
+    {% assign fluid_viewport_start = 375 %}
+    {% assign fluid_viewport_end = 1440 %}
+    {% assign fluid_viewport_range = fluid_viewport_end | minus: fluid_viewport_start %}
+
+    {% comment %}
+    ==========================================
+    BODY
+    ==========================================
+    {% endcomment %}
+
+    {% assign body_mobile = settings.body_base_size_mobile %}
+    {% assign body_desktop = settings.body_base_size %}
+    {% assign body_font_range = body_desktop | minus: body_mobile %}
+    {% assign body_vw = body_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign body_offset = body_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign body_base = body_mobile | minus: body_offset %}
+
+
+    {% comment %}
+    ==========================================
+    LARGE
+    ==========================================
+    {% endcomment %}
+
+    {% assign large_mobile = settings.large_font_size_mobile %}
+    {% assign large_desktop = settings.large_font_size_desktop %}
+    {% assign large_font_range = large_desktop | minus: large_mobile %}
+    {% assign large_vw = large_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign large_offset = large_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign large_base = large_mobile | minus: large_offset %}
+
+
+    {% comment %}
+    ==========================================
+    SMALL
+    ==========================================
+    {% endcomment %}
+
+    {% assign small_mobile = settings.small_font_size_mobile %}
+    {% assign small_desktop = settings.small_font_size_desktop %}
+    {% assign small_font_range = small_desktop | minus: small_mobile %}
+    {% assign small_vw = small_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign small_offset = small_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign small_base = small_mobile | minus: small_offset %}
+
+
+    {% comment %}
+    ==========================================
+    EXTRA SMALL
+    ==========================================
+    {% endcomment %}
+
+    {% assign extra_small_mobile = settings.extra_small_font_size_mobile %}
+    {% assign extra_small_desktop = settings.extra_small_font_size_desktop %}
+    {% assign extra_small_font_range = extra_small_desktop | minus: extra_small_mobile %}
+    {% assign extra_small_vw = extra_small_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign extra_small_offset = extra_small_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign extra_small_base = extra_small_mobile | minus: extra_small_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HERO
+    ==========================================
+    {% endcomment %}
+
+    {% assign hero_mobile = settings.hero_font_size_mobile %}
+    {% assign hero_desktop = settings.hero_font_size_desktop %}
+    {% assign hero_font_range = hero_desktop | minus: hero_mobile %}
+    {% assign hero_vw = hero_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign hero_offset = hero_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign hero_base = hero_mobile | minus: hero_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 1
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_1_mobile = settings.h1_font_size_mobile %}
+    {% assign heading_1_desktop = settings.h1_font_size_desktop %}
+    {% assign heading_1_font_range = heading_1_desktop | minus: heading_1_mobile %}
+    {% assign heading_1_vw = heading_1_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_1_offset = heading_1_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_1_base = heading_1_mobile | minus: heading_1_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 2
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_2_mobile = settings.h2_font_size_mobile %}
+    {% assign heading_2_desktop = settings.h2_font_size_desktop %}
+    {% assign heading_2_font_range = heading_2_desktop | minus: heading_2_mobile %}
+    {% assign heading_2_vw = heading_2_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_2_offset = heading_2_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_2_base = heading_2_mobile | minus: heading_2_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 3
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_3_mobile = settings.h3_font_size_mobile %}
+    {% assign heading_3_desktop = settings.h3_font_size_desktop %}
+    {% assign heading_3_font_range = heading_3_desktop | minus: heading_3_mobile %}
+    {% assign heading_3_vw = heading_3_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_3_offset = heading_3_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_3_base = heading_3_mobile | minus: heading_3_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 4
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_4_mobile = settings.h4_font_size_mobile %}
+    {% assign heading_4_desktop = settings.h4_font_size_desktop %}
+    {% assign heading_4_font_range = heading_4_desktop | minus: heading_4_mobile %}
+    {% assign heading_4_vw = heading_4_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_4_offset = heading_4_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_4_base = heading_4_mobile | minus: heading_4_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 5
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_5_mobile = settings.h5_font_size_mobile %}
+    {% assign heading_5_desktop = settings.h5_font_size_desktop %}
+    {% assign heading_5_font_range = heading_5_desktop | minus: heading_5_mobile %}
+    {% assign heading_5_vw = heading_5_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_5_offset = heading_5_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_5_base = heading_5_mobile | minus: heading_5_offset %}
+
+
+    {% comment %}
+    ==========================================
+    HEADING 6
+    ==========================================
+    {% endcomment %}
+
+    {% assign heading_6_mobile = settings.h6_font_size_mobile %}
+    {% assign heading_6_desktop = settings.h6_font_size_desktop %}
+    {% assign heading_6_font_range = heading_6_desktop | minus: heading_6_mobile %}
+    {% assign heading_6_vw = heading_6_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign heading_6_offset = heading_6_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign heading_6_base = heading_6_mobile | minus: heading_6_offset %}
+
+    {% comment %}
+    ==========================================
+    SUB HEADING
+    ==========================================
+    {% endcomment %}
+
+    {% assign sub_heading_mobile = settings.sub_heading_font_size_mobile %}
+    {% assign sub_heading_desktop = settings.sub_heading_font_size_desktop %}
+    {% assign sub_heading_range = sub_heading_desktop | minus: sub_heading_mobile %}
+    {% assign sub_heading_vw = sub_heading_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign sub_heading_offset = sub_heading_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign sub_heading_base = sub_heading_mobile | minus: sub_heading_offset %}
+
+    {% comment %}
+    ==========================================
+    BUTTONS
+    ==========================================
+    {% endcomment %}
+
+    {% assign button_mobile = settings.buttons_font_size_mobile %}
+    {% assign button_desktop = settings.buttons_font_size_desktop %}
+    {% assign button_font_range = button_desktop | minus: button_mobile %}
+    {% assign button_vw = button_font_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign button_offset = button_font_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign button_base = button_mobile | minus: button_offset %}
+
+
+    {% assign button_height_mobile = settings.buttons_min_height_mobile %}
+    {% assign button_height_desktop = settings.buttons_min_height_desktop %}
+    {% assign button_height_range = button_height_desktop | minus: button_height_mobile %}
+    {% assign button_height_vw = button_height_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign button_height_offset = button_height_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign button_height_base = button_height_mobile | minus: button_height_offset %}
+
+    {% comment %}
+    =============================================
+    ICON SIZE
+    =============================================
+    {% endcomment %}
+
+    {% assign icon_mobile = block.settings.icon_size_mobile %}
+    {% assign icon_desktop = block.settings.icon_size_desktop%}
+    {% assign icon_size_range = icon_desktop | minus: icon_mobile %}
+    {% assign icon_vw = icon_size_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign icon_offset = icon_size_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign icon_size = icon_mobile | minus: icon_offset %}
+
+    {% comment %}
+    =============================================
+    ARROW SIZE
+    =============================================
+    {% endcomment %}
+
+    {% assign arrow_size_mobile = settings.arrow_size_mobile | default: 44 %}
+    {% assign arrow_size_desktop = settings.arrow_size_desktop | default: 48 %}
+    {% assign arrow_size_range = arrow_size_desktop | minus: arrow_size_mobile %}
+    {% assign arrow_size_vw = arrow_size_range | times: 100.0 | divided_by: fluid_viewport_range %}
+    {% assign arrow_size_offset = arrow_size_range | times: fluid_viewport_start | divided_by: fluid_viewport_range %}
+    {% assign arrow_size_base = arrow_size_mobile | minus: arrow_size_offset %}
+
+
+    {% comment %}
+    =============================================
+    STANDARD PAGE WIDTHS AND SYSTEM SPACING SCALE
+    =============================================
+    {% endcomment %}
+
+  
+    :root {
+
+        /*
+        * ------------------------------------------------------------
+        * Typography System (from Theme Settings) *
+        * ------------------------------------------------------------
+        */
+
+        /* Body */
+
+        --vt-font-body-family: {{ settings.type_body_font.family }}, {{ settings.type_body_font.fallback_families }};
+        --vt-font-body-weight: {{ settings.body_font_weight | default: '400' }};
+        --vt-font-body-line-height: {{ settings.body_line_height | default: 1.6 }};
+        --vt-font-body-letter-spacing: {{ settings.body_letter_spacing | default: -5 | divided_by: 1000.0 }}em;
+        --vt-font-text-transform: {{ settings.body_text_transform }};
+        --vt-font-body-size-desktop: {{ body_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-body-size-mobile: {{ body_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+
+        /* BODY - FLUID FONT SIZE */
+
+        --vt-font-body-size: clamp(var(--vt-font-body-size-mobile), {{ body_base | round: 4 }}px + {{ body_vw | round: 4 }}vw, var(--vt-font-body-size-desktop));
+
+
+        /* LARGE */
+
+        --vt-font-large-weight: {{ settings.large_font_weight | default: '400' }};
+        --vt-font-large-line-height: {{ settings.large_line_height | default: 1.6 }};
+        --vt-font-large-letter-spacing: {{ settings.large_letter_spacing | default: -5 | divided_by: 1000.0 }}em;
+        --vt-font-large-text-transform: {{ settings.large_text_transform }};
+        --vt-font-large-size-desktop: {{ large_desktop | divided_by: 16.0 | round: 4 }}rem;     
+        --vt-font-large-size-mobile: {{ large_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* LARGE - FLUID FONT SIZE */
+
+        --vt-font-large-size: clamp(var(--vt-font-large-size-mobile), {{ large_base | round: 4 }}px + {{ large_vw | round: 4 }}vw, var(--vt-font-large-size-desktop) );
+    
+        /* SMALL */        
+
+        --vt-font-small-weight: {{ settings.small_font_weight | default: '400' }};
+        --vt-font-small-line-height: {{ settings.small_line_height | default: 1.6 }};
+        --vt-font-small-letter-spacing: {{ settings.small_letter_spacing | default: -5 | divided_by: 1000.0 }}em;
+        --vt-font-small-text-transform: {{ settings.small_text_transform }};
+        --vt-font-small-size-desktop: {{ small_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-small-size-mobile: {{ small_mobile | divided_by: 16.0 | round: 4 }}rem;
+       
+
+        /* SMALL - FLUID FONT SIZE */
+
+        --vt-font-small-size: clamp(var(--vt-font-small-size-mobile), {{ small_base | round: 4 }}px + {{ small_vw | round: 4 }}vw, var(--vt-font-small-size-desktop) );
+
+        /* EXTRA SMALL */
+
+        --vt-font-extra-small-weight: {{ settings.extra_small_font_weight | default: '400' }};
+        --vt-font-extra-small-line-height: {{ settings.extra_small_line_height | default: 1.6 }};
+        --vt-font-extra-small-letter-spacing: {{ settings.extra_small_letter_spacing | default: -5 | divided_by: 1000.0 }}em;
+        --vt-font-extra-small-text-transform: {{ settings.extra_small_text_transform }};
+        --vt-font-extra-small-size-desktop: {{ extra_small_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-extra-small-size-mobile: {{ extra_small_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* EXTRA SMALL - FLUID FONT SIZE */
+
+        --vt-font-extra-small-size: clamp(var(--vt-font-extra-small-size-mobile), {{ extra_small_base | round: 4 }}px + {{ extra_small_vw | round: 4 }}vw, var(--vt-font-extra-small-size-desktop) );
+
+
+        /* Headings */
+        
+        --vt-font-family-heading: {{ settings.heading_font_family.family }}, {{ settings.heading_font_family.fallback_families }};	
+        --vt-font-heading-weight: {{ settings.heading_font_weight | default: '700' }};
+
+        /*
+        * ------------------------------------------------------------
+        * HERO - CORE PROPERTIES *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-hero-line-height: {{ settings.hero_line_height }};
+        --vt-font-hero-letter-spacing: {{ settings.hero_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-hero-text-transform: {{ settings.hero_text_transform }};
+
+        /* HERO - RESPONSIVE FONT SIZES (converted px → rem) */
+        --vt-font-hero-size-desktop: {{ hero_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-hero-size-mobile: {{ hero_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HERO - FLUID FONT SIZE */
+
+        --vt-font-hero-size: clamp(var(--vt-font-hero-size-mobile), {{ hero_base | round: 4 }}px + {{ hero_vw | round: 4 }}vw, var(--vt-font-hero-size-desktop) );
+
+        /*
+        * ------------------------------------------------------------
+        * HEADING 1 - CORE PROPERTIES *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-heading-1-line-height: {{ settings.h1_line_height }};
+        --vt-font-heading-1-letter-spacing: {{ settings.h1_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-1-text-transform: {{ settings.h1_text_transform }};
+
+        /* HEADING 1 - RESPONSIVE FONT SIZES */
+        --vt-font-heading-1-size-mobile: {{ heading_1_mobile | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-1-size-desktop: {{ heading_1_desktop | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HEADING 1 - FLUID FONT SIZE */
+        
+        --vt-font-heading-1-size: clamp(var(--vt-font-heading-1-size-mobile), {{ heading_1_base | round: 4 }}px + {{ heading_1_vw | round: 4 }}vw, var(--vt-font-heading-1-size-desktop) );
+
+        /*
+        * ------------------------------------------------------------
+        * HEADING 2 *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-heading-2-line-height: {{ settings.h2_line_height }};
+        --vt-font-heading-2-letter-spacing: {{ settings.h2_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-2-text-transform: {{ settings.h2_text_transform }};
+
+        /* HEADING 2 - RESPONSIVE FONT SIZES */
+
+        --vt-font-heading-2-size-desktop: {{ heading_2_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-2-size-mobile: {{ heading_2_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HEADING 2 - FLUID FONT SIZE */
+        
+        --vt-font-heading-2-size: clamp(var(--vt-font-heading-2-size-mobile), {{ heading_2_base | round: 4 }}px + {{ heading_2_vw | round: 4 }}vw, var(--vt-font-heading-2-size-desktop) );
+        
+        /*
+        * ------------------------------------------------------------
+        * HEADING 3 *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-heading-3-line-height: {{ settings.h3_line_height }};
+        --vt-font-heading-3-letter-spacing: {{ settings.h3_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-3-text-transform: {{ settings.h3_text_transform }};
+
+        /* HEADING 3 - RESPONSIVE FONT SIZES */
+
+        --vt-font-heading-3-size-desktop: {{ heading_3_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-3-size-mobile: {{ heading_3_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HEADING 3 - FLUID FONT SIZE */
+        
+        --vt-font-heading-3-size: clamp(var(--vt-font-heading-3-size-mobile), {{ heading_3_base | round: 4 }}px + {{ heading_3_vw | round: 4 }}vw, var(--vt-font-heading-3-size-desktop) );
+
+        /*
+        * ------------------------------------------------------------
+        * HEADING 4 *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-heading-4-line-height: {{ settings.h4_line_height }};
+        --vt-font-heading-4-letter-spacing: {{ settings.h4_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-4-text-transform: {{ settings.h4_text_transform }};
+
+        /* HEADING 4 - RESPONSIVE FONT SIZES */
+
+        --vt-font-heading-4-size-desktop: {{ heading_4_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-4-size-mobile: {{ heading_4_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HEADING 4 - FLUID FONT SIZE */
+        
+        --vt-font-heading-4-size: clamp(var(--vt-font-heading-4-size-mobile), {{ heading_4_base | round: 4 }}px + {{ heading_4_vw | round: 4 }}vw, var(--vt-font-heading-4-size-desktop) );
+
+        /*
+        * ------------------------------------------------------------
+        * HEADING 5 *
+        * ------------------------------------------------------------
+        */
+        
+        --vt-font-heading-5-line-height: {{ settings.h5_line_height }};
+        --vt-font-heading-5-letter-spacing: {{ settings.h5_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-5-text-transform: {{ settings.h5_text_transform }};
+
+        /* HEADING 5 - RESPONSIVE FONT SIZES */
+
+        --vt-font-heading-5-size-desktop: {{ heading_5_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-5-size-mobile: {{ heading_5_mobile | divided_by: 16.0 | round: 4 }}rem;
+
+        /* HEADING 5 - FLUID FONT SIZE */
+
+        --vt-font-heading-5-size: clamp(var(--vt-font-heading-5-size-mobile), {{ heading_5_base | round: 4 }}px + {{ heading_5_vw | round: 4 }}vw, var(--vt-font-heading-5-size-desktop) );
+        
+        /*
+        * ------------------------------------------------------------
+        * HEADING 6 *
+        * ------------------------------------------------------------
+        */
+
+        --vt-font-heading-6-line-height: {{ settings.h6_line_height }};
+        --vt-font-heading-6-letter-spacing: {{ settings.h6_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-font-heading-6-text-transform: {{ settings.h6_text_transform }};
+
+        /* HEADING 6 - RESPONSIVE FONT SIZES */
+
+        --vt-font-heading-6-size-desktop: {{ heading_6_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-font-heading-6-size-mobile: {{ heading_6_mobile | divided_by: 16.0 | round: 4 }}rem;        
+
+        /* HEADING 6 - FLUID FONT SIZE */
+
+        --vt-font-heading-6-size: clamp(var(--vt-font-heading-6-size-mobile), {{ heading_6_base | round: 4 }}px + {{ heading_6_vw | round: 4 }}vw, var(--vt-font-heading-6-size-desktop) );
+
+        /*
+        * ------------------------------------------------------------
+        * SUB HEADING *
+        * ------------------------------------------------------------
+        */
+
+        --vt-sub-heading-line-height: {{ settings.sub_heading_line_height }};
+        --vt-sub-heading-letter-spacing: {{ settings.sub_heading_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-sub-heading-text-transform: {{ settings.sub_heading_text_transform }};
+        --vt-sub-heading-font-weight: {{ settings.sub_heading_font_weight }};
+
+        /* SUB HEADING - RESPONSIVE FONT SIZES */
+
+        --vt-sub-heading-size-desktop: {{ sub_heading_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-sub-heading-size-mobile: {{ sub_heading_mobile | divided_by: 16.0 | round: 4 }}rem;        
+
+        /* SUB HEADING - FLUID FONT SIZE */
+
+        --vt-sub-heading-size: clamp(var(--vt-sub-heading-size-mobile), {{ sub_heading_base | round: 4 }}px + {{ sub_heading_vw | round: 4 }}vw, var(--vt-sub-heading-size-desktop) );
+
+        /* Navigation */
+        --font-nav--family: {% if settings.nav_font == 'heading' %}var(--vt-font-family-heading){% else %}var(--vt-font-body-family){% endif %};
+        --font-nav--weight: {{ settings.nav_font_weight | default: '600' }};
+        --font-nav--size: {{ settings.nav_base_size | default: 18 }}px;
+        --font-nav--transform: {% if settings.nav_capitalize %}uppercase{% else %}none{% endif %};
+
+       
+        {%- comment -%}
+        ------------------------------------------------------------
+        BUTTON CSS VARIABLES
+        Global button design tokens
+        ------------------------------------------------------------
+        {%- endcomment -%}
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON TYPOGRAPHY *
+        * ------------------------------------------------------------
+        */
+        
+        --vt-button-font-family: {% if settings.buttons_font == 'heading' %}var(--vt-font-family-heading){% else %}var(--vt-font-body-family){% endif %};
+        --vt-button-font-size-desktop: {{ button_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-button-font-size-mobile: {{ button_mobile | divided_by: 16.0 | round: 4 }}rem;        
+        --vt-button-font-weight: {{ settings.buttons_font_weight }};
+        --vt-button-letter-spacing: {{ settings.buttons_letter_spacing | divided_by: 1000.0 }}em;
+        --vt-button-text-case: {{ settings.buttons_text_case }};    
+        
+        /* BUTTON 4 - FLUID FONT SIZE */
+        
+        --vt-button-size: clamp(var(--vt-button-font-size-mobile), {{ button_base | round: 4 }}px + {{ button_vw | round: 4 }}vw, var(--vt-button-font-size-desktop));
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON DIMENSIONS *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-min-height-desktop: {{ button_height_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-button-min-height-mobile: {{ button_height_mobile | divided_by: 16.0 | round: 4 }}rem;        
+        --vt-button-min-height: clamp(var(--vt-button-min-height-mobile), {{ button_height_base | round: 4 }}px + {{ button_height_vw | round: 4 }}vw, var(--vt-button-min-height-desktop));
+        --vt-button-horizontal-padding: {{ settings.buttons_horizontal_padding | divided_by: 16.0 }}rem;
+        --vt-button-horizontal-padding-mobile: {{ settings.buttons_horizontal_padding | times: 0.75 | divided_by: 16.0 }}rem;
+ 
+        /*
+        * ------------------------------------------------------------
+        * BUTTON BORDER *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-border-width: {{ settings.buttons_border_width }}px;
+        --vt-button-border-opacity: {{ settings.buttons_border_opacity | divided_by: 100.0 }}; 
+        
+        /*
+        * ------------------------------------------------------------
+        * BUTTON RADIUS *
+        * ------------------------------------------------------------
+        */
+  
+        --vt-button-radius: {{ settings.buttons_radius }}px;
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON PRIMARY *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-primary-background: {{ settings.button_primary_background }};
+        --vt-button-primary-text: {{ settings.button_primary_text }};
+        --vt-button-primary-border: {{ settings.button_primary_border }};
+        --vt-button-primary-hover-background: {{ settings.button_primary_hover_background }};
+        --vt-button-primary-hover-text: {{ settings.button_primary_hover_text }};
+        --vt-button-primary-hover-border: {{ settings.button_primary_hover_border }};
+    
+        /*
+        * ------------------------------------------------------------
+        * BUTTON SECONDARY *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-secondary-background: {{ settings.button_secondary_background }};
+        --vt-button-secondary-text: {{ settings.button_secondary_text }};
+        --vt-button-secondary-border: {{ settings.button_secondary_border }};
+        --vt-button-secondary-hover-background: {{ settings.button_secondary_hover_background }};
+        --vt-button-secondary-hover-text: {{ settings.button_secondary_hover_text }};
+        --vt-button-secondary-hover-border: {{ settings.button_secondary_hover_border }};
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON OUTLINE *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-outline-background: {{ settings.button_outline_background }};
+        --vt-button-outline-text: {{ settings.button_outline_text }};
+        --vt-button-outline-border: {{ settings.button_outline_border }};
+        --vt-button-outline-hover-background: {{ settings.button_outline_hover_background }};
+        --vt-button-outline-hover-text: {{ settings.button_outline_hover_text }};
+        --vt-button-outline-hover-border: {{ settings.button_outline_hover_border }};
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON ACCENT *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-accent-background: {{ settings.button_accent_background }};
+        --vt-button-accent-text: {{ settings.button_accent_text }};
+        --vt-button-accent-border: {{ settings.button_accent_border }};
+        --vt-button-accent-hover-background: {{ settings.button_accent_hover_background }};
+        --vt-button-accent-hover-text: {{ settings.button_accent_hover_text }};
+        --vt-button-accent-hover-border: {{ settings.button_accent_hover_border }};
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON LINK *
+        * ------------------------------------------------------------
+        */
+        
+        --vt-button-link-text: {{ settings.button_link_text }};
+        --vt-button-icon-link-dark: {{ settings.button_icon_link_dark }};
+
+        /*
+        * ------------------------------------------------------------
+        * BUTTON LINK LIGHT *
+        * ------------------------------------------------------------
+        */
+
+        --vt-button-link-light-text: {{ settings.button_link_light_text }};
+        --vt-button-icon-link-light: {{ settings.button_icon_link_light }};
+        
+
+        /*
+        * ------------------------------------------------------------
+        * ICON SIZE *
+        * ------------------------------------------------------------
+        */
+
+        --vt-icon-size-desktop: {{ icon_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-icon-size-mobile: {{ icon_mobile | divided_by: 16.0 | round: 4 }}rem;
+        --vt-icon-size: clamp(var(--vt-icon-size-mobile), {{ icon_size | round: 4 }}px + {{ icon_vw | round: 4 }}vw, var(--vt-icon-size-desktop));
+
+
+
+        /*
+        * ------------------------------------------------------------
+        * ARROW PRIMARY *
+        * ------------------------------------------------------------
+        */
+
+        --vt-arrow-primary-background: {{ settings.arrows_primary_background }};
+        --vt-arrow-primary-icon: {{ settings.arrows_primary_icon }};
+        --vt-arrow-primary-hover-background: {{ settings.arrows_primary_hover_background }};
+        --vt-arrow-primary-hover-icon: {{ settings.arrows_primary_hover_icon }};
+
+        /*
+        * ------------------------------------------------------------
+        * ARROW secondary *
+        * ------------------------------------------------------------
+        */
+
+        --vt-arrow-secondary-background: {{ settings.arrows_secondary_background }};
+        --vt-arrow-secondary-icon: {{ settings.arrows_secondary_icon }};
+        --vt-arrow-secondary-hover-background: {{ settings.arrows_secondary_hover_background }};
+        --vt-arrow-secondary-hover-icon: {{ settings.arrows_secondary_hover_icon }};
+		
+        /*
+        * ------------------------------------------------------------
+        * ARROW SIZE *
+        * ------------------------------------------------------------
+        */
+
+        --vt-arrow-size-desktop: {{ arrow_size_desktop | divided_by: 16.0 | round: 4 }}rem;
+        --vt-arrow-size-mobile: {{ arrow_size_mobile | divided_by: 16.0 | round: 4 }}rem;
+        --vt-arrow-size: clamp(var(--vt-arrow-size-mobile), {{ arrow_size_base | round: 4 }}px + {{ arrow_size_vw | round: 4 }}vw, var(--vt-arrow-size-desktop));
+        --vt-arrow-icon-size: {{ settings.arrow_icon_size | default: 15 | divided_by: 16.0 | round: 4 }}rem;
+        --vt-arrow-radius: {{ settings.arrow_corner_radius | default: 50 | divided_by: 16.0 | round: 4 }}rem;
+        
+
+        /* Layout */           
+                
+        --vt-link-underline-thickness: {{ settings.link_underline_thickness }}px;
+        --vt-page-width: {{ settings.max_page_width | default: 1170 }}px;        
+
+        /* 3 anchor points for responsive system */
+        --vt-breakpoint-mobile: 375;
+        --vt-breakpoint-tablet: 1024;
+        --vt-breakpoint-desktop: 1440;
+        {%- liquid
+          assign vt_pad_mobile = settings.page_padding_mobile | default: 20
+          assign vt_pad_desktop = settings.page_padding_desktop | default: 34
+          assign vt_pad_tablet = vt_pad_mobile | plus: vt_pad_desktop | divided_by: 2.0
+        -%}
+        /* Padding is the gutter beside the page width; the tablet point sits halfway so it scales one way */
+        --vt-page-padding-mobile: {{ vt_pad_mobile }};
+        --vt-page-padding-tablet: {{ vt_pad_tablet }};
+        --vt-page-padding-desktop: {{ vt_pad_desktop }};
+
+        /* From mobile → tablet */
+        --vt-pad-slope-1: calc((var(--vt-page-padding-tablet) - var(--vt-page-padding-mobile)) / (var(--vt-breakpoint-tablet) - var(--vt-breakpoint-mobile)));
+        --vt-pad-intercept-1: calc(var(--vt-page-padding-mobile) - var(--vt-pad-slope-1) * var(--vt-breakpoint-mobile));
+
+        /* From tablet → desktop */
+        --vt-pad-slope-2: calc((var(--vt-page-padding-desktop) - var(--vt-page-padding-tablet)) / (var(--vt-breakpoint-desktop) - var(--vt-breakpoint-tablet)));
+        --vt-pad-intercept-2: calc(var(--vt-page-padding-tablet) - var(--vt-pad-slope-2) * var(--vt-breakpoint-tablet));
+
+        /* Default: (mobile → tablet) */
+        /* min()/max() keep clamp valid when mobile padding is larger than desktop */
+        --vt-page-padding: clamp(
+          calc(min(var(--vt-page-padding-mobile), var(--vt-page-padding-tablet)) * 1px),
+          calc(var(--vt-pad-intercept-1) * 1px + var(--vt-pad-slope-1) * 100vw),
+          calc(max(var(--vt-page-padding-mobile), var(--vt-page-padding-tablet)) * 1px)
+        );
+
+      @media screen and (min-width: 1024px) {
+        --vt-page-padding: clamp(
+          calc(min(var(--vt-page-padding-tablet), var(--vt-page-padding-desktop)) * 1px),
+          calc(var(--vt-pad-intercept-2) * 1px + var(--vt-pad-slope-2) * 100vw),
+          calc(max(var(--vt-page-padding-tablet), var(--vt-page-padding-desktop)) * 1px)
+        );
+      }
+      
+      /* ==========================================================================
+      Color Palette (from Theme Settings)
+      ========================================================================== */
+      --vt-background-color: {{ settings.color_palette.background }};
+      --vt-foreground-color: {{ settings.color_palette.foreground }};
+      --vt-color-primary: {{ settings.color_palette.primary }};
+      --vt-color-secondary: {{ settings.color_palette.secondary }};
+      --vt-color-accent: {{ settings.color_palette.accent }};
+      --vt-color-cactus-green: {{ settings.color_palette.cactus_green }};
+
+    }
+
+{% endstyle %}

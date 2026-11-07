@@ -1,0 +1,70 @@
+{% doc %}
+  Country or language selector as a popover. Each option submits the localization
+  form, so it also works without JavaScript.
+
+  @param {string} type - 'country' or 'language'
+  @param {string} form_id - Unique id of the form
+
+  @example
+  {% render 'localization-selector', type: 'country', form_id: block.id %}
+{% enddoc %}
+
+<details class="vt-localization" data-localization>
+  <summary class="vt-localization__summary vt-link">
+    {%- if type == 'country' -%}
+      <span class="vt-visually-hidden">{{ 'accessibility.country_selector' | t }}: </span>
+      <span class="vt-link-label">
+        {{- localization.country.name }} ({{ localization.country.currency.iso_code }}
+        {{ localization.country.currency.symbol -}}
+        )
+      </span>
+    {%- else -%}
+      <span class="vt-visually-hidden">{{ 'accessibility.language_selector' | t }}: </span>
+      <span class="vt-link-label">{{ localization.language.endonym_name | capitalize }}</span>
+    {%- endif -%}
+    <span class="vt-localization__icon" aria-hidden="true">{% render 'icons', icon: 'dropdown' %}</span>
+  </summary>
+
+  {%- form 'localization', id: form_id, class: 'vt-localization__panel' -%}
+    <ul class="vt-localization__list" role="list">
+      {%- if type == 'country' -%}
+        {%- for country in localization.available_countries -%}
+          <li>
+            <button
+              class="vt-localization__option vt-link"
+              type="submit"
+              name="country_code"
+              value="{{ country.iso_code }}"
+              {% if country.iso_code == localization.country.iso_code %}
+                aria-current="true"
+              {% endif %}
+            >
+              <span class="vt-link-label">
+                {{- country.name }} ({{ country.currency.iso_code }}
+                {{ country.currency.symbol -}}
+                )
+              </span>
+            </button>
+          </li>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for language in localization.available_languages -%}
+          <li>
+            <button
+              class="vt-localization__option vt-link"
+              type="submit"
+              name="language_code"
+              value="{{ language.iso_code }}"
+              lang="{{ language.iso_code }}"
+              {% if language.iso_code == localization.language.iso_code %}
+                aria-current="true"
+              {% endif %}
+            >
+              <span class="vt-link-label">{{ language.endonym_name | capitalize }}</span>
+            </button>
+          </li>
+        {%- endfor -%}
+      {%- endif -%}
+    </ul>
+  {%- endform -%}
+</details>

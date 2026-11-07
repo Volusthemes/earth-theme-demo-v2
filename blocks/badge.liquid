@@ -1,0 +1,374 @@
+{% doc %}
+  Renders a pill badge with custom text, background/text color, size presets,
+  and scroll-in animation (disabled in the theme editor preview).
+
+  @example
+  {% content_for 'block', type: 'badge', id: 'badge' %}
+{% enddoc %}
+
+{%- if block.settings.text != blank -%}
+  {%- assign badge_size = block.settings.badge_size | default: 'vt-paragraph-extra-small' -%}
+
+  {%- assign vt_classes = 'vt-badge' -%}
+  {%- assign vt_classes = vt_classes | append: ' ' | append: badge_size -%}
+  {%- assign vt_classes = vt_classes | append: ' vt-badge--width-' | append: block.settings.width -%}
+
+  {%- if block.settings.show_border -%}
+    {%- assign vt_classes = vt_classes | append: ' vt-badge--border' -%}
+  {%- endif -%}
+
+  {%- assign vt_style = '' -%}
+
+  {%- if block.settings.bg_color != blank -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-bg: ' | append: block.settings.bg_color | append: ';' -%}
+  {%- endif -%}
+
+  {%- if block.settings.text_color != blank -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-color: ' | append: block.settings.text_color | append: ';' -%}
+  {%- endif -%}
+
+  {%- if block.settings.radius != blank -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-radius: ' | append: block.settings.radius | append: ';' -%}
+  {%- endif -%}
+
+  {%- if badge_size == 'vt-paragraph-custom' and block.settings.font_size != blank and block.settings.font_size > 0 -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-font-size: ' | append: block.settings.font_size | append: ';' -%}
+  {%- endif -%}
+
+  {%- if block.settings.width == 'custom' and block.settings.width_custom != blank -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-width: ' | append: block.settings.width_custom | append: '%;' -%}
+  {%- endif -%}
+
+  {%- if block.settings.show_border -%}
+    {%- if block.settings.border_size != blank -%}
+      {%- assign vt_style = vt_style | append: ' --vt-badge-border-width: ' | append: block.settings.border_size | append: 'px;' -%}
+    {%- endif -%}
+
+    {%- if block.settings.border_color != blank -%}
+      {%- assign vt_style = vt_style | append: ' --vt-badge-border-color: ' | append: block.settings.border_color | append: ';' -%}
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%}
+    Build animation classes
+  {%- endcomment -%}
+
+  {%- assign vt_animation_type = block.settings.animation_type -%}
+  {%- assign vt_anim_classes = '' -%}
+
+  {%- unless vt_animation_type == 'none' or request.visual_preview_mode -%}
+    {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type -%}
+
+    {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' -%}
+      {%- assign vt_anim_classes = vt_anim_classes
+        | append: ' vt-animate--dir-'
+        | append: block.settings.animation_direction
+      -%}
+    {%- endif -%}
+  {%- endunless -%}
+
+  {%- comment -%}
+    Build animation CSS custom properties
+  {%- endcomment -%}
+
+  {%- unless vt_animation_type == 'none' or request.visual_preview_mode -%}
+
+    {%- assign vt_style = vt_style | append: ' --vt-duration: ' | append: block.settings.animation_duration | append: 's;' -%}
+
+    {%- assign vt_style = vt_style | append: ' --vt-delay: ' | append: block.settings.animation_delay | append: 's;' -%}
+
+    {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' or vt_animation_type == 'blur' -%}
+      {%- case block.settings.animation_easing -%}
+        {%- when 'linear' -%}
+          {%- assign vt_easing_value = 'linear' -%}
+
+        {%- when 'ease-out-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+
+        {%- when 'ease-in-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)' -%}
+
+        {%- when 'ease-in-out-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)' -%}
+
+        {%- when 'ease-in-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)' -%}
+
+        {%- when 'ease-out-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)' -%}
+
+        {%- when 'ease-in-out-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)' -%}
+
+        {%- else -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+      {%- endcase -%}
+
+      {%- assign vt_style = vt_style | append: ' --vt-easing: ' | append: vt_easing_value | append: ';' -%}
+    {%- endif -%}
+
+    {%- if vt_animation_type == 'blur' -%} {%- assign vt_style = vt_style | append: ' --vt-blur: ' | append: block.settings.animation_blur_intensity | append: 'px;' -%} {%- endif -%}
+
+  {%- endunless -%}
+
+  <div
+    class="
+      {{ vt_classes }}
+      {{ vt_anim_classes }}
+    "
+    style="
+      {{ vt_style | strip }}
+      --vt-badge-gap: {% render 'fluid-clamp', min_px: block.settings.gap, max_px: block.settings.gap, unit: 'rem' %};
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% content_for 'blocks' %}
+    {{ block.settings.text }}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Badge",
+  "tag": null,
+  "blocks": [
+    {"type": "icons"}
+  ],
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Content",
+      "default": "Badge label"
+    },
+    {
+      "type": "select",
+      "id": "radius",
+      "options": [
+        { "value": "3.125rem", "label": "Pill badge" },
+        { "value": "0", "label": "Square badge" },
+        { "value": "0.5rem", "label": "Default badge" }
+      ],
+      "default": "3.125rem",
+      "label": "Badge style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Badge with outline",
+      "default": false
+    },    
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "badge_size",
+      "options": [
+        {
+          "value": "vt-paragraph-extra-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label"
+        },
+        {
+          "value": "vt-paragraph-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+        },
+        {
+          "value": "vt-paragraph-medium",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+        },
+        {
+          "value": "vt-paragraph-large",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+        },
+        {
+          "value": "vt-paragraph-custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "vt-paragraph-medium",
+      "label": "Badge size"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Font size",
+      "default": 16,
+      "visible_if": "{{ block.settings.badge_size == 'vt-paragraph-custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Badge width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "label": "Custom width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_size",
+      "min": 0,
+      "max": 3,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Outline thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.show_border }}"
+    },    
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 2,
+      "max": 26,
+      "step": 2,
+      "unit": "px",
+      "default": 6,
+      "label": "Gap"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "{{ settings.color_palette.accent }}"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "{{ settings.color_palette.foreground }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Outline",
+      "default": "{{ settings.color_palette.foreground }}",
+      "visible_if": "{{ block.settings.show_border }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.heading.settings.animation_type.options__4.label" },
+        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {      
+      "name": "t:general.badge",
+      "category": "t:general.categories.basic",      
+      "settings": {
+        "text": "Label",
+        "radius": "3.125rem",
+        "badge_size": "vt-paragraph-small",
+        "font_size": 16,
+        "width": "fit",
+        "width_custom": 50,
+        "show_border": false,
+        "border_size": 1,
+        "gap": 4,
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5
+      }
+    }
+  ]
+}
+{% endschema %}

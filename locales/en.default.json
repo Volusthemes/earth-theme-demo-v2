@@ -1,0 +1,164 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin language editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */ 
+{
+  "accessibility": {
+    "announcement_bar": "Announcements",
+    "previous_announcement": "Previous announcement",
+    "next_announcement": "Next announcement",
+    "pause_announcements": "Pause announcements",
+    "play_announcements": "Play announcements",
+    "close_announcement": "Close announcement",    
+    "skip_to_text": "Skip to content",        
+    "collection_aria_label": "Collection gallery",
+    "view_collection": "View collection",
+    "items_with_count": "{{ count }} items",
+    "slideshow_tabs": "Choose a slide",
+    "slideshow_slide": "Slide {{ number }}",
+    "pause_slideshow": "Pause slideshow",
+    "play_slideshow": "Play slideshow",
+    "play_video": "Play video",
+    "pause_video": "Pause video",
+    "background_video": "Background video",
+    "main_menu": "Main menu",
+    "open_menu": "Open menu",
+    "close_menu": "Close menu",
+    "search": "Search",
+    "cart": "Cart",
+    "country_selector": "Country/region",
+    "language_selector": "Language",
+    "column_layout":{
+      "column_label": "Column {{ number }}",
+      "aria_label": "Column layout",
+      "carousel_role_description": "carousel",
+      "slide_role_description": "slide",
+      "slide_label": "{{ index }} of {{ total }}"
+    },
+    "card_badges": {
+      "aria_label": "Product badges"
+    },
+    "breadcrumbs": {
+      "home": "Home", 
+      "collections": "Collections",
+      "aria_label": "Breadcrumb" 
+    }   
+  }, 
+  "404": {
+    "title": "404",
+    "not_found": "Page not found.",
+    "back_to_shopping": "Back to shopping"
+  },
+  "blog": {
+    "article_comments": "Comments",
+    "article_metadata_html": "{{ date }} by {{ author }}",
+    "comment_form_body": "Comment",
+    "comment_form_email": "Email",
+    "comment_form_name": "Name",
+    "comment_form_submit": "Post",
+    "comment_form_title": "Add a comment"
+  },
+  "cart": {
+    "checkout": "Checkout",
+    "title": "Cart",
+    "update": "Update",
+    "remove": "Remove"
+  },
+  "customers": {
+    "login": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "title": "Login"
+    }
+  },
+  "collections": {
+    "title": "Collections",
+    "pagination_label": "Collections pagination",
+    "empty": "No collections found.",
+    "products_label": "Products",
+    "no_products": "No products found in this collection."
+  },
+  "gift_card": {
+    "add_to_apple_wallet": "Add to Apple Wallet",
+    "card": "Gift card",
+    "expired": "This gift card has expired",
+    "expires_on": "Expires on {{ expires_on }}",
+    "use_at_checkout": "Use this gift card at checkout"
+  },
+  "password": {
+    "title": "This shop is private",
+    "password": "Password",
+    "enter": "Enter"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Search articles, pages, or products",
+    "submit": "Search",
+    "no_results_html": "No results found for {{ terms }}",
+    "results_for_html": "{{ count }} results found for {{ terms }}"
+  },
+  "products":{
+    "product":{
+       "quick_view": "Quick view",
+       "add_to_cart": "Add to cart",
+       "sold_out": "Sold out",
+       "sale_price": "Sale price",
+       "regular_price": "Regular price",
+       "tags": "Tags",
+       "placeholder_title": "Product title",
+       "vendor": "Vendor",
+       "quick_view_label": "Quick view: {{ title }}",
+       "add_to_cart_label": "Add to cart: {{ title }}",
+       "impact": "{{ value }}% impact",
+       "water_usage_label": "Water usage:",
+       "water_usage": "{{ value }} L",
+       "carbon_footprint_label": "Carbon footprint:",
+       "carbon_footprint": "{{ value }} kg",
+       "made_in": "Made in {{ country }}",
+       "material": "Material",
+       "discount_note": "{{ percent }}% off (price as marked)",
+       "quick_add": "Quick add",
+       "quick_add_label": "Quick add: {{ title }}",
+       "sold_out_label": "Sold out: {{ title }}",
+       "added_to_cart": "Added to cart"
+    },
+    "badges": {
+      "sale": "Sale",
+      "new": "New",
+      "best_seller": "Best Seller"
+    },
+    "quick_add": {
+      "close": "Close",
+      "unavailable": "Unavailable"
+    },
+    "tabs": {
+      "label": "Product categories",
+      "all": "All",
+      "collection": "Collection",
+      "tag": "Tag",
+      "new_arrivals": "New arrivals",
+      "sale": "Sale",
+      "best_sellers": "Best sellers",
+      "empty": "No products found in this category.",
+      "best_sellers_setup": "Select a collection sorted by Best selling to show best sellers here.",
+      "count": {
+        "one": "{{ count }} product",
+        "other": "{{ count }} products"
+      }
+    }
+  },
+  "content":{
+    "pagination": {
+      "nav_label": "Pagination",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{ page }}"
+    }
+  }
+}

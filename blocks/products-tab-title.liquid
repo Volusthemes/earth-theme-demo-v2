@@ -1,0 +1,433 @@
+{% comment %}
+
+  Tab title / filter block for products-tab-carousel.
+  Types: all | collection | tag | new_arrivals | sale | best_sellers
+
+{% endcomment %}
+
+{%- liquid
+  assign tab_type = block.settings.tab_type | default: 'collection'
+  assign tab_label = block.settings.title
+  if tab_label == blank
+    case tab_type
+      when 'all'
+        assign tab_label = 'products.tabs.all' | t
+      when 'new_arrivals'
+        assign tab_label = 'products.tabs.new_arrivals' | t
+      when 'sale'
+        assign tab_label = 'products.tabs.sale' | t
+      when 'best_sellers'
+        assign tab_label = 'products.tabs.best_sellers' | t
+      when 'tag'
+        assign tab_label = block.settings.filter_tag
+        if tab_label == blank
+          assign tab_label = 'products.tabs.tag' | t
+        endif
+      else
+        assign tab_label = block.settings.collection.title
+        if tab_label == blank
+          assign tab_label = 'products.tabs.collection' | t
+        endif
+    endcase
+  endif
+
+  # Scroll-in animation: same classes and CSS variables as the heading block (snippets/animate)
+  assign animation_type = block.settings.animation_type | default: 'none'
+  assign vt_anim_classes = ''
+  assign vt_anim_style = ''
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = ' vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+
+    assign vt_anim_style = '--vt-duration: ' | append: block.settings.animation_duration | append: 's; --vt-delay: ' | append: block.settings.animation_delay | append: 's;'
+
+    if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur'
+      case block.settings.animation_easing
+        when 'linear'
+          assign vt_easing_value = 'linear'
+        when 'ease-in-sine'
+          assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)'
+        when 'ease-in-out-sine'
+          assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)'
+        when 'ease-in-cubic'
+          assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)'
+        when 'ease-out-cubic'
+          assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)'
+        when 'ease-in-out-cubic'
+          assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)'
+        else
+          assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+      endcase
+      assign vt_anim_style = vt_anim_style | append: ' --vt-easing: ' | append: vt_easing_value | append: ';'
+    endif
+
+    if animation_type == 'blur'
+      assign vt_anim_style = vt_anim_style | append: ' --vt-blur: ' | append: block.settings.animation_blur_intensity | append: 'px;'
+    endif
+  endunless
+-%}
+
+<button
+  type="button"
+  class="vt-tab-title {{ block.settings.font_size | default: 'vt-heading-h6' }}{% if block.settings.is_default %} is-active{% endif %}{{ vt_anim_classes }}"
+  role="tab"
+  id="vt-tab-{{ block.id }}"
+  aria-selected="{% if block.settings.is_default %}true{% else %}false{% endif %}"
+  aria-controls="vt-panel-{{ block.id }}"
+  {%- comment -%} Roving tabindex: only the selected tab is in the Tab order; arrow keys move between tabs {%- endcomment %}
+  tabindex="{% if block.settings.is_default %}0{% else %}-1{% endif %}"
+  data-tab-type="{{ tab_type }}"
+  data-tab-id="{{ block.id }}"
+  data-collection-id="{{ block.settings.collection.id }}"
+  data-filter-tag="{{ block.settings.filter_tag | escape }}"
+  data-new-days="{{ block.settings.new_days | default: 30 }}"
+  {{ block.shopify_attributes }}
+  style="
+    --vt-tab-color: {{ block.settings.text_color | default: 'var(--vt-color-primary)' }};
+    --vt-tab-active-color: {{ block.settings.active_color | default: 'var(--vt-color-secondary)' }};
+    {{ vt_anim_style }}
+  "
+>
+  <span class="vt-tab-title__label">{{ tab_label | escape }}</span>
+  {%- if block.settings.show_count -%}    
+    {% render 'products-tab-panel',
+      section: section,
+      panel_id: block.id,
+      tab_type: tab_type,
+      collection: block.settings.collection,
+      filter_tag: block.settings.filter_tag,
+      new_days: block.settings.new_days,
+      mode: 'count'
+    %}
+  {%- endif -%}
+</button>
+
+{%- comment -%}
+  Only this block can read its settings, so it renders its own panel.
+  The section's JS moves it out of the tablist into the panels container.
+{%- endcomment -%}
+
+{% render 'products-tab-panel',
+  section: section,
+  panel_id: block.id,
+  tab_type: tab_type,
+  collection: block.settings.collection,
+  filter_tag: block.settings.filter_tag,
+  new_days: block.settings.new_days,
+  is_active: block.settings.is_default,
+  is_tabpanel: true
+%}
+
+{% stylesheet %}
+  .vt-tab-title {
+    appearance: none;
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1.5rem 0.65rem;
+    margin: 0;    
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+
+  .vt-tab-title::before,
+  .vt-tab-title::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: .0625rem;
+    pointer-events: none;
+  }
+
+  .vt-tab-title::after {
+    background-color: var(--vt-tabs-line-color, var(--vt-tab-color));
+  }
+
+  .vt-tab-title:has(~ .vt-tab-title)::after {
+    inset-inline-end: calc(var(--vt-tabs-gap, 1.5rem) * -1);
+  }
+  
+  .vt-tab-title::before {
+    z-index: 1;
+    background-color: var(--vt-tab-active-color);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .vt-tab-title:hover {
+    color: var(--vt-tab-color);
+  }
+
+  .vt-tab-title.is-active,
+  .vt-tab-title[aria-selected="true"] {
+    color: var(--vt-tab-active-color);
+  }
+
+  .vt-tab-title.is-active::before,
+  .vt-tab-title[aria-selected="true"]::before {
+    opacity: 1;
+  }
+
+  .vt-tab-title:focus-visible {
+    outline: .125rem solid var(--vt-tab-active-color);
+    outline-offset: .1875rem;    
+  }
+
+  .vt-tab-title__count {
+    position: relative;
+    top: -0.75em;
+    margin-inline-start: 0.125rem;
+    line-height: 0;
+    vertical-align: baseline;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible to screen readers only */
+  .vt-tab-title__sr {
+    position: absolute;
+    width: .0625rem;    
+    height: .0625rem;
+    padding: 0;
+    margin: -.0625rem;    
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Tab title",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "tab_type",
+      "label": "Tab type",
+      "options": [
+        { "value": "all", "label": "All products" },
+        { "value": "collection", "label": "Collection" },
+        { "value": "tag", "label": "Product tag" },
+        { "value": "new_arrivals", "label": "New Arrivals" },
+        { "value": "sale", "label": "Sale" },
+        { "value": "best_sellers", "label": "Best Sellers" }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Custom title",
+      "info": "Leave blank to use default label based on type"
+    },
+    {
+      "type": "paragraph",
+      "content": "Best sellers use Shopify's sales ranking: 1. In Shopify admin, go to Products > Collections and create or open a collection 2. Set its Sort to Best selling. 3. Select it below.",
+      "visible_if": "{{ block.settings.tab_type == 'best_sellers' }}"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Collection: products to show. Best sellers: required, sorted by Best selling. Tag, New arrivals, Sale: collection to filter (all products when empty). Not used by All products."
+    },
+    {
+      "type": "text",
+      "id": "filter_tag",
+      "label": "Filter by tag",
+      "info": "Exact product tag. For groups like Men's or Women's, prefer the Collection tab type.",
+      "visible_if": "{{ block.settings.tab_type == 'tag' }}"
+    },
+    {
+      "type": "range",
+      "id": "new_days",
+      "label": "New arrivals window (days)",
+      "min": 7,
+      "max": 90,
+      "step": 1,
+      "default": 30,
+      "info": "Products created within this many days",
+      "visible_if": "{{ block.settings.tab_type == 'new_arrivals' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "is_default",
+      "label": "Active by default",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product count",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "select",
+      "id": "font_size",
+      "options": [        
+        { "value": "vt-heading-h4", "label": "t:blocks.heading.settings.heading_size.options__5.label" },
+        { "value": "vt-heading-h5", "label": "t:blocks.heading.settings.heading_size.options__6.label" },
+        { "value": "vt-heading-h6", "label": "t:blocks.heading.settings.heading_size.options__7.label" }
+      ],
+      "default": "vt-heading-h6",
+      "label": "Font size"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "active_color",
+      "label": "Active text color",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.paragraph.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options":
+      [
+          {
+              "value": "none",
+              "label": "t:blocks.paragraph.settings.animation_type.options__1.label"
+          },
+          {
+              "value": "fade",
+              "label": "t:blocks.paragraph.settings.animation_type.options__2.label"
+          },
+          {
+              "value": "slide",
+              "label": "t:blocks.paragraph.settings.animation_type.options__3.label"
+          },
+          {
+              "value": "reveal",
+              "label": "t:blocks.paragraph.settings.animation_type.options__4.label"
+          },
+          {
+              "value": "blur",
+              "label": "t:blocks.paragraph.settings.animation_type.options__5.label"
+          }
+      ],
+      "default": "slide",
+      "label": "t:blocks.paragraph.settings.animation_type.label"
+    },
+    {
+        "type": "select",
+        "id": "animation_direction",
+        "options":
+        [
+            {
+                "value": "from-left",
+                "label": "t:blocks.paragraph.settings.animation_direction.options__1.label"
+            },
+            {
+                "value": "from-right",
+                "label": "t:blocks.paragraph.settings.animation_direction.options__2.label"
+            },
+            {
+                "value": "from-top",
+                "label": "t:blocks.paragraph.settings.animation_direction.options__3.label"
+            },
+            {
+                "value": "from-bottom",
+                "label": "t:blocks.paragraph.settings.animation_direction.options__4.label"
+            }
+        ],
+        "default": "from-bottom",
+        "label": "t:blocks.paragraph.settings.animation_direction.label",
+        "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+        "type": "range",
+        "id": "animation_duration",
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1,
+        "unit": "s",        
+        "default": 1.2,
+        "label": "t:blocks.paragraph.settings.animation_duration.label",
+        "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+        "type": "range",
+        "id": "animation_delay",
+        "min": 0,
+        "max": 2,
+        "step": 0.1,
+        "unit": "s",
+        "default": 0.2,
+        "label": "t:blocks.paragraph.settings.animation_delay.label",
+        "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+        "type": "select",
+        "id": "animation_easing",
+        "options":
+        [
+            {
+                "value": "linear",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__1.label"
+            },
+            {
+                "value": "ease-out-sine",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__2.label"
+            },
+            {
+                "value": "ease-in-sine",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__3.label"
+            },
+            {
+                "value": "ease-in-out-sine",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__4.label"
+            },
+            {
+                "value": "ease-in-cubic",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__5.label"
+            },
+            {
+                "value": "ease-out-cubic",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__6.label"
+            },
+            {
+                "value": "ease-in-out-cubic",
+                "label": "t:blocks.paragraph.settings.animation_easing.options__7.label"
+            }
+        ],
+        "default": "ease-out-sine",
+        "label": "t:blocks.paragraph.settings.animation_easing.label",
+        "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+        "type": "range",
+        "id": "animation_blur_intensity",
+        "min": 5,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 5,
+        "label": "t:blocks.paragraph.settings.animation_blur_intensity.label",
+        "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tab title"
+    }
+  ]
+}
+{% endschema %}

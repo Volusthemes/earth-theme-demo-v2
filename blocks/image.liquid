@@ -1,0 +1,634 @@
+{% doc %}
+  Renders a responsive image that might be wrapped in a link.
+
+  When `width`, `height` and `crop` are provided, the image will be rendered
+  with a fixed aspect ratio.
+
+  Serves as an example of how to use the `image_url` filter and `image_tag` filter
+  as well as how you can use LiquidDoc to document your code.
+
+  {% content_for 'block', type: 'image', id: 'image' %}
+{% enddoc %}
+
+{%- liquid
+  assign image = block.settings.image_desktop
+  assign image_mobile = block.settings.image_mobile
+
+  assign has_image = false
+  if image != blank
+    assign has_image = true
+  endif
+
+  assign alt_text = image.alt | default: ''
+
+  # ---------------------------------------------------------------
+  # Aspect ratio (CSS aspect-ratio value)
+  # ---------------------------------------------------------------
+  # frame_ratio: width / height of the frame, used for sizes="auto" below
+  assign frame_ratio = 100
+  case block.settings.image_aspect_ratio
+    when 'square'
+      assign aspect_ratio = '1/1'
+      assign frame_ratio = 1.0
+    when 'landscape'
+      assign aspect_ratio = '4/3'
+      assign frame_ratio = 1.3333
+    when 'portrait'
+      assign aspect_ratio = '3/4'
+      assign frame_ratio = 0.75
+    when 'wide'
+      assign aspect_ratio = '16/9'
+      assign frame_ratio = 1.7778
+    when 'classic_portrait'
+      assign aspect_ratio = '2/3'
+      assign frame_ratio = 0.6667
+    when 'ultra_wide'
+      assign aspect_ratio = '21/9'
+      assign frame_ratio = 2.3333
+    else
+      assign aspect_ratio = 'auto'
+  endcase
+
+  # ---------------------------------------------------------------
+  # Width per breakpoint. `image_device` in the schema only toggles
+  # which panel the merchant is editing; both breakpoints are always
+  # rendered together on the storefront.
+  # ---------------------------------------------------------------
+  case block.settings.image_desktop_width
+    when 'fit'
+      assign desktop_width_css = 'auto'
+    when 'custom'
+      assign desktop_width_css = block.settings.image_desktop_width_custom | append: '%'
+    else
+      assign desktop_width_css = '100%'
+  endcase
+
+  case block.settings.image_mobile_width
+    when 'fit'
+      assign mobile_width_css = 'auto'
+    when 'custom'
+      assign mobile_width_css = block.settings.image_mobile_width_custom | append: '%'
+    else
+      assign mobile_width_css = '100%'
+  endcase
+
+  assign desktop_max_active = false
+  if block.settings.enable_desktop_max_width and block.settings.image_desktop_width != 'fit'
+    assign desktop_max_active = true
+  endif
+
+  assign mobile_max_active = false
+  if block.settings.enable_mobile_max_width and block.settings.image_mobile_width != 'fit'
+    assign mobile_max_active = true
+  endif
+
+  # Rendered width hint for srcset: the limit when on, otherwise the viewport share
+  assign desktop_sizes = '100vw'
+  if desktop_max_active
+    assign desktop_sizes = block.settings.image_desktop_max_width | append: 'px'
+  elsif block.settings.image_desktop_width == 'custom'
+    assign desktop_sizes = block.settings.image_desktop_width_custom | append: 'vw'
+  endif
+
+  assign mobile_sizes = '100vw'
+  if mobile_max_active
+    assign mobile_sizes = block.settings.image_mobile_max_width | append: 'px'
+  elsif block.settings.image_mobile_width == 'custom'
+    assign mobile_sizes = block.settings.image_mobile_width_custom | append: 'vw'
+  endif
+
+  # sizes="auto" asks the browser for the frame's real width. An image wider than its frame
+  # is cropped by object-fit and needs more pixels than that, so it keeps the estimate.
+  # A filled frame can be taller than its ratio, so it keeps the estimate too.
+  assign desktop_auto = ''
+  if image.aspect_ratio <= frame_ratio and block.settings.image_fill_height == false
+    assign desktop_auto = 'auto, '
+  endif
+
+  assign mobile_auto = ''
+  if image_mobile.aspect_ratio <= frame_ratio
+    assign mobile_auto = 'auto, '
+  endif
+
+  # ---------------------------------------------------------------
+  # Border
+  # ---------------------------------------------------------------
+  assign has_border = false
+  if block.settings.image_border_style == 'solid'
+    assign has_border = true
+  endif
+
+  # ---------------------------------------------------------------
+  # Easing keyword -> CSS timing function
+  # ---------------------------------------------------------------
+  case block.settings.animation_easing
+    when 'ease-out-sine'
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign vt_easing = 'linear'
+  endcase
+
+  assign animate_class = ''
+  if block.settings.animation_type != 'none' and request.visual_preview_mode == false
+    assign animate_class = 'vt-animate vt-animate--' | append: block.settings.animation_type
+    if block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal'
+      assign animate_class = animate_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endif
+
+  assign widths = '165, 360, 535, 750, 940, 1080, 1296, 1512, 1728, 1950, 2100, 3200'
+  assign widths_arr = widths | split: ', '
+
+  assign has_link = false
+  if block.settings.image_link != blank
+    assign has_link = true
+  endif
+-%}
+
+{%- # Both limits on: one fluid value between them. One limit on: its fixed value. -%}
+{%- capture fluid_max_width -%}
+  {%- render 'fluid-clamp', min_px: block.settings.image_mobile_max_width, max_px: block.settings.image_desktop_max_width -%}
+{%- endcapture -%}
+{%- liquid
+  assign fluid_max_width = fluid_max_width | strip_newlines | strip
+  assign desktop_max_css = 'none'
+  assign mobile_max_css = 'none'
+  if desktop_max_active and mobile_max_active
+    assign desktop_max_css = fluid_max_width
+    assign mobile_max_css = fluid_max_width
+  elsif desktop_max_active
+    assign desktop_max_css = block.settings.image_desktop_max_width | divided_by: 16.0 | append: 'rem'
+  elsif mobile_max_active
+    assign mobile_max_css = block.settings.image_mobile_max_width | divided_by: 16.0 | append: 'rem'
+  endif
+-%}
+
+<div
+  class="vt-image{% if block.settings.image_fill_height %} vt-image--fill{% endif %} {{ animate_class }}"
+  {{ block.shopify_attributes }}
+  style="
+    --vt-aspect-ratio: {{ aspect_ratio }};
+    --vt-mobile-width: {{ mobile_width_css }};
+    --vt-desktop-width: {{ desktop_width_css }};
+    --vt-mobile-max-width: {{ mobile_max_css }};
+    --vt-desktop-max-width: {{ desktop_max_css }};
+    {%- if has_image %}
+    --vt-image-focal: {{ image.presentation.focal_point }};
+    --vt-image-focal-mobile: {{ image_mobile.presentation.focal_point | default: image.presentation.focal_point }};
+    {%- endif %}
+    --vt-radius: {{ block.settings.image_corner }}px;
+    --vt-border-width: {% if has_border %}{{ block.settings.image_border_size }}px{% else %}0px{% endif %};
+    --vt-border-opacity: {{ block.settings.image_border_opacity }}%;
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    --vt-easing: {{ vt_easing }};
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+  "
+>
+  {%- if has_image == false -%}
+    {%- # Merchant hasn't picked an image yet: render Shopify's placeholder art -%}
+    <div class="vt-image__media vt-image__media--placeholder" aria-hidden="true">
+      {%- # Theme Store: slideshows use the Lifestyle placeholder (only slideshow sections have these settings) -%}
+      {%- if section.settings.slide_style != blank or section.settings.slide_position != blank -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'vt-image__placeholder' }}
+      {%- else -%}
+        {{ 'image' | placeholder_svg_tag: 'vt-image__placeholder' }}
+      {%- endif -%}
+    </div>
+  {%- else -%}
+    {%- if has_link -%}
+      <a
+        href="{{ block.settings.image_link }}"
+        class="vt-image__link"
+        {% if block.settings.open_in_new_tab %}
+          target="_blank" rel="noopener noreferrer"
+        {% endif %}
+        {% if alt_text == blank %}
+          aria-label="{{ block.settings.image_link }}"          
+        {% endif %}
+      >
+    {%- endif -%}
+
+    <picture class="vt-image__media">
+      {%- if image_mobile != blank -%}
+        <source
+          media="(max-width: 749px)"
+          srcset="{% for w in widths_arr %}{{ image_mobile | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+          sizes="{{ mobile_auto }}{{ mobile_sizes }}"
+          width="{{ image_mobile.width }}"
+          height="{{ image_mobile.height }}"
+        >
+      {%- endif -%}
+
+      <img
+        src="{{ image | image_url: width: 1024 }}"
+        srcset="{% for w in widths_arr %}{{ image | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+        sizes="{{ desktop_auto }}(max-width: 749px) {{ mobile_sizes }}, {{ desktop_sizes }}"
+        width="{{ image.width }}"
+        height="{{ image.height }}"
+        alt="{{ alt_text }}"
+        loading="lazy"
+        class="vt-image__img"
+      >
+    </picture>
+
+    {%- if has_link -%}
+      </a>
+    {%- endif -%}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .vt-image {
+    display: block;
+    width: var(--vt-mobile-width, 100%);
+    max-width: var(--vt-mobile-max-width, none);
+  }
+
+  @media (min-width: 750px) {
+    .vt-image {
+      width: var(--vt-desktop-width, 100%);
+      max-width: var(--vt-desktop-max-width, none);
+    }
+  }
+
+  /*
+    Fill column height: grows to the row height set by the tallest column.
+    The aspect ratio stays as the minimum height, so a lone column keeps it.
+  */
+  .vt-image--fill {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    align-self: stretch;
+  }
+
+  .vt-image--fill .vt-image__link {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+  }
+
+  .vt-image--fill .vt-image__media {
+    flex: 1 0 auto;
+  }
+
+  .vt-image__link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .vt-image__media {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--vt-aspect-ratio, auto);
+    border-radius: var(--vt-radius, 0);
+    border-width: var(--vt-border-width, 0);
+    border-style: solid;
+    border-color: color-mix(in srgb, currentColor var(--vt-border-opacity, 100%), transparent);
+  }
+
+  .vt-image__media--placeholder {
+    width: 100%;
+    aspect-ratio: var(--vt-aspect-ratio, 4 / 3);
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .vt-image__img {
+    object-position: var(--vt-image-focal-mobile, center);
+  }
+
+  @media (min-width: 750px) {
+    .vt-image__img {
+      object-position: var(--vt-image-focal, center);
+    }
+  }
+
+  .vt-image__placeholder,
+  .vt-image__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image_desktop",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Image (optional)"
+    },
+    {
+      "type": "url",
+      "id": "image_link",
+      "label": "Link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "classic_portrait",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "ultra_wide",
+          "label": "Ultra wide (21:9)"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "checkbox",
+      "id": "image_fill_height",
+      "label": "Fill column height",
+      "info": "Matches the tallest column beside it. The aspect ratio sets the minimum height.",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "image_device",
+      "label": "Device",
+      "options": [
+      {
+        "value": "desktop",
+        "label": "Desktop"
+      },
+      {
+        "value": "mobile",
+        "label": "Mobile"
+      }    
+      ],
+        "default": "desktop"
+    },
+    {
+      "type": "select",
+      "id": "image_desktop_width",
+      "label": "Width (desktop)",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill",
+      "visible_if": "{{ block.settings.image_device == 'desktop' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_desktop_width_custom",
+      "label": "Custom width (desktop)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.image_desktop_width == 'custom' and block.settings.image_device == 'desktop' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_desktop_max_width",
+      "label": "Width limit (desktop)",
+      "default": false,
+      "visible_if": "{{ block.settings.image_device == 'desktop' and block.settings.image_desktop_width != 'fit' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_desktop_max_width",
+      "min": 50,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "label": "Max width (desktop)",
+      "default": 500,
+      "visible_if": "{{ block.settings.image_device == 'desktop' and block.settings.image_desktop_width != 'fit' and block.settings.enable_desktop_max_width }}"
+    },
+    {      
+      "type": "select",
+      "id": "image_mobile_width",      
+      "label": "Width (mobile)",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill",
+      "visible_if": "{{ block.settings.image_device == 'mobile' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_mobile_width_custom",
+      "label": "Custom width (mobile)",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.image_mobile_width == 'custom' and block.settings.image_device == 'mobile' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_max_width",
+      "label": "Width limit (mobile)",
+      "default": false,
+      "visible_if": "{{ block.settings.image_device == 'mobile' and block.settings.image_mobile_width != 'fit' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_mobile_max_width",
+      "min": 50,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "label": "Max width (mobile)",
+      "default": 300,
+      "visible_if": "{{ block.settings.image_device == 'mobile' and block.settings.image_mobile_width != 'fit' and block.settings.enable_mobile_max_width }}"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "select",
+      "id": "image_border_style",
+      "label": "Borders",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }    
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "image_border_size",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border thickness",
+      "default": 1,            
+      "visible_if": "{{ block.settings.image_border_style == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Border opacity",
+      "default": 100,          
+      "visible_if": "{{ block.settings.image_border_style == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_corner",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0        
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.icon.settings.icon_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
+        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+      ],
+      "default": "slide",
+      "label": "t:blocks.icon.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.icon.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",      
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.icon.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.icon.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.icon.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.icon.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }   
+  ],
+  "presets": [
+    {
+      "name": "Image",
+      "category": "t:general.categories.basic"
+    }
+  ]
+}
+{% endschema %}

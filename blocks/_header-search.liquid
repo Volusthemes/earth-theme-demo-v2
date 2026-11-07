@@ -1,0 +1,28 @@
+{% doc %}
+  Search icon of the header, linking to the search page.
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-search', id: 'search' %}
+{% enddoc %}
+
+<a
+  class="vt-header__action"
+  href="{{ routes.search_url }}"
+  aria-label="{{ 'accessibility.search' | t }}"
+  {{ block.shopify_attributes }}
+>
+  <span class="vt-header__icon" aria-hidden="true">{% render 'icons', icon: 'search' %}</span>
+</a>
+
+{% schema %}
+{
+  "name": "Search",
+  "tag": null,
+  "presets": [
+    {
+      "name": "Search"
+    }
+  ]
+}
+{% endschema %}

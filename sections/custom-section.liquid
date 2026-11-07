@@ -1,0 +1,246 @@
+{%- liquid
+  # Inner class list
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+-%}
+
+{%- comment -%} Without blocks the storefront shows nothing, so no empty space. The theme editor keeps it visible to add blocks. {%- endcomment -%}
+{%- if section.blocks.size > 0 or request.design_mode -%}
+  {%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+  {% render 'section-styles', section: section %}
+
+  <div
+    class="vt-section vt-custom-section"
+    {{ section.shopify_attributes }}
+  >
+    <div class="{{ inner_classes }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "t:general.custom_section",
+  "tag": "section",
+  "class": "custom-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 30,
+      "label": "Gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"      
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [{ "type": "@theme" }],
+  "presets": [
+    {
+      "name": "t:general.custom_section",
+      "settings": {
+        "gap": 30,
+        "gap_mobile": 20,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Add a section heading",
+            "heading_tag": "h2",
+            "heading_size": "vt-heading-h2",
+            "heading_alignment": "text-inherit"
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Add a short description of this section.</p>"
+          }
+        },
+        {
+          "type": "button",
+          "settings": {
+            "button_label": "Add a button label"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

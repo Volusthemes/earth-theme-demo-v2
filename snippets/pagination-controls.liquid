@@ -1,0 +1,296 @@
+{%- doc -%}
+  Renders accessible pagination: previous/next arrows and page numbers.
+  Pages far from the current page collapse into an ellipsis on mobile.
+
+  Every visual value is a --vt-pagination-* custom property with a
+  color palette fallback, so the snippet works on its own. The
+  `pagination` block sets those properties from merchant settings.
+
+  @param {object} paginate - The paginate object
+  @param {string} [id] - ID for the nav element (used by the block to scope its styles)
+  @param {string} [class] - Extra classes for the nav element
+  @param {string} [attributes] - Extra HTML attributes for the nav element, such as block.shopify_attributes
+  @param {string} [aria_label] - Accessible name for the nav landmark. Defaults to "Pagination".
+  @param {string} [icon] - Arrow icon style: chevron (default) | arrow
+
+  @example
+  {%- paginate collection.products by 24 -%}
+    {%- render 'pagination-controls', paginate: paginate -%}
+  {%- endpaginate -%}
+{%- enddoc -%}
+
+{%- if paginate.pages > 1 -%}
+  {%- liquid
+    if aria_label == blank
+      assign aria_label = 'content.pagination.nav_label' | t
+    endif
+
+    # Same path for both arrows; "previous" is mirrored in CSS (and for RTL)
+    case icon
+      when 'arrow'
+        assign vt_icon_path = 'M2 8h11M9 4l4 4-4 4'
+      else
+        assign vt_icon_path = 'M6 3l5 5-5 5'
+    endcase
+
+    assign vt_current_page = paginate.current_page
+    assign vt_last_visible = 0
+    assign vt_after_gap = false
+  -%}
+
+  <nav
+    {% if id != blank %}
+      id="{{ id }}"
+    {% endif %}
+    class="vt-pagination {{ class }}"
+    aria-label="{{ aria_label | escape }}"
+    {{ attributes }}
+  >
+    {%- comment -%} role="list" keeps list semantics in Safari/VoiceOver when list-style is none {%- endcomment -%}
+    <ul class="vt-pagination__list" role="list">
+      {%- comment -%} A disabled arrow is decorative, so it is hidden from assistive tech {%- endcomment -%}
+      <li class="vt-pagination__item" {% unless paginate.previous %}aria-hidden="true"{% endunless %}>
+        {%- if paginate.previous -%}
+          <a
+            class="vt-pagination__link vt-pagination__link--arrow"
+            href="{{ paginate.previous.url }}"
+            rel="prev"
+            aria-label="{{ 'content.pagination.previous' | t }}"
+          >
+            <svg class="vt-pagination__icon vt-pagination__icon--previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
+          </a>
+        {%- else -%}
+          <span class="vt-pagination__link vt-pagination__link--arrow vt-pagination__link--disabled">
+            <svg class="vt-pagination__icon vt-pagination__icon--previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
+          </span>
+        {%- endif -%}
+      </li>
+
+      {%- for part in paginate.parts -%}
+        {%- liquid
+          assign vt_is_gap = false
+          assign vt_page = 0
+          assign vt_hide_mobile = false
+
+          if part.title == '&hellip;'
+            assign vt_is_gap = true
+          elsif part.is_link
+            assign vt_page = part.title | plus: 0
+          else
+            assign vt_page = vt_current_page
+          endif
+
+          # On mobile keep only the first, last and direct neighbors of the current page
+          if vt_page > 0
+            assign vt_distance = vt_page | minus: vt_current_page | abs
+            if vt_page != 1 and vt_page != paginate.pages and vt_distance > 1
+              assign vt_hide_mobile = true
+            endif
+          endif
+
+          assign vt_item_class = 'vt-pagination__item'
+          if vt_is_gap
+            assign vt_item_class = vt_item_class | append: ' vt-pagination__item--gap'
+          endif
+          if vt_hide_mobile
+            assign vt_item_class = vt_item_class | append: ' vt-pagination__item--mobile-hide'
+          endif
+        -%}
+
+        {%- comment -%} Mobile-only ellipsis where hidden pages leave a jump in the sequence {%- endcomment -%}
+        {%- if vt_page > 0 and vt_hide_mobile == false -%}
+          {%- assign vt_next_expected = vt_last_visible | plus: 1 -%}
+          {%- if vt_last_visible > 0 and vt_page > vt_next_expected and vt_after_gap == false -%}
+            <li class="vt-pagination__item vt-pagination__item--gap vt-pagination__item--mobile-only" aria-hidden="true">
+              <span class="vt-pagination__gap">&hellip;</span>
+            </li>
+          {%- endif -%}
+          {%- assign vt_last_visible = vt_page -%}
+          {%- assign vt_after_gap = false -%}
+        {%- elsif vt_is_gap -%}
+          {%- assign vt_after_gap = true -%}
+        {%- endif -%}
+
+        <li class="{{ vt_item_class }}" {% if vt_is_gap %}aria-hidden="true"{% endif %}>
+          {%- if vt_is_gap -%}
+            <span class="vt-pagination__gap">&hellip;</span>
+          {%- elsif part.is_link -%}
+            <a
+              class="vt-pagination__link"
+              href="{{ part.url }}"
+              aria-label="{{ 'content.pagination.page' | t: page: part.title }}"
+            >
+              {{- part.title -}}
+            </a>
+          {%- else -%}
+            {%- comment -%} Current page: not a link; aria-current announces "current page" {%- endcomment -%}
+            <span class="vt-pagination__link vt-pagination__link--current" aria-current="page">
+              <span class="vt-pagination__sr">{{ 'content.pagination.page' | t: page: part.title }}</span>
+              <span aria-hidden="true">{{ part.title }}</span>
+            </span>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+
+      <li class="vt-pagination__item" {% unless paginate.next %}aria-hidden="true"{% endunless %}>
+        {%- if paginate.next -%}
+          <a
+            class="vt-pagination__link vt-pagination__link--arrow"
+            href="{{ paginate.next.url }}"
+            rel="next"
+            aria-label="{{ 'content.pagination.next' | t }}"
+          >
+            <svg class="vt-pagination__icon vt-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
+          </a>
+        {%- else -%}
+          <span class="vt-pagination__link vt-pagination__link--arrow vt-pagination__link--disabled">
+            <svg class="vt-pagination__icon vt-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
+          </span>
+        {%- endif -%}
+      </li>
+    </ul>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  /* All values come from --vt-pagination-* (set by the pagination block),
+     falling back to the color palette and sensible defaults. */
+  .vt-pagination {
+    --vt-pagination-transition: 0.25s ease-out;
+
+    display: flex;
+    justify-content: var(--vt-pagination-justify, center);
+    padding-block: var(--vt-pagination-padding-block-start, 2rem) var(--vt-pagination-padding-block-end, 0);
+    color: var(--vt-pagination-color, var(--vt-foreground-color, currentColor));
+  }
+
+  .vt-pagination__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: inherit;
+    gap: var(--vt-pagination-gap, 0.25rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-pagination__item {
+    display: flex;
+  }
+
+  .vt-pagination__link,
+  .vt-pagination__gap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;    
+    block-size: max(1.5rem, var(--vt-pagination-size, 2.5rem));
+    color: inherit;
+  }
+
+  .vt-pagination__link {
+    box-sizing: border-box;
+    /* min-width (not width) so 3-digit page numbers still fit */
+    min-inline-size: max(1.5rem, var(--vt-pagination-size, 2.5rem));
+    padding-inline: 0.25em;
+    border: var(--vt-pagination-border-width, 0) solid var(--vt-pagination-border-color, transparent);
+    border-radius: var(--vt-pagination-radius, 0.375rem);
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background-color var(--vt-pagination-transition),
+      border-color var(--vt-pagination-transition),
+      color var(--vt-pagination-transition);
+  }
+
+  .vt-pagination__gap {
+    min-inline-size: calc(max(1.5rem, var(--vt-pagination-size, 2.5rem)) / 2);
+    user-select: none;
+  }
+
+  /* Hover only on real pointers, so touch devices never keep a "stuck" hover */
+  @media (hover: hover) {
+    a.vt-pagination__link:hover {
+      background-color: var(
+        --vt-pagination-hover-bg,
+        color-mix(in srgb, currentColor 10%, transparent)
+      );
+      border-color: var(--vt-pagination-hover-bg, var(--vt-pagination-border-color, transparent));
+      color: var(--vt-pagination-hover-color, inherit);
+    }
+  }
+
+  .vt-pagination__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .vt-pagination__link--current {
+    background-color: var(--vt-pagination-active-bg, var(--vt-foreground-color, currentColor));
+    border-color: var(--vt-pagination-active-bg, var(--vt-foreground-color, currentColor));
+    color: var(--vt-pagination-active-color, var(--vt-background-color, #fff));
+    cursor: default;
+  }
+
+  .vt-pagination__link--disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .vt-pagination__icon {
+    flex: none;
+    inline-size: var(--vt-pagination-icon-size, 0.875rem);
+    block-size: var(--vt-pagination-icon-size, 0.875rem);
+  }
+
+  /* Previous points left in LTR and right in RTL; next is the opposite */
+  .vt-pagination__icon--previous,
+  [dir='rtl'] .vt-pagination__icon--next {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .vt-pagination__icon--previous {
+    transform: none;
+  }
+
+  /* Visible to screen readers only */
+  .vt-pagination__sr {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .vt-pagination__item--mobile-only {
+    display: none;
+  }
+
+  @media screen and (max-width: 767px) {
+    .vt-pagination__item--mobile-hide {
+      display: none;
+    }
+
+    .vt-pagination__item--mobile-only {
+      display: flex;
+    }
+  }
+
+  /* Windows high contrast: keep the current page distinguishable */
+  @media (forced-colors: active) {
+    .vt-pagination__link--current {
+      border: 2px solid CanvasText;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-pagination {
+      --vt-pagination-transition: 0s;
+    }
+  }
+{% endstylesheet %}

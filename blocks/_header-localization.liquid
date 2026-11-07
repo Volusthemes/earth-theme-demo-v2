@@ -1,0 +1,48 @@
+{% doc %}
+  Country and language selectors of the header. Each one only shows when the store
+  has more than one option. Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-localization', id: 'localization' %}
+{% enddoc %}
+
+<div class="vt-header__localization" {{ block.shopify_attributes }}>
+  {%- if block.settings.show_country and localization.available_countries.size > 1 -%}
+    {%- assign country_form_id = 'HeaderCountry-' | append: block.id -%}
+    {%- render 'localization-selector', type: 'country', form_id: country_form_id -%}
+  {%- endif -%}
+  {%- if block.settings.show_language and localization.available_languages.size > 1 -%}
+    {%- assign language_form_id = 'HeaderLanguage-' | append: block.id -%}
+    {%- render 'localization-selector', type: 'language', form_id: language_form_id -%}
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Country and language",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows on desktop when the store sells in more than one country or language."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country",
+      "label": "Show country selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "Show language selector",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Country and language"
+    }
+  ]
+}
+{% endschema %}

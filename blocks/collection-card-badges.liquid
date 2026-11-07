@@ -1,0 +1,109 @@
+{% doc %}
+  Badge group wrapper inside a collection card.
+  Re-propagates closest.collection so nested badge blocks can read
+  collection metafields (custom.badges).
+{% enddoc %}
+
+<div
+  class="vt-collection-card__badges vt-collection-card__badges--width-{{ block.settings.width }}"
+  style="{% render 'collection-stack-style', block: block %}"
+  role="group"
+  aria-label="{{ 'accessibility.card_badges.aria_label' | t }}"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+
+{% schema %}
+{
+  "name": "Card badges",
+  "tag": null,
+  "blocks": [
+    { "type": "collection-badge" }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:labels.gap_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:labels.gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit",    "label": "Fit" },
+        { "value": "fill",   "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "min": 1, "max": 100, "step": 1, "unit": "%",
+      "label": "Custom width",
+      "default": 50,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Card badges",
+      "category": "Collection stack",
+      "settings": {
+        "gap_desktop": 8,
+        "gap_mobile": 6,
+        "width": "fit",
+        "width_custom": 50
+      },
+      "blocks": [
+        { 
+          "type": "collection-badge",
+          "settings": {
+            "radius": "3.125rem",
+            "badge_size": "vt-paragraph-extra-small",
+            "width": "fit",
+            "gap": 6,
+            "text": "Metaobjects",                
+            "show_border": false,
+            "font_size": 16,
+            "width_custom": 100,
+            "border_size": 1,
+            "animation_type": "none",
+            "animation_direction": "from-bottom", 
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }    
+        }        
+      ]
+    }
+  ]
+}
+{% endschema %}

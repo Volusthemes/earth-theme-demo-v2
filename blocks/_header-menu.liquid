@@ -1,0 +1,61 @@
+{% doc %}
+  Main menu of the header: links on desktop, a hamburger button below 990px.
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-menu', id: 'menu' %}
+{% enddoc %}
+
+<div class="vt-header__menu" {{ block.shopify_attributes }}>
+  <button
+    class="vt-header__menu-toggle"
+    type="button"
+    aria-expanded="false"
+    aria-label="{{ 'accessibility.open_menu' | t }}"
+    data-label-open="{{ 'accessibility.open_menu' | t }}"
+    data-label-close="{{ 'accessibility.close_menu' | t }}"
+    data-header-menu-toggle
+  >
+    <span class="vt-header__menu-icon" aria-hidden="true"></span>
+  </button>
+
+  {%- if block.settings.menu.links.size > 0 -%}
+    <nav class="vt-header__nav" aria-label="{{ 'accessibility.main_menu' | t }}">
+      <ul class="vt-header__nav-list" role="list">
+        {%- for link in block.settings.menu.links -%}
+          <li>
+            <a
+              class="vt-header__nav-link vt-link"
+              href="{{ link.url }}"
+              {% if link.current %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span class="vt-link-label">{{ link.title | escape }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Main menu",
+  "tag": null,
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation",
+      "default": "main-menu"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Main menu"
+    }
+  ]
+}
+{% endschema %}

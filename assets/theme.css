@@ -1,0 +1,1229 @@
+/** Critical CSS for the theme. This file is included on every page. */
+
+/* Reset styles inspired by https://www.joshwcomeau.com/css/custom-css-reset/ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  min-height: 100svh;    
+}
+
+html {
+  scrollbar-gutter: stable;    
+}
+
+html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
+  overflow: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {  
+  display: block;
+  max-width: 100%;
+  height: auto;      
+}
+
+input,
+textarea,
+select {
+  font: inherit;
+  border-radius: var(--style-border-radius-inputs, .125rem);
+}
+
+select {
+  background-color: var(--vt-background-color);
+  color: currentcolor;
+}
+
+dialog {
+  background-color: var(--vt-background-color);
+  color: var(--vt-foreground-color);
+}
+
+p {
+  text-wrap: pretty;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+p:empty {
+  display: none;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):first-child,
+:empty:first-child+ :where(p, h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+:is(p, h1, h2, h3, h4, h5, h6):last-child,
+:where(p, h1, h2, h3, h4, h5, h6)+ :has(+ :empty:last-child) {
+  margin-block-end: 0;
+}
+
+/* Hero and Heading style */
+
+h1,
+.h1,
+.vt-heading-h1 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-1-size);
+  line-height: var(--vt-font-heading-1-line-height);
+  letter-spacing: var(--vt-font-heading-1-letter-spacing);
+  text-transform: var(--vt-font-heading-1-text-transform);
+}
+
+h2,
+.h2,
+.vt-heading-h2 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-2-size);
+  line-height: var(--vt-font-heading-2-line-height);
+  letter-spacing: var(--vt-font-heading-2-letter-spacing);
+  text-transform: var(--vt-font-heading-2-text-transform);
+}
+
+h3,
+.h3,
+.vt-heading-h3 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-3-size);
+  line-height: var(--vt-font-heading-3-line-height);
+  letter-spacing: var(--vt-font-heading-3-letter-spacing);
+  text-transform: var(--vt-font-heading-3-text-transform);
+}
+
+h4,
+.h4,
+.vt-heading-h4 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-4-size);
+  line-height: var(--vt-font-heading-4-line-height);
+  letter-spacing: var(--vt-font-heading-4-letter-spacing);
+  text-transform: var(--vt-font-heading-4-text-transform);
+}
+
+h5,
+.h5,
+.vt-heading-h5 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-5-size);
+  line-height: var(--vt-font-heading-5-line-height);
+  letter-spacing: var(--vt-font-heading-5-letter-spacing);
+  text-transform: var(--vt-font-heading-5-text-transform);
+}
+
+h6,
+.h6,
+.vt-heading-h6 {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-heading-6-size);
+  line-height: var(--vt-font-heading-6-line-height);
+  letter-spacing: var(--vt-font-heading-6-letter-spacing);
+  text-transform: var(--vt-font-heading-6-text-transform);
+}
+
+.vt-hero-heading {
+  font-family: var(--vt-font-family-heading);
+  font-weight: var(--vt-font-heading-weight);
+  font-size: var(--vt-font-hero-size);
+  line-height: var(--vt-font-hero-line-height);
+  letter-spacing: var(--vt-font-hero-letter-spacing);
+  text-transform: var(--vt-font-hero-text-transform);
+}
+
+/** Theme styles below */
+body {
+  font-family: var(--vt-font-body-family);  
+  background-color: var(--vt-background-color);
+  color: var(--vt-foreground-color);
+}
+
+/** Section layout utilities */
+
+/**
+ * Setup a grid that enables both full-width and constrained layouts
+ * depending on the class of the child elements.
+ *
+ * By default, a minimum content margin is set on the left and right
+ * sides of the section and the content is centered in the viewport to
+ * not exceed the maximum page width.
+ *
+ * When a child element is given the `full-width` class, it will span
+ * the entire viewport.
+ */
+
+*, *:before, *:after{
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.skip-to-content-link {
+  position: absolute !important;
+  width: .0625rem !important;
+  margin: -0.0625rem !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  height: .0625rem !important;
+  clip-path: inset(50%) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  overflow-wrap: normal !important;  
+}
+
+.shopify-section {
+  position: relative;    
+  width: 100%;      
+}
+
+.vt-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Text links: the effect comes from the Link hover effect theme setting (class on body).
+   Markup: .vt-link on the interactive element, .vt-link-label on its text. */
+
+:root {
+  --vt-link-transition: 0.25s ease-out;
+}
+
+.vt-link-label {
+  position: relative;
+  display: inline-block;
+  /* Even on both sides, so the text stays vertically centered */
+  padding-block: 0.15em;
+}
+
+/* Sliding underline */
+.vt-link-hover--underline .vt-link-label::after,
+.vt-link:is([aria-current='page'], [aria-current='true']) .vt-link-label::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--vt-link-underline-thickness);
+  background: var(--vt-link-hover-color, currentColor);
+}
+
+.vt-link-hover--underline .vt-link-label::after {
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--vt-link-transition);
+}
+
+.vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+[dir='rtl'] .vt-link-hover--underline .vt-link-label::after {
+  transform-origin: left;
+}
+
+[dir='rtl'] .vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after {
+  transform-origin: right;
+}
+
+/* The current page keeps its underline whichever effect is chosen */
+.vt-link:is([aria-current='page'], [aria-current='true']) .vt-link-label::after {
+  transform: none;
+}
+
+/* Sliding border: a thin bar fades in before the text */
+.vt-link-hover--border .vt-link-label {
+  /* Space reserved for the bar, so neighbors never jump */
+  padding-inline-start: 0.6em;
+  transition: transform var(--vt-link-transition);
+}
+
+.vt-link-hover--border .vt-link-label::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  /* Centered on the text, fixed height so it lines up on every item */
+  top: 50%;
+  height: 1em;
+  width: 0.0938rem;
+  background: var(--vt-link-hover-color, currentColor);
+  opacity: 0;
+  transform: translate(0, -10%);
+  transition:
+    opacity var(--vt-link-transition),
+    transform var(--vt-link-transition);
+}
+
+.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label {
+  transform: translateX(0.25em);
+}
+
+/* Bar cancels the text shift, so it stays exactly before the text's start */
+.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before {
+  opacity: 1;
+  transform: translate(-0.25em, -50%);
+}
+
+[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label {
+  transform: translateX(-0.25em);
+}
+
+[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before {
+  transform: translate(0.25em, -50%);
+}
+
+/* Wave fade: a second color sweeps across the text.
+   Guarded so text never turns invisible on unsupported browsers. */
+@supports ((background-clip: text) or (-webkit-background-clip: text)) and (color: color-mix(in srgb, red, blue)) {
+  .vt-link-hover--wave_fade .vt-link-label {
+    background-image: linear-gradient(
+      90deg,
+      var(--vt-link-hover-color, color-mix(in srgb, currentColor 60%, transparent)) 35%,
+      currentColor 65%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-position var(--vt-link-transition);
+  }
+
+  .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label {
+    background-position: 0 0;
+  }
+
+  /* RTL: the color enters from the right */
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link-label {
+    background-image: linear-gradient(
+      270deg,
+      var(--vt-link-hover-color, color-mix(in srgb, currentColor 60%, transparent)) 35%,
+      currentColor 65%
+    );
+    background-position: 0 0;
+  }
+
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label {
+    background-position: 100% 0;
+  }
+}
+
+/* Windows high contrast: plain system text */
+@media (forced-colors: active) {
+  .vt-link-hover--wave_fade .vt-link-label {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --vt-link-transition: 0s;
+  }
+}
+
+.vt-page-width {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--vt-page-width) + var(--vt-page-padding) * 2);
+  margin-inline: auto;
+  padding-inline: var(--vt-page-padding);
+}
+
+/* Button style */
+
+.vt-buttons {
+  display: flex;
+  gap: 1rem;
+  /* Buttons have no alignment setting: follow the parent context */
+  justify-content: var(--vt-align-justify, flex-start);
+}
+
+/* ============================================================
+  BUTTON BASE
+  ============================================================ */
+
+.vt-button {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--vt-button-min-height);
+  padding-inline: var(--vt-button-horizontal-padding);
+  border-width: var(--vt-button-border-width);  
+  border-style: solid;
+  border-radius: var(--vt-button-radius);
+  font-family: var(--vt-button-font-family);
+  font-size: var(--vt-button-size);
+  font-weight: var(--vt-button-font-weight);  
+  letter-spacing: var(--vt-button-letter-spacing);
+  text-transform: var(--vt-button-text-case);
+  transition: all 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+  text-decoration: none;
+  overflow: hidden;
+  cursor: pointer; 
+  z-index: 1;
+}
+
+@media screen and (max-width: 749px) {
+  .vt-button {
+    padding-inline: var(--vt-button-horizontal-padding-mobile);
+  }    
+}
+
+/* ============================================================
+  PRIMARY
+  ============================================================ */
+
+.vt-button--primary {
+  background-color: var(--vt-button-primary-background);
+  color: var(--vt-button-primary-text);  
+  border-color: var(--vt-button-primary-border);    
+}
+
+/* ============================================================
+  SECONDARY
+  ============================================================ */
+
+.vt-button--secondary {
+  background-color: var(--vt-button-secondary-background);
+  color: var(--vt-button-secondary-text);  
+  border-color: var(--vt-button-secondary-border);   
+}
+
+
+/* ============================================================
+  OUTLINE
+  ============================================================ */
+
+.vt-button--outline {
+  background-color: var(--vt-button-outline-background);
+  color: var(--vt-button-outline-text);  
+  border-color: var(--vt-button-outline-border);  
+}
+
+
+/* ============================================================
+  ACCENT
+  ============================================================ */
+
+.vt-button--accent {
+  background-color: var(--vt-button-accent-background);
+  color: var(--vt-button-accent-text);  
+  border-color: var(--vt-button-accent-border);      
+}
+
+/* ============================================================
+  LINK
+  ============================================================ */
+
+.vt-button--link,
+.vt-button--link-light {
+  border: 0;
+  padding: 0;  
+  outline: none;
+  overflow: visible;
+  gap: .75rem
+}
+
+.vt-button--link {  
+  color: var(--vt-button-link-text);
+}
+
+.vt-button--link::after,
+.vt-button--link-light::after {  
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: .0625rem;
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.vt-button--link::after {  
+  background-color: var(--vt-button-link-text);
+}
+
+.vt-button--link-light {
+  color: var(--vt-button-link-light-text);
+}
+
+.vt-button--link-light::after {  
+  background-color: var(--vt-button-link-light-text);
+}
+
+.vt-button .vt-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;  
+  border-radius: 50%;  
+}
+
+.vt-button--link .vt-button-icon{
+  background-color: var(--vt-button-link-text);
+  color: var(--vt-button-icon-link-dark);
+}
+
+.vt-button--link-light .vt-button-icon{
+  background-color: var(--vt-button-link-light-text);
+  color: var(--vt-button-icon-link-light);
+}
+
+.vt-button-icon svg {
+  width: .75rem;
+  height: .625rem;
+  flex-shrink: 0;
+}
+
+.vt-button--link:hover::after,
+.vt-button--link-light:hover::after {  
+  animation: swipeLine 0.5s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes swipeLine {
+  0% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  45% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  55% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+}
+
+
+/* ============================================================
+  STANDARD HOVER EFFECT
+  ============================================================ */
+
+.vt-button--hover-standard::before {  
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: 0;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;  
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+
+/* ============================================================
+  PRIMARY HOVER
+  ============================================================ */
+
+.vt-button--primary.vt-button--hover-standard::before {
+  background-color: var(--vt-button-primary-hover-background);    
+}
+
+.vt-button--primary.vt-button--hover-standard:hover::before {  
+  transform: scaleX(1);
+}
+
+.vt-button--primary.vt-button--hover-standard:hover {  
+  color: var(--vt-button-primary-hover-text);
+  border-color: var(--vt-button-primary-hover-border);    
+}
+
+
+/* ============================================================
+  SECONDARY HOVER
+  ============================================================ */
+
+.vt-button--secondary.vt-button--hover-standard::before {
+  background-color: var(--vt-button-secondary-hover-background);    
+}
+
+.vt-button--secondary.vt-button--hover-standard:hover::before {
+  transform: scaleX(1);
+}
+
+.vt-button--secondary.vt-button--hover-standard:hover {
+  color: var(--vt-button-secondary-hover-text);    
+  border-color: var(--vt-button-secondary-hover-border);    
+}
+
+
+/* ============================================================
+  OUTLINE HOVER
+  ============================================================ */
+
+.vt-button--outline.vt-button--hover-standard::before {
+  background-color: var(--vt-button-outline-hover-background);    
+}
+
+.vt-button--outline.vt-button--hover-standard:hover::before {
+  transform: scaleX(1);
+}
+
+.vt-button--outline.vt-button--hover-standard:hover {
+  color: var(--vt-button-outline-hover-text);
+  border-color: var(--vt-button-outline-hover-border);      
+}
+
+
+/* ============================================================
+  ACCENT HOVER
+  ============================================================ */
+
+.vt-button--accent.vt-button--hover-standard::before {
+  background-color: var(--vt-button-accent-hover-background);    
+}
+
+.vt-button--accent.vt-button--hover-standard:hover::before {
+  transform: scaleX(1);
+}
+
+.vt-button--accent.vt-button--hover-standard:hover {
+  color: var(--vt-button-accent-hover-text);
+  border-color: var(--vt-button-accent-hover-border);      
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-button--hover-standard::before {
+    transition: none;    
+  }
+}
+
+
+/* ============================================================
+  BUTTON ARROW  
+  ============================================================ */
+
+.vt-arrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--vt-arrow-size);
+  height: var(--vt-arrow-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--vt-arrow-radius);
+  overflow: hidden;
+  /* Keeps the hover fill (z-index: -1) inside the button */
+  isolation: isolate;
+  cursor: pointer;
+  transition: color 0.25s ease, background-color 0.25s ease, opacity 0.25s ease;
+}
+
+.vt-arrow__icon {
+  display: flex;
+  width: var(--vt-arrow-icon-size);
+  height: var(--vt-arrow-icon-size);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.vt-arrow__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vt-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.vt-arrow:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.vt-arrow:disabled,
+.vt-arrow[aria-disabled="true"] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ============================================================
+  ARROW PRIMARY / SECONDARY
+  ============================================================ */
+
+.vt-arrow--primary {
+  background-color: var(--vt-arrow-primary-background);
+  color: var(--vt-arrow-primary-icon);
+}
+
+.vt-arrow--secondary {
+  background-color: var(--vt-arrow-secondary-background);
+  color: var(--vt-arrow-secondary-icon);
+}
+
+/* ============================================================
+  ARROW STANDARD HOVER EFFECT (same wipe as .vt-button--hover-standard)
+  ============================================================ */
+
+.vt-arrow--hover-standard::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.vt-arrow--primary.vt-arrow--hover-standard::before {
+  background-color: var(--vt-arrow-primary-hover-background);
+}
+
+.vt-arrow--secondary.vt-arrow--hover-standard::before {
+  background-color: var(--vt-arrow-secondary-hover-background);
+}
+
+.vt-arrow--hover-standard:not(:disabled, [aria-disabled="true"]):hover::before {
+  transform: scaleX(1);
+}
+
+.vt-arrow--primary.vt-arrow--hover-standard:not(:disabled, [aria-disabled="true"]):hover {
+  color: var(--vt-arrow-primary-hover-icon);
+}
+
+.vt-arrow--secondary.vt-arrow--hover-standard:not(:disabled, [aria-disabled="true"]):hover {
+  color: var(--vt-arrow-secondary-hover-icon);
+}
+
+/* arrow-next / arrow-previous point diagonally (↗ / ↖); hover turns them horizontal (→ / ←), with any hover effect */
+.vt-arrow:not(:disabled, [aria-disabled="true"]):hover .vt-arrow__icon--next {
+  transform: rotate(45deg);
+}
+
+.vt-arrow:not(:disabled, [aria-disabled="true"]):hover .vt-arrow__icon--previous {
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-arrow,
+  .vt-arrow__icon,
+  .vt-arrow--hover-standard::before {
+    transition: none;
+  }
+}
+
+/* ============================================================
+  TABS SCROLLER  
+  ============================================================ */
+
+.vt-tabs-scroller {
+  --vt-tabs-fade: 3rem;
+  box-sizing: border-box;  
+  overflow-x: auto;
+  overscroll-behavior-x: contain;  
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--vt-tabs-fade-start, 0px),
+    #000 calc(100% - var(--vt-tabs-fade-end, 0px)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--vt-tabs-fade-start, 0px),
+    #000 calc(100% - var(--vt-tabs-fade-end, 0px)),
+    transparent 100%
+  );
+}
+
+.vt-tabs-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.vt-tabs-scroller.has-overflow-start {
+  --vt-tabs-fade-start: var(--vt-tabs-fade);
+}
+
+.vt-tabs-scroller.has-overflow-end {
+  --vt-tabs-fade-end: var(--vt-tabs-fade);
+}
+
+@media screen and (min-width: 751px) {
+  .vt-tabs-scroller--mobile {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+/* ============================================================
+  SLIDER ARROWS  
+  ============================================================ */
+
+.vt-swiper-btn {
+  --vt-swiper-btn-inset: 1rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;  
+}
+
+.vt-swiper-btn--prev {
+  left: calc(var(--vt-swiper-offset, 0px) + var(--vt-swiper-btn-inset));
+}
+
+.vt-swiper-btn--next {
+  right: calc(var(--vt-swiper-offset, 0px) + var(--vt-swiper-btn-inset));
+}
+
+.vt-swiper-btn:disabled,
+.vt-swiper-btn[aria-disabled="true"] {
+  pointer-events: none;
+}
+
+/* Hover-only arrows: shown while the pointer or focus is inside the carousel */
+.vt-swiper-btn--hover-only {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.swiper:is(:hover, :focus-within) .vt-swiper-btn--hover-only {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Keep the disabled fade when hover reveals the arrows */
+.swiper:is(:hover, :focus-within) .vt-swiper-btn--hover-only:is(:disabled, [aria-disabled="true"]) {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+@media screen and (max-width: 749px) {
+  .vt-swiper-btn {
+    --vt-swiper-btn-inset: 0.5rem;
+  }
+}
+
+/* ============================================================
+  RICH TEXT
+  ============================================================ */
+
+:is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .justify-start {
+  align-items: flex-start;
+  text-align: left;
+  --vt-align-justify: flex-start;
+  --vt-align-margin: 0 auto;
+}
+:is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .justify-center {
+  align-items: center;
+  text-align: center;
+  --vt-align-justify: center;
+  --vt-align-margin: auto;
+}
+:is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .justify-end {
+  align-items: flex-end;
+  text-align: right;
+  --vt-align-justify: flex-end;
+  --vt-align-margin: auto 0;
+}
+
+@media screen and (min-width: 750px) {
+  :is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .md\:justify-start {
+    align-items: flex-start;
+    text-align: left;
+    --vt-align-justify: flex-start;
+    --vt-align-margin: 0 auto;
+  }
+  :is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .md\:justify-center {
+    align-items: center;
+    text-align: center;
+    --vt-align-justify: center;
+    --vt-align-margin: auto;
+  }
+  :is(.vt-rich-text, .vt-image-overlay, .vt-video-overlay, .vt-page-section) .md\:justify-end {
+    align-items: flex-end;
+    text-align: right;
+    --vt-align-justify: flex-end;
+    --vt-align-margin: auto 0;
+  }
+}
+
+/* Body paragraph style */
+
+.vt-paragraph {  
+  color: inherit;
+  font-weight: var(--vt-font-body-weight);  
+  max-width: var(--vt-paragraph-max-width, none);
+  display: flex;  
+  contain: layout style;    
+}
+
+/* Extra Small Paragraph */
+
+.vt-paragraph-extra-small {
+  font-size: var(--vt-font-extra-small-size);
+  font-weight: var(--vt-font-extra-small-weight);
+  line-height: var(--vt-font-extra-small-line-height);
+  letter-spacing: var(--vt-font-extra-small-letter-spacing);
+  text-transform: var(--vt-font-extra-small-text-transform, none);
+}
+
+/* Small Paragraph */
+
+.vt-paragraph-small {
+  font-size: var(--vt-font-small-size);  
+  font-weight: var(--vt-font-small-weight);
+  line-height: var(--vt-font-small-line-height);
+  letter-spacing: var(--vt-font-small-letter-spacing);
+  text-transform: var(--vt-font-small-text-transform, none);
+}
+
+/* Body Paragraph */
+
+.vt-paragraph-medium {
+  font-size: var(--vt-font-body-size);  
+  font-weight: var(--vt-font-body-weight);
+  line-height: var(--vt-font-body-line-height);
+  letter-spacing: var(--vt-font-body-letter-spacing);
+  text-transform: var(--vt-font-body-text-transform, none);
+}
+
+/* Large Paragraph */
+
+.vt-paragraph-large {
+  font-size: var(--vt-font-large-size);
+  font-weight: var(--vt-font-large-weight);
+  line-height: var(--vt-font-large-line-height);
+  letter-spacing: var(--vt-font-large-letter-spacing);
+  text-transform: var(--vt-font-large-text-transform, none);
+}
+
+.vt-paragraph.text-inherit {
+  text-align: inherit;
+  justify-content: var(--vt-align-justify, flex-start);
+  margin-inline: var(--vt-align-margin, 0);
+}
+.vt-paragraph.text-left { 
+  text-align: left;    
+  justify-content: flex-start; 
+}
+.vt-paragraph.text-center { 
+  text-align: center;  
+  justify-content: center; 
+}
+.vt-paragraph.text-right { 
+  text-align: right;   
+  justify-content: flex-end; 
+}
+.vt-paragraph--width-fit { 
+  width: fit-content; 
+}
+.vt-paragraph--width-fill { 
+  width: 100%; 
+}
+.vt-paragraph--width-max-content { 
+  width: max-content; 
+  max-width: 100%; 
+}
+.vt-paragraph--width-min-content { 
+  width: min-content; 
+}
+.vt-paragraph--width-custom { 
+  width: var(--vt-paragraph-width, auto); 
+}
+.vt-paragraph:not(.vt-paragraph--width-fill).text-center {
+  margin-inline: auto;
+}
+.vt-paragraph:not(.vt-paragraph--width-fill).text-right {
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+.vt-paragraph__text {
+  min-width: 0;
+}
+.vt-paragraph__text > :first-child {
+  margin-top: 0;
+}
+.vt-paragraph__text > :last-child {
+  margin-bottom: 0;
+}
+
+/* Heading Style */
+.vt-heading-wrapper {    
+  flex-direction: column;
+  gap: var(--vt-heading-gap-mobile, 0.5rem);
+  width: 100%;
+  max-width: var(--vt-heading-max-width, none);
+  contain: layout style;
+}
+.vt-heading-wrapper.text-left .vt-heading { 
+  text-align: left;    
+  justify-content: flex-start; 
+}
+.vt-heading-wrapper.text-center .vt-heading { 
+  text-align: center;  
+  justify-content: center; 
+}
+.vt-heading-wrapper.text-right .vt-heading { 
+  text-align: right;   
+  justify-content: flex-end; 
+}
+/* Inherit: the wrapper is a flex column, so the heading box (and the
+   collection index) is placed with align-items from the parent context */
+.vt-heading-wrapper.text-inherit {
+  align-items: var(--vt-align-justify, stretch);
+}
+.vt-heading-wrapper.text-inherit .vt-heading {
+  text-align: inherit;
+  justify-content: var(--vt-align-justify, flex-start);
+}
+/* Width variants */
+.vt-heading-wrapper--width-fit .vt-heading { 
+  width: fit-content; 
+}
+.vt-heading-wrapper--width-fill .vt-heading { 
+  width: 100%; 
+}
+.vt-heading-wrapper--width-max-content .vt-heading { 
+  width: max-content; 
+  max-width: 100%; 
+}
+.vt-heading-wrapper--width-min-content .vt-heading { 
+  width: min-content; 
+}
+.vt-heading-wrapper--width-custom .vt-heading { 
+  width: var(--vt-heading-width, auto); 
+}
+.vt-heading-wrapper:not(.vt-heading-wrapper--width-fill).text-center .vt-heading {
+  margin-inline: auto;
+}
+.vt-heading-wrapper:not(.vt-heading-wrapper--width-fill).text-right .vt-heading {
+  margin-inline-start: auto;
+  margin-inline-end: 0;
+}
+
+/* Desktop gap */
+@media (min-width: 768px) {
+  .vt-heading-wrapper {
+    gap: var(--vt-heading-gap-desktop, 0.75rem);
+  }
+}
+
+.vt-heading {
+  display: inline-flex;
+  gap: var(--vt-heading-gap-mobile, 0.5rem);
+  color: inherit;
+}
+
+@media (min-width: 768px) {
+  .vt-heading {
+    gap: var(--vt-heading-gap-desktop, 0.75rem);
+  }
+}
+
+/* Product count — inherits size class from setting */
+.vt-heading__product-count {
+  color: inherit;  
+  display: inline-block;
+  white-space: nowrap;    
+  flex-shrink: 0;
+}
+
+/* CSS-counter index (01, 02...) inherits from .vt-collection-list__grid */
+.vt-heading__index {
+  display: flex;
+}
+
+.vt-heading__index::before {
+  color: inherit;  
+  display: inline-block;
+  white-space: nowrap;    
+  flex-shrink: 0;          
+}
+
+.vt-paragraph-extra-small::before {
+  font-size: var(--vt-font-extra-small-size);
+  font-weight: var(--vt-font-extra-small-weight);
+  line-height: var(--vt-font-extra-small-line-height);
+  letter-spacing: var(--vt-font-extra-small-letter-spacing);
+  text-transform: var(--vt-font-extra-small-text-transform, none);
+}
+
+.vt-paragraph-small::before {
+  font-size: var(--vt-font-small-size);
+  font-weight: var(--vt-font-small-weight);
+  line-height: var(--vt-font-small-line-height);
+  letter-spacing: var(--vt-font-small-letter-spacing);
+  text-transform: var(--vt-font-small-text-transform, none);
+}
+
+.vt-paragraph-medium::before {
+  font-size: var(--vt-font-body-size);
+  font-weight: var(--vt-font-body-weight);
+  line-height: var(--vt-font-body-line-height);
+  letter-spacing: var(--vt-font-body-letter-spacing);
+  text-transform: var(--vt-font-body-text-transform, none);
+}
+
+.vt-paragraph-large::before {
+  font-size: var(--vt-font-large-size);
+  font-weight: var(--vt-font-large-weight);
+  line-height: var(--vt-font-large-line-height);
+  letter-spacing: var(--vt-font-large-letter-spacing);
+  text-transform: var(--vt-font-large-text-transform, none);
+}
+
+
+/* Sub heading */
+
+.vt-subheading{
+  font-size: var(--vt-sub-heading-size);
+  font-weight: var(--vt-sub-heading-font-weight);
+  line-height: var(--vt-sub-heading-line-height);
+  letter-spacing: var(--vt-sub-heading-letter-spacing);
+  text-transform: var(--vt-sub-heading-text-transform, none);    
+}
+
+/* ---- Section style ---- */
+.vt-section {
+  background: var(--vt-section-bg, var(--vt-background-color, transparent));
+  color: var(--vt-section-color, var(--vt-foreground-color, inherit));
+  padding-block-start: var(--vt-section-padding-block-start, 0);
+  padding-block-end: var(--vt-section-padding-block-end, 0);      
+}
+
+/* Full-bleed variant: inner padding comes from section (not page-width wrapper) */
+.vt-section:not(:has(.vt-page-width)) {
+  padding-inline-start: var(--vt-section-padding-inline-start, 0);
+  padding-inline-end: var(--vt-section-padding-inline-end, 0);
+}
+
+/* ---- Section inner (stacked blocks) ---- */
+.vt-section__inner {
+  display: flex;  
+  flex-direction: column;
+  gap: var(--vt-section-gap, 0);
+}
+
+/* ---- Paragraph color override (inherited from section) ---- */
+.vt-section .vt-paragraph {
+  color: var(--vt-section-paragraph-color, var(--vt-color-primary, inherit));
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .vt-section,
+  .vt-section__inner {
+    transition: none;
+    animation: none;
+  }
+}
+
+/* Badge and Tag */
+
+.vt-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--vt-badge-gap, .375rem);
+  background-color: var(--vt-badge-bg, var(--vt-color-accent));
+  color: var(--vt-badge-color, var(--vt-foreground-color));
+  font-family: var(--vt-font-family-body);
+  line-height: 1.3;
+  white-space: nowrap;
+  text-transform: none;
+  letter-spacing: 0.02em;    
+  border-radius: var(--vt-badge-radius, 50%);
+  border-style: solid;
+  border-width: var(--vt-badge-border-width, 0);
+  border-color: var(--vt-badge-border-color, var(--vt-color-accent));
+  box-sizing: border-box;
+}
+
+/* In a card the badge sits in the text flow: wrap instead of spilling out of the card */
+.vt-card .vt-badge {
+  max-width: 100%;
+  white-space: normal;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.vt-badge-group {
+  flex-direction: column;
+  /* Column layout: horizontal placement is align-items, from the parent context */
+  align-items: var(--vt-align-justify, flex-start);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vt-badge.vt-paragraph-extra-small {
+  font-size: var(--vt-font-extra-small-size);
+  padding: .125rem .875rem;    
+}
+
+.vt-badge.vt-paragraph-small {  
+  padding: .1875rem .9375rem;    
+}
+
+.vt-badge.vt-paragraph-medium {      
+  padding: .25rem .875rem;  
+}
+
+.vt-badge.vt-paragraph-large {
+  font-size: var(--vt-font-large-size);
+  padding: .3125rem 1rem;
+}
+
+.vt-badge.vt-paragraph-custom {    
+  font-size: calc(var(--vt-badge-font-size, 12) / 16 * 1rem);
+  padding: .5rem 1.25rem;
+}
+
+.vt-badge--width-fit {
+  width: fit-content;
+}
+
+.vt-badge--width-fill {
+  width: 100%;
+}
+
+.vt-badge--width-custom {
+  width: var(--vt-badge-width, 50%);
+}
+
+.vt-badge--border {
+  border-width: var(--vt-badge-border-width, 1px);
+}

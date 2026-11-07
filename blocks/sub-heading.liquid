@@ -1,0 +1,318 @@
+{% doc %}
+  Renders a sub-heading block.
+
+  @example
+  {% content_for 'block', type: 'sub-heading', id: 'sub-heading' %}
+{% enddoc %}
+
+{%- if block.settings.sub_heading != blank -%}
+  {%- assign sub_heading_tag = block.settings.subheading_tag -%}
+  {%- assign animation_type = block.settings.animation_type -%}
+
+  {%- comment -%} Build animation classes {%- endcomment -%}
+  {%- assign vt_anim_classes = '' -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+    {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
+
+    {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
+      {%- assign vt_anim_classes = vt_anim_classes
+        | append: ' vt-animate--dir-'
+        | append: block.settings.animation_direction
+      -%}
+    {%- endif -%}
+  {%- endunless -%}
+
+  {%- capture subheading_class -%}    
+    vt-subheading
+    {{ block.settings.subheading_alignment }}
+    {{ vt_anim_classes }}
+  {%- endcapture -%}
+  {%- assign subheading_class = subheading_class | strip -%}
+
+  {%- comment -%} Build animation CSS custom properties {%- endcomment -%}
+  {%- assign vt_style = '' -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+    {%- assign vt_style = vt_style
+      | append: '--vt-duration: '
+      | append: block.settings.animation_duration
+      | append: 's;'
+    -%}
+    {%- assign vt_style = vt_style | append: ' --vt-delay: ' | append: block.settings.animation_delay | append: 's;' -%}
+
+    {%- if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur' -%}
+      {%- case block.settings.animation_easing -%}
+        {%- when 'linear' -%}
+          {%- assign vt_easing_value = 'linear' -%}
+        {%- when 'ease-out-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+        {%- when 'ease-in-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)' -%}
+        {%- when 'ease-in-out-sine' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)' -%}
+        {%- when 'ease-in-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)' -%}
+        {%- when 'ease-out-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)' -%}
+        {%- when 'ease-in-out-cubic' -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)' -%}
+        {%- else -%}
+          {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+      {%- endcase -%}
+
+      {%- assign vt_style = vt_style | append: ' --vt-easing: ' | append: vt_easing_value | append: ';' -%}
+    {%- endif -%}
+
+    {%- if animation_type == 'blur' -%}
+      {%- assign vt_style = vt_style
+        | append: ' --vt-blur: '
+        | append: block.settings.animation_blur_intensity
+        | append: 'px;'
+      -%}
+    {%- endif -%}    
+  {%- endunless -%}
+
+  <div class="vt-sub-heading">
+    <{{ sub_heading_tag }}
+      class="{{ subheading_class }}"
+      {% if vt_style != '' %}
+        style="{{ vt_style | strip }}"
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      {{ block.settings.sub_heading }}
+    </{{ sub_heading_tag }}>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-sub-heading {
+    display: flex;
+    flex-wrap: nowrap;    
+    text-align: inherit;
+  }
+
+  .vt-subheading--horizontal {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+  .vt-subheading--vertical {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .vt-subheading.text-left {
+    text-align: left;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .vt-subheading.text-center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .vt-subheading.text-right {    
+    text-align: right;
+    margin-left: auto;
+    margin-right: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.sub_heading.name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "sub_heading",
+      "default": "t:blocks.sub_heading.settings.text.default",
+      "label": "t:blocks.sub_heading.settings.text.label",      
+      "info": "Edit presets in theme settings"
+    },
+    {
+      "type": "select",
+      "id": "subheading_tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph" }
+      ],
+      "default": "h3",
+      "label": "t:options.heading_tag.label",
+      "info": "t:options.heading_tag.info"
+    },
+    {
+      "type": "select",
+      "id": "subheading_alignment",
+      "options": [
+        {
+          "value": "text-left",
+          "label": "t:blocks.sub_heading.settings.sub_heading_alignment.options__1.label"
+        },
+        {
+          "value": "text-center",
+          "label": "t:blocks.sub_heading.settings.sub_heading_alignment.options__2.label"
+        },
+        {
+          "value": "text-right",
+          "label": "t:blocks.sub_heading.settings.sub_heading_alignment.options__3.label"
+        }
+      ],
+      "default": "text-left",
+      "label": "t:blocks.sub_heading.settings.sub_heading_alignment.label"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.sub_heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:blocks.sub_heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.sub_heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.sub_heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.sub_heading.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.sub_heading.settings.animation_type.options__5.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:blocks.sub_heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        {
+          "value": "from-left",
+          "label": "t:blocks.sub_heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.sub_heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.sub_heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.sub_heading.settings.animation_direction.options__4.label"
+        }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.sub_heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.sub_heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.sub_heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        {
+          "value": "linear",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.sub_heading.settings.animation_easing.options__7.label"
+        }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.sub_heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.sub_heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],  
+  "presets": [
+    {
+      "name": "t:blocks.sub_heading.presets.name",
+      "category": "t:general.categories.basic",   
+      "settings":{
+        "sub_heading": "Sub heading",
+        "subheading_tag": "h4",
+        "subheading_alignment": "text-left",
+        "animation_type": "fade",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5
+      }   
+    }
+  ]
+}
+{% endschema %}

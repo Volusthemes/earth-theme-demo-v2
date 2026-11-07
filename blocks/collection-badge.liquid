@@ -1,0 +1,435 @@
+{% # theme-check-disable UndefinedObject %}
+
+{% doc %}
+  Renders badges inside a collection card.
+
+  Source priority:
+  1. Auto: closest.collection.metafields.custom.badges (List of Badge metaobjects)
+  2. Manual: block.settings.manual_badges (Metaobject list picked in theme editor)
+  3. Static: block.settings.text (plain text fallback)
+
+  @example
+  {% content_for 'block', type: 'collection-badge', id: 'collection-badge' %}
+{% enddoc %}
+
+{%- liquid
+
+  assign vt_collection = closest.collection
+  assign vt_badges = vt_collection.metafields.custom.badges.value
+
+  if vt_badges == blank
+    assign vt_badges = block.settings.manual_badges
+  endif
+
+  # --- Build shared class list ---
+  assign vt_badge_size = block.settings.badge_size | default: 'vt-paragraph-extra-small'
+  assign vt_badge_class = 'vt-badge ' | append: vt_badge_size | append: ' vt-badge--width-' | append: block.settings.width
+  if block.settings.show_border
+    assign vt_badge_class = vt_badge_class | append: ' vt-badge--border'
+  endif
+
+  # --- Build shared inline styles ---
+  assign vt_badge_style = ''
+  if block.settings.bg_color != blank
+    assign vt_badge_style = vt_badge_style | append: '--vt-badge-bg: ' | append: block.settings.bg_color | append: ';'
+  endif
+  if block.settings.text_color != blank
+    assign vt_badge_style = vt_badge_style | append: ' --vt-badge-color: ' | append: block.settings.text_color | append: ';'
+  endif
+  if block.settings.radius != blank
+    assign vt_badge_style = vt_badge_style | append: ' --vt-badge-radius: ' | append: block.settings.radius | append: ';'
+  endif
+  if block.settings.show_border
+    if block.settings.border_size != blank
+      assign vt_badge_style = vt_badge_style | append: ' --vt-badge-border-width: ' | append: block.settings.border_size | append: 'px;'
+    endif
+    if block.settings.border_color != blank
+      assign vt_badge_style = vt_badge_style | append: ' --vt-badge-border-color: ' | append: block.settings.border_color | append: ';'
+    endif
+  endif
+  if block.settings.badge_size == 'vt-paragraph-custom' and block.settings.font_size > 0
+    assign vt_badge_style = vt_badge_style | append: ' --vt-badge-font-size: ' | append: block.settings.font_size | append: ';'
+  endif
+  if block.settings.width == 'custom' and block.settings.width_custom != blank
+    assign vt_badge_style = vt_badge_style | append: ' --vt-badge-width: ' | append: block.settings.width_custom | append: '%;'
+  endif
+
+  # --- Animation classes & properties (skipped in visual preview) ---
+  assign vt_anim_classes = ''
+  unless block.settings.animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = 'vt-animate vt-animate--' | append: block.settings.animation_type
+    if block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+
+    assign vt_badge_style = vt_badge_style | append: ' --vt-duration: ' | append: block.settings.animation_duration | append: 's;'
+    assign vt_badge_style = vt_badge_style | append: ' --vt-delay: ' | append: block.settings.animation_delay | append: 's;'
+
+    case block.settings.animation_easing
+      when 'linear'
+        assign vt_easing = 'linear'
+      when 'ease-in-sine'
+        assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+      when 'ease-in-out-sine'
+        assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+      when 'ease-in-cubic'
+        assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+      when 'ease-out-cubic'
+        assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+      when 'ease-in-out-cubic'
+        assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+      else
+        assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    endcase
+    assign vt_badge_style = vt_badge_style | append: ' --vt-easing: ' | append: vt_easing | append: ';'
+
+    if block.settings.animation_type == 'blur'
+      assign vt_badge_style = vt_badge_style | append: ' --vt-blur: ' | append: block.settings.animation_blur_intensity | append: 'px;'
+    endif
+  endunless
+-%}
+
+{%- if vt_badges != blank or block.settings.text != blank -%}
+  <div class="vt-badge-group flex"
+    style="--vt-badge-gap: {% render 'fluid-clamp', min_px: block.settings.gap, max_px: block.settings.gap, unit: 'rem' %};"
+    role="list" {{ block.shopify_attributes }}>
+    {%- if vt_badges != blank -%}
+      {%- comment -%} Source: metafield (auto) OR manual metaobject_list setting {%- endcomment -%}
+      {%- for vt_badge_obj in vt_badges -%}
+        {%- liquid          
+          assign vt_badge_label = vt_badge_obj.label.value
+          if vt_badge_label == blank
+            assign vt_badge_label = vt_badge_obj.display_name
+          endif
+        -%}
+        {%- if vt_badge_label != blank -%}
+          <div class="{{ vt_badge_class }} {{ vt_anim_classes }}" style="{{ vt_badge_style | strip }}" role="listitem">            
+            <span>{{ vt_badge_label }}</span>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      {%- comment -%} Static text fallback {%- endcomment -%}
+      <div class="{{ vt_badge_class }} {{ vt_anim_classes }}"
+          style="{{ vt_badge_style | strip }}"          
+          role="listitem">        
+        <span>{{ block.settings.text }}</span>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+
+
+{% schema %}
+{
+  "name": "Collection badge",
+  "tag": null,  
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Source priority: 1) collection metafield 'custom.badges', 2) Manual badges below, 3) Fallback text. The first non-empty source wins."
+    },
+    {
+      "type": "metaobject_list",      
+      "id": "manual_badges",      
+      "label": "Manual badges",
+      "metaobject_type": "badges",
+      "info": "Used only when the parent collection has no 'custom.badges' metafield. Requires a metaobject definition of type 'badges' in your store."
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Fallback content",
+      "default": "Metaobjects",
+      "info": "Used only when neither the metafield nor Manual badges has any value."
+    },
+    {
+      "type": "select",
+      "id": "radius",
+      "label": "Badge style",
+      "options": [
+        { 
+          "value": "3.125rem", 
+          "label": "Pill" 
+        },
+        { 
+          "value": "0",        
+          "label": "Square" 
+        },
+        { 
+          "value": "0.5rem",   
+          "label": "Default" 
+        }
+      ],
+      "default": "3.125rem"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Outline",
+      "default": false
+    },
+    { 
+      "type": "header", 
+      "content": "Size" 
+    },
+    {
+      "type": "select",
+      "id": "badge_size",
+      "label": "Badge size",
+      "options": [
+        { 
+          "value": "vt-paragraph-extra-small", 
+          "label": "Extra small" 
+        },
+        { 
+          "value": "vt-paragraph-small",       
+          "label": "Small" 
+        },
+        { 
+          "value": "vt-paragraph-medium",      
+          "label": "Medium" 
+        },
+        { 
+          "value": "vt-paragraph-large",       
+          "label": "Large" 
+        },
+        { 
+          "value": "vt-paragraph-custom",      
+          "label": "Custom" 
+        }
+      ],
+      "default": "vt-paragraph-medium"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "min": 0, 
+      "max": 40, 
+      "step": 1, 
+      "unit": "px",
+      "label": "Font size",
+      "default": 16,
+      "visible_if": "{{ block.settings.badge_size == 'vt-paragraph-custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { 
+          "value": "fit",    
+          "label": "Fit" 
+        },
+        { 
+          "value": "fill",   
+          "label": "Fill" 
+        },
+        { 
+          "value": "custom", 
+          "label": "Custom" 
+        }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "min": 1, 
+      "max": 100, 
+      "step": 1, 
+      "unit": "%",
+      "label": "Custom width",
+      "default": 50,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_size",
+      "min": 0, 
+      "max": 3, 
+      "step": 0.5, 
+      "unit": "px",
+      "label": "Outline thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.show_border }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 2, 
+      "max": 26, 
+      "step": 2, 
+      "unit": "px",
+      "label": "Gap",
+      "default": 6
+    },
+    { 
+      "type": "header", 
+      "content": "Color" 
+    },
+    { 
+      "type": "color", 
+      "id": "bg_color",     
+      "label": "Background", 
+      "default": "{{ settings.color_palette.background }}" 
+    },
+    { 
+      "type": "color", 
+      "id": "text_color",   
+      "label": "Text",       
+      "default": "{{ settings.color_palette.foreground }}" 
+    },
+    { 
+      "type": "color", 
+      "id": "border_color", 
+      "label": "Outline",    
+      "default": "{{ settings.color_palette.background }}", 
+      "visible_if": "{{ block.settings.show_border }}" 
+    },
+    { 
+      "type": "header", 
+      "content": "Animation" 
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Animation",
+      "options": [
+        { 
+          "value": "none",  
+          "label": "None" 
+        },
+        { 
+          "value": "fade", 
+          "label": "Fade" 
+        },
+        { 
+          "value": "slide", 
+          "label": "Slide" 
+        },
+        { 
+          "value": "reveal", 
+          "label": "Reveal" 
+        },
+        { 
+          "value": "blur",  
+          "label": "Blur" 
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "label": "Direction",
+      "options": [
+        { 
+          "value": "from-left",   
+          "label": "From left" 
+        },
+        { 
+          "value": "from-right",  
+          "label": "From right" 
+        },
+        { 
+          "value": "from-top",    
+          "label": "From top" 
+        },
+        { 
+          "value": "from-bottom", 
+          "label": "From bottom" 
+        }
+      ],
+      "default": "from-bottom",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    { 
+      "type": "range", 
+      "id": "animation_duration", 
+      "min": 0.1, 
+      "max": 3, 
+      "step": 0.1, 
+      "unit": "s", 
+      "default": 1.2, 
+      "label": "Duration", 
+      "visible_if": "{{ block.settings.animation_type != 'none' }}" 
+    },
+    { 
+      "type": "range", 
+      "id": "animation_delay",    
+      "min": 0,   
+      "max": 2, 
+      "step": 0.1, 
+      "unit": "s", 
+      "default": 0.2, 
+      "label": "Delay",    
+      "visible_if": "{{ block.settings.animation_type != 'none' }}" 
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "label": "Easing",
+      "options": [
+        { 
+          "value": "linear",           
+          "label": "Linear" 
+        },
+        { 
+          "value": "ease-out-sine",    
+          "label": "Ease out sine" 
+        },
+        { 
+          "value": "ease-in-sine",     
+          "label": "Ease in sine" 
+        },
+        { 
+          "value": "ease-in-out-sine", 
+          "label": "Ease in-out sine" 
+        },
+        { 
+          "value": "ease-in-cubic",    
+          "label": "Ease in cubic" 
+        },
+        { 
+          "value": "ease-out-cubic",   
+          "label": "Ease out cubic" 
+        },
+        { 
+          "value": "ease-in-out-cubic",
+          "label": "Ease in-out cubic" 
+        }
+      ],
+      "default": "ease-out-sine",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    { "type": "range", "id": "animation_blur_intensity", "min": 5, "max": 50, "step": 1, "unit": "px", "default": 5, "label": "Blur intensity", "visible_if": "{{ block.settings.animation_type == 'blur' }}" }
+  ],
+  "presets": [
+    {
+      "name": "Collection badge",
+      "category": "Collection item",
+      "settings": {
+        "radius": "3.125rem",
+        "badge_size": "vt-paragraph-extra-small",
+        "width": "fit",
+        "gap": 6,
+        "text": "Metaobjects",                
+        "show_border": false,
+        "font_size": 16,
+        "width_custom": 100,
+        "border_size": 1,
+        "animation_type": "none",
+        "animation_direction": "from-bottom", 
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5
+      }   
+    }
+  ]
+}
+{% endschema %}
+
+{% # theme-check-enable UndefinedObject %}

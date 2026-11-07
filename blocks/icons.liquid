@@ -1,0 +1,338 @@
+{% doc %}
+  Decorative icon, with an optional box behind it.
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'icons', id: 'icons' %}
+{% enddoc %}
+
+
+{% liquid
+  assign icon = block.settings.icon
+  assign animation_type = block.settings.animation_type
+
+  # -----------------------------------------------------------------------
+  # Color: a blank icon matches the text around it. Inside a box it uses the
+  # palette, because the text color could be the same as the box.
+  # -----------------------------------------------------------------------
+  assign vt_icon_color = block.settings.icon_color
+  if vt_icon_color == blank
+    assign vt_icon_color = 'currentColor'
+    if block.settings.show_box
+      assign vt_icon_color = 'var(--vt-foreground-color)'
+    endif
+  endif
+
+  # -----------------------------------------------------------------------
+  # Animation classes / custom properties. Skipped inside the visual preset
+  # preview so presets render fully visible instead of waiting on an
+  # IntersectionObserver that may never fire inside the preview frame.
+  # -----------------------------------------------------------------------
+  assign vt_anim_classes = ''
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing_value = 'linear'
+    when 'ease-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    when 'ease-in-sine'
+      assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Class list (built with assign + append, no capture needed)
+  # -----------------------------------------------------------------------
+  assign vt_class_list = 'vt-icon'
+
+  if block.settings.show_box
+    assign vt_class_list = vt_class_list | append: ' has-box'
+  endif
+
+  if vt_anim_classes != blank
+    assign vt_class_list = vt_class_list | append: ' ' | append: vt_anim_classes
+  endif
+%}
+
+<div
+  class="{{ vt_class_list }}"
+  style="
+    --vt-icon-size: {% render 'fluid-clamp', min_px: block.settings.icon_size_mobile, max_px: block.settings.icon_size_desktop %};
+    --vt-icon-color: {{ vt_icon_color }};
+    {%- if block.settings.show_box %}
+    --vt-box-size: {% render 'fluid-clamp', min_px: block.settings.box_size_mobile, max_px: block.settings.box_size_desktop %};
+    --vt-box-bg-color: {{ block.settings.box_bg_color | default: 'var(--vt-background-color)' }};
+    --vt-box-radius: {{ block.settings.box_radius }};
+    {%- endif %}
+    {%- if vt_anim_classes != blank %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    {%- endif %}
+    {%- if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur' %}
+    --vt-easing: {{ vt_easing_value }};
+    {%- endif %}
+    {%- if animation_type == 'blur' %}
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  aria-hidden="true"
+  {{ block.shopify_attributes }}
+>
+  {%- render 'icons', icon: icon -%}
+</div>
+
+{% stylesheet %}
+  .vt-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    flex-shrink: 0;
+    contain: layout style;
+  }
+
+  .vt-icon svg {
+    width: var(--vt-icon-size, 2rem);
+    height: var(--vt-icon-size, 2rem);
+    color: var(--vt-icon-color, currentColor);
+  }
+
+  /* Box icon styles */
+  .vt-icon.has-box {
+    width: var(--vt-box-size, 3.5rem);
+    height: var(--vt-box-size, 3.5rem);
+    background-color: var(--vt-box-bg-color, transparent);
+    border-radius: var(--vt-box-radius, 50%);
+  }
+
+  .vt-icon.has-box svg {
+    max-width: 100%;
+    max-height: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.icon.name",
+  "tag": null,  
+  "settings": [
+    {
+      "type": "select",
+      "id": "icon",
+      "options": [
+        { "value": "leaf", "label": "t:blocks.icon.settings.icon.options__1.label" },
+        { "value": "carbon", "label": "t:blocks.icon.settings.icon.options__2.label" },
+        { "value": "cotton-plant", "label": "t:blocks.icon.settings.icon.options__20.label" },
+        { "value": "tree", "label": "t:blocks.icon.settings.icon.options__3.label" },
+        { "value": "zero-emissions", "label": "t:blocks.icon.settings.icon.options__4.label" },
+        { "value": "quality", "label": "t:blocks.icon.settings.icon.options__5.label" },
+        { "value": "drop", "label": "t:blocks.icon.settings.icon.options__6.label" },
+        { "value": "ecology", "label": "t:blocks.icon.settings.icon.options__7.label" },
+        { "value": "flower", "label": "t:blocks.icon.settings.icon.options__11.label" },
+        { "value": "sparkle", "label": "t:blocks.icon.settings.icon.options__12.label" },
+        { "value": "handshake", "label": "t:blocks.icon.settings.icon.options__13.label" },
+        { "value": "organic-cotton", "label": "t:blocks.icon.settings.icon.options__14.label" },
+        { "value": "recycled-materials", "label": "t:blocks.icon.settings.icon.options__15.label" },
+        { "value": "vegan-cruelty-free", "label": "t:blocks.icon.settings.icon.options__16.label" },
+        { "value": "eco", "label": "t:blocks.icon.settings.icon.options__17.label" },
+        { "value": "certificate-regulation", "label": "t:blocks.icon.settings.icon.options__18.label" },
+        { "value": "shake-hand-cooperate", "label": "t:blocks.icon.settings.icon.options__19.label" }
+      ],
+      "default": "leaf",
+      "label": "t:blocks.icon.settings.icon.label"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "t:blocks.icon.settings.icon_color.label",
+      "info": "Leave blank to match the text color"
+    },
+    {      
+      "type": "range",
+      "id": "icon_size_desktop",
+      "min": 12,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "t:blocks.icon.settings.icon_size_desktop.label"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "min": 12,
+      "max": 96,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "label": "t:blocks.icon.settings.icon_size_mobile.label"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.icon.settings.header_box.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_box",
+      "default": false,
+      "label": "t:blocks.icon.settings.show_box.label"
+    },
+    {
+      "type": "color",
+      "id": "box_bg_color",
+      "label": "t:blocks.icon.settings.box_bg_color.label",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ block.settings.show_box == true }}"
+    },
+    {
+      "type": "range",
+      "id": "box_size_desktop",
+      "min": 24,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 56,
+      "label": "t:blocks.icon.settings.box_size_desktop.label",
+      "visible_if": "{{ block.settings.show_box == true }}"
+    },
+    {
+      "type": "range",
+      "id": "box_size_mobile",
+      "min": 24,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 44,
+      "label": "t:blocks.icon.settings.box_size_mobile.label",
+      "visible_if": "{{ block.settings.show_box == true }}"
+    },
+    {
+      "type": "select",
+      "id": "box_radius",
+      "options": [
+        { "value": "50%", "label": "t:blocks.icon.settings.box_radius.options__1.label" },
+        { "value": "0", "label": "t:blocks.icon.settings.box_radius.options__2.label" },
+        { "value": "0.5rem", "label": "t:blocks.icon.settings.box_radius.options__3.label" }
+      ],
+      "default": "50%",
+      "label": "t:blocks.icon.settings.box_radius.label",
+      "visible_if": "{{ block.settings.show_box == true }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.icon.settings.icon_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
+        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.icon.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.icon.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",      
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.icon.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.icon.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.icon.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.icon.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.icon.presets.name",
+      "category": "t:general.categories.basic",   
+      "settings": 
+      {
+        "icon": "leaf",
+        "icon_size_desktop": 32,
+        "icon_size_mobile": 24,
+        "show_box": false,
+        "box_size_desktop": 56,
+        "box_size_mobile": 40,
+        "box_radius": "50%",
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-in-out-sine",
+        "animation_blur_intensity": 5
+      }
+    }    
+  ]
+}
+{% endschema %}

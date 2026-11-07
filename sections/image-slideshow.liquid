@@ -1,0 +1,588 @@
+{%- comment -%}
+  Section: Image slideshow
+  - Image blocks in a Swiper carousel (assets/theme-slider.js), one image per slide
+  - Slide position: Offset (current slides start a % from the left) or Center
+    (current slide in the middle, both sides show equally)
+  - One image ratio for every slide, so the row stays even
+{%- endcomment -%}
+
+{%- liquid
+  assign make_section_page_width = section.settings.make_section_page_width
+  assign slide_position = section.settings.slide_position | default: 'offset'
+
+  # Outer class list
+  assign section_classes = 'vt-section vt-image-slideshow vt-image-slideshow--' | append: slide_position
+
+  # Inner class list
+  assign inner_classes = 'vt-section__inner'
+  if make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  # Slide width (%) -> slides per view, e.g. 38% shows two slides and part of a third
+  assign slide_width = section.settings.slide_width_desktop | default: 38
+  assign slides_desktop = 100.0 | divided_by: slide_width | round: 4
+  # Offset: Swiper fits the slides between the offsets on both ends, so count them
+  # in the space left over (12% + 38% + 38% + 12% -> 2 slides)
+  if slide_position == 'offset'
+    assign slide_offset = section.settings.slide_offset | default: 0
+    assign slides_desktop = slide_offset | times: -2 | plus: 100.0 | divided_by: slide_width | round: 4
+  endif
+  assign slide_width_tablet = section.settings.slide_width_tablet | default: 50
+  assign slides_tablet = 100.0 | divided_by: slide_width_tablet | round: 4
+  assign slide_width_mobile = section.settings.slide_width_mobile | default: 85
+  assign slides_mobile = 100.0 | divided_by: slide_width_mobile | round: 4
+
+  # Desktop space beside the current slides (%), where the arrows sit
+  if slide_position == 'center'
+    assign side_peek = 100 | minus: slide_width | divided_by: 2.0
+  else
+    assign side_peek = section.settings.slide_offset | default: 0
+  endif
+
+  case section.settings.image_ratio
+    when 'portrait'
+      assign image_ratio = '3 / 4'
+    when 'classic_portrait'
+      assign image_ratio = '2 / 3'
+    when 'landscape'
+      assign image_ratio = '4 / 3'
+    when 'wide'
+      assign image_ratio = '16 / 9'
+    else
+      assign image_ratio = '1 / 1'      
+  endcase
+
+  assign slides = section.blocks
+  assign autoplay_delay = section.settings.autoplay_delay | default: 5 | times: 1000
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  id="vt-image-slideshow-{{ section.id }}"
+  class="{{ section_classes }}"
+  style="
+    --vt-image-slideshow-gap: {% render 'fluid-clamp', min_px: section.settings.slide_gap_mobile, max_px: section.settings.slide_gap_desktop %};
+    --vt-image-slideshow-slides-desktop: {{ slides_desktop }};
+    --vt-image-slideshow-slides-tablet: {{ slides_tablet }};
+    --vt-image-slideshow-slides-mobile: {{ slides_mobile }};
+    --vt-image-slideshow-offset: {{ section.settings.slide_offset | default: 0 }};
+    --vt-image-slideshow-peek: {{ side_peek }}%;
+    --vt-image-slideshow-ratio: {{ image_ratio }};    
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">
+    <div
+      class="swiper vt-image-slideshow__swiper"
+      data-swiper
+      data-swiper-auto
+      data-slide-children="true"
+      data-loop-fill="true"
+      data-slides-desktop="{{ slides_desktop }}"
+      data-slides-tablet="{{ slides_tablet }}"
+      data-slides-mobile="{{ slides_mobile }}"
+      data-slide-style="{{ slide_position }}"
+      data-slide-offset="{{ section.settings.slide_offset | default: 0 }}"
+      data-loop="{{ section.settings.loop }}"
+      data-autoplay="{{ section.settings.autoplay }}"
+      data-autoplay-delay="{{ autoplay_delay }}"
+    >
+      <div class="swiper-wrapper">
+        {% content_for 'blocks' %}        
+      </div>
+
+      {%- if section.settings.show_arrows and slides.size > 1 -%}
+        {%- liquid
+          assign vt_arrow_style = section.settings.arrows_style | default: 'primary'
+          assign vt_arrow_class = 'vt-arrow vt-arrow--' | append: vt_arrow_style
+          if settings.arrows_hover_effect == 'standard'
+            assign vt_arrow_class = vt_arrow_class | append: ' vt-arrow--hover-standard'
+          endif
+          assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn'
+          if section.settings.arrows_on_hover
+            assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn--hover-only'
+          endif
+        -%}
+        <button
+          type="button"
+          class="{{ vt_arrow_class }} vt-swiper-btn--prev"
+          aria-label="{{ 'content.pagination.previous' | t }}"
+          data-swiper-prev
+        >
+          <span class="vt-arrow__icon vt-arrow__icon--previous" aria-hidden="true">{% render 'icons', icon: 'arrow-previous' %}</span>
+        </button>
+        <button
+          type="button"
+          class="{{ vt_arrow_class }} vt-swiper-btn--next"
+          aria-label="{{ 'content.pagination.next' | t }}"
+          data-swiper-next
+        >
+          <span class="vt-arrow__icon vt-arrow__icon--next" aria-hidden="true">{% render 'icons', icon: 'arrow-next' %}</span>
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Carousel: Swiper and arrows come from theme-slider.js and theme.css (SLIDER ARROWS) */
+  .vt-image-slideshow {
+    --vt-image-slideshow-slides: var(--vt-image-slideshow-slides-mobile, 1.18);
+  }
+
+  .vt-image-slideshow__swiper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    /* No layout effect on a block box; theme-slider.js reads it as the resolved px gap */
+    column-gap: var(--vt-image-slideshow-gap);
+  }
+
+  .vt-image-slideshow__swiper .swiper-wrapper {
+    display: flex;
+  }
+
+  /* Image blocks are the slides: Swiper sets their width, the block's own width settings don't apply */
+  .vt-image-slideshow__swiper .swiper-wrapper > .vt-image {
+    flex-shrink: 0;
+    max-width: none;
+    box-sizing: border-box;
+  }
+
+  /* One ratio for every slide (section setting), instead of each image block's own */
+  .vt-image-slideshow .vt-image__media {
+    aspect-ratio: var(--vt-image-slideshow-ratio, 1 / 1);
+  }
+
+  /* Before Swiper starts: same slide widths as the carousel, so nothing jumps */
+  .vt-image-slideshow__swiper:not(.swiper-initialized) .swiper-wrapper {
+    gap: var(--vt-image-slideshow-gap);
+  }
+
+  .vt-image-slideshow__swiper:not(.swiper-initialized) .swiper-wrapper > * {
+    width: calc((100% - var(--vt-image-slideshow-gap) * (var(--vt-image-slideshow-slides) - 1)) / var(--vt-image-slideshow-slides));
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .vt-image-slideshow {
+      --vt-image-slideshow-slides: var(--vt-image-slideshow-slides-tablet, 2);
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    /* Swipe only: no arrows on touch-sized screens */
+    .vt-image-slideshow__swiper .vt-swiper-btn {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-image-slideshow {
+      --vt-image-slideshow-slides: var(--vt-image-slideshow-slides-desktop, 2.6);
+    }
+
+    /* Offset: the first slide already starts at the offset */
+    .vt-image-slideshow--offset .vt-image-slideshow__swiper:not(.swiper-initialized) .swiper-wrapper {
+      padding-inline-start: calc(var(--vt-image-slideshow-offset, 0) * 1%);
+    }
+
+    /* Arrows in the middle of the part-shown slides on either side */
+    .vt-image-slideshow .vt-swiper-btn--prev {
+      left: calc(var(--vt-image-slideshow-peek, 0%) / 2);
+      transform: translate(-50%, -50%);
+    }
+
+    .vt-image-slideshow .vt-swiper-btn--next {
+      right: calc(var(--vt-image-slideshow-peek, 0%) / 2);
+      transform: translate(50%, -50%);
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    if (window.vtImageSlideshowInit) return;
+    window.vtImageSlideshowInit = true;
+
+    // Theme editor: show an image when its block is selected, and hold it there
+    document.addEventListener('shopify:block:select', (event) => {
+      const slide = event.target.closest?.('.vt-image-slideshow .swiper-slide');
+      const swiper = slide?.closest('[data-swiper]')?._swiperInstance;
+      if (!swiper) return;
+      const index = Number(slide.dataset.swiperSlideIndex ?? swiper.slides.indexOf(slide));
+      if (Number.isNaN(index) || index < 0) return;
+      swiper.autoplay?.stop();
+      if (swiper.params.loop) swiper.slideToLoop(index);
+      else swiper.slideTo(index);
+    });
+
+    document.addEventListener('shopify:block:deselect', (event) => {
+      const swiper = event.target.closest?.('.vt-image-slideshow')?.querySelector('[data-swiper]')?._swiperInstance;
+      if (swiper?.params.autoplay?.enabled) swiper.autoplay.start();
+    });
+
+    document.addEventListener('shopify:section:unload', (event) => {
+      const swiperEl = event.target.querySelector?.('.vt-image-slideshow [data-swiper]');
+      if (swiperEl) window.vtSlider?.destroy(swiperEl);
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Image slideshow",
+  "tag": "section",
+  "class": "image-slideshow-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slideshow"
+    },
+    {
+      "type": "select",
+      "id": "slide_position",
+      "label": "Slide position",
+      "options": [
+        {
+          "value": "offset",
+          "label": "Offset"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "offset",
+      "info": "Offset: slides start a set distance from the left. Center: the current image sits in the middle, both sides show equally."
+    },
+    {
+      "type": "range",
+      "id": "slide_offset",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "default": 12,
+      "label": "Offset (desktop)",
+      "info": "Space before the first slide, also shown at the end",
+      "visible_if": "{{ section.settings.slide_position == 'offset' }}"
+    },
+    {
+      "type": "range",
+      "id": "slide_width_desktop",
+      "min": 25,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 38,
+      "label": "Slide width (desktop)",
+      "info": "Below 100%, part of the next slides shows."
+    },
+    {
+      "type": "range",
+      "id": "slide_width_tablet",
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "label": "Slide width (tablet)"
+    },
+    {
+      "type": "range",
+      "id": "slide_width_mobile",
+      "min": 60,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 85,
+      "label": "Slide width (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "classic_portrait",
+          "label": "Tall portrait (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        }
+      ],
+      "default": "square",
+      "info": "Used for every image, so all slides are the same height"
+    },
+    {
+      "type": "range",
+      "id": "slide_gap_desktop",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Space between slides (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "slide_gap_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Space between slides (mobile)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "default": true,
+      "label": "Show arrows",
+      "info": "Desktop only. Mobile and tablet use swipe."
+    },
+    {
+      "type": "select",
+      "id": "arrows_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "primary",
+      "label": "Arrows style",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows_on_hover",      
+      "default": true,
+      "label": "Show arrows on hover only",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "default": true,
+      "label": "Loop slides",
+      "info": "Keeps images on both sides at the first and last slide"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "default": false,
+      "label": "Autoplay"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5,
+      "label": "Change slides every",
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 0,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 0,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image slideshow",
+      "settings": {
+        "slide_position": "offset",
+        "slide_offset": 12,
+        "slide_width_desktop": 38,
+        "slide_width_tablet": 50,
+        "slide_width_mobile": 85,
+        "image_ratio": "square",
+        "slide_gap_desktop": 0,
+        "slide_gap_mobile": 0,
+        "show_arrows": true,
+        "arrows_style": "primary",
+        "arrows_on_hover": true,
+        "loop": true,
+        "autoplay": false,
+        "autoplay_delay": 5,
+        "background_style": "solid",
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "padding_left_desktop": 0,
+        "padding_right_desktop": 0,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_left_mobile": 0,
+        "padding_right_mobile": 0,
+        "make_section_page_width": false
+      },
+      "blocks": [
+        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
+        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
+        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
+        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
+        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

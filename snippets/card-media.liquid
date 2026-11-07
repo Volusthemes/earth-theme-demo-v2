@@ -1,0 +1,83 @@
+{%- doc -%}
+
+  @param {object} product - The product
+  @param {string} [ratio] - adapt | square | landscape | portrait | classic_portrait (default portrait)
+  @param {boolean} [show_secondary_image] - Show the second image on hover
+  @param {string} [hover_effect] - fade | reveal (default fade)
+  @param {string} [reveal_direction] - left | right | top | bottom: side the reveal comes in from (default left)
+
+  @example
+  <div class="vt-product-media">{% render 'card-media', product: product, ratio: 'portrait' %}</div>
+{%- enddoc -%}
+
+{%- liquid
+  assign featured_media = product.featured_media
+  assign secondary_media = nil
+  if show_secondary_image and settings.enable_image_hover_effects and product.media.size > 1
+    assign secondary_media = product.media[1]
+  endif
+  assign ratio = ratio | default: 'portrait'
+  if featured_media == blank and ratio == 'adapt'
+    assign ratio = 'portrait'
+  endif
+
+  assign vt_hover_effect = hover_effect | default: 'fade'
+  assign vt_reveal_direction = reveal_direction | default: 'left'
+-%}
+
+{%- comment -%}
+  Same destination as the product title link, so it's skipped by keyboard
+  and screen readers to avoid a duplicate tab stop and announcement.
+{%- endcomment -%}
+
+<a href="{{ product.url }}" class="vt-product-media__link" tabindex="-1" aria-hidden="true">
+  <div class="vt-product-media__wrapper relative vt-product-media__wrapper--{{ ratio }}">
+    {%- if featured_media -%}
+      {{
+        featured_media
+        | image_url: width: 900
+        | image_tag:
+          loading: 'lazy',
+          widths: '300,400,500,600,700,800,900',
+          sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+          class: 'vt-product-media__image vt-product-media__image--primary',
+          alt: featured_media.alt | default: product.title
+      }}
+      {%- if secondary_media and vt_hover_effect == 'reveal' -%}
+
+        {%- comment -%}
+          Reveal: the wrapper's clip-path wipes open from the chosen side while
+          the image inside settles from an offset and a slight zoom.
+        {%- endcomment -%}
+        
+        <span class="vt-product-media__reveal vt-product-media__reveal--{{ vt_reveal_direction }}">
+          {{
+            secondary_media
+            | image_url: width: 900
+            | image_tag:
+              loading: 'lazy',
+              widths: '300,400,500,600,700,800,900',
+              sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+              class: 'vt-product-media__image vt-product-media__reveal-image',
+              alt: ''
+          }}
+        </span>
+      {%- elsif secondary_media -%}
+        {{
+          secondary_media
+          | image_url: width: 900
+          | image_tag:
+            loading: 'lazy',
+            widths: '300,400,500,600,700,800,900',
+            sizes: '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw',
+            class: 'vt-product-media__image vt-product-media__image--secondary',
+            alt: ''
+        }}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'vt-product-media__image vt-product-media__placeholder' }}
+    {%- endif -%}
+  </div>
+</a>
+
+<span class="vt-product-media__shade" aria-hidden="true"></span>

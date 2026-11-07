@@ -1,0 +1,34 @@
+{% doc %}
+  Product card as a static block inside Products list. It has no settings of
+  its own: every card in the theme is styled in Theme settings > Product cards
+  (snippets/product-card), so the sidebar only links there.
+
+  @param {object} [product] - Product to render, passed by products-list
+  @param {number} [placeholder_index] - Placeholder card index (store without products)
+
+  @example
+  {% content_for 'block', type: 'products-card', id: 'products-card', product: product %}
+{% enddoc %}
+
+<div class="vt-products-card-block" {{ block.shopify_attributes }}>
+  {% render 'product-card', product: product, placeholder_index: placeholder_index %}
+</div>
+
+{% stylesheet %}
+  .vt-products-card-block {
+    height: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.products_card.name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:blocks.products_card.settings.edit_in_theme_settings.content"
+    }
+  ]
+}
+{% endschema %}

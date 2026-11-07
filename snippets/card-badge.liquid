@@ -1,0 +1,200 @@
+{%- doc -%}
+  @param {object} product - The product
+  @param {string} type - sale | new | best_seller | sold_out | impact | water | carbon | metafield | tag | custom
+  @param {string} [label] - Custom text (sale, new, best_seller, sold_out, tag, custom)
+  @param {number} [new_days] - New: days since creation (default 30); products tagged "New" always qualify
+  @param {string} [tag_match] - Best seller / tag: product tag to match
+  @param {string} [metafield_namespace] - Metafield badge namespace
+  @param {string} [metafield_key] - Metafield badge key
+  @param {string} [metaobject_field] - Metaobject field to show (default: label, name or title)
+  @param {string} [icon] - auto (default) | none | icon key
+  @param {string} [text_size] - vt-paragraph-* class (default vt-paragraph-small)
+  @param {string} [bg_color] - Background override (default: color palette per type)
+  @param {string} [text_color] - Text color override
+  @param {string} [variant] - "inline": plain text + icon, no pill (used under the image on mobile)
+  @param {string} [attributes] - Extra attributes for the first pill
+
+  @example
+  {% render 'card-badge', product: product, type: 'sale' %}
+{%- enddoc -%}
+
+{%- assign badge_type = type -%}
+
+{%- if product != blank -%}
+  {%- liquid
+    assign vt_delim = '~~'
+    # Badge texts, joined with a delimiter so a metaobject list can yield several pills
+    assign vt_texts = ''
+
+    case badge_type
+      when 'sale'
+        if product.compare_at_price > product.price
+          assign vt_texts = label | default: ''
+          if vt_texts == blank
+            assign vt_texts = 'products.badges.sale' | t
+          endif
+        endif
+
+      when 'new'
+        # Tagged "new", or created within the chosen number of days
+        assign vt_is_new = false
+        for vt_tag in product.tags
+          assign vt_tag_handle = vt_tag | handle
+          if vt_tag_handle == 'new'
+            assign vt_is_new = true
+            break
+          endif
+        endfor
+        unless vt_is_new
+          assign vt_now = 'now' | date: '%s' | plus: 0
+          assign vt_created = product.created_at | date: '%s' | plus: 0
+          assign vt_window = new_days | default: 30 | times: 86400
+          assign vt_age = vt_now | minus: vt_created
+          if vt_age <= vt_window
+            assign vt_is_new = true
+          endif
+        endunless
+        if vt_is_new
+          assign vt_texts = label | default: ''
+          if vt_texts == blank
+            assign vt_texts = 'products.badges.new' | t
+          endif
+        endif
+
+      when 'best_seller', 'tag'
+        # Product carries the chosen tag (compared by handle, so case/spaces don't matter)
+        assign vt_match = tag_match | handle
+        if vt_match != blank
+          for vt_tag in product.tags
+            assign vt_tag_handle = vt_tag | handle
+            if vt_tag_handle == vt_match
+              if badge_type == 'tag'
+                assign vt_texts = label | default: vt_tag
+              else
+                assign vt_texts = label | default: ''
+                if vt_texts == blank
+                  assign vt_texts = 'products.badges.best_seller' | t
+                endif
+              endif
+              break
+            endif
+          endfor
+        endif
+
+      when 'sold_out'
+        unless product.available
+          assign vt_texts = label | default: ''
+          if vt_texts == blank
+            assign vt_texts = 'products.product.sold_out' | t
+          endif
+        endunless
+
+      when 'impact'
+        assign vt_mf = product.metafields.custom.impact_score | default: product.metafields.custom.impact
+        if vt_mf != blank
+          assign vt_texts = 'products.product.impact' | t: value: vt_mf.value
+        endif
+
+      when 'water'
+        assign vt_mf = product.metafields.custom.water_usage | default: product.metafields.custom.water
+        if vt_mf != blank
+          assign vt_texts = 'products.product.water_usage' | t: value: vt_mf.value
+        endif
+
+      when 'carbon'
+        assign vt_mf = product.metafields.custom.carbon_footprint | default: product.metafields.custom.carbon
+        if vt_mf != blank
+          assign vt_texts = 'products.product.carbon_footprint' | t: value: vt_mf.value
+        endif
+
+      when 'metafield'
+        if metafield_namespace != blank and metafield_key != blank
+          assign vt_mf = product.metafields[metafield_namespace][metafield_key]
+          if vt_mf != blank
+            if vt_mf.type contains 'metaobject'
+              # metaobject_reference (one) or list.metaobject_reference (many): one pill each
+              assign vt_field = metaobject_field | strip
+              assign vt_is_list = false
+              assign vt_count = 1
+              if vt_mf.type contains 'list'
+                assign vt_is_list = true
+                assign vt_count = vt_mf.value.size
+              endif
+
+              for vt_i in (1..vt_count)
+                if vt_is_list
+                  assign vt_index = vt_i | minus: 1
+                  assign vt_mo = vt_mf.value[vt_index]
+                else
+                  assign vt_mo = vt_mf.value
+                endif
+
+                if vt_field != blank
+                  assign vt_mo_text = vt_mo[vt_field].value
+                else
+                  assign vt_mo_text = vt_mo.label.value | default: vt_mo.name.value | default: vt_mo.title.value | default: vt_mo.system.handle
+                endif
+
+                if vt_mo_text != blank
+                  assign vt_texts = vt_texts | append: vt_delim | append: vt_mo_text
+                endif
+              endfor
+              assign vt_texts = vt_texts | remove_first: vt_delim
+            else
+              assign vt_texts = vt_mf.value
+            endif
+          endif
+        endif
+
+      when 'custom'
+        assign vt_texts = label
+    endcase
+    
+    assign vt_icon = icon | default: 'auto'
+    if vt_icon == 'auto'
+      case badge_type
+        when 'impact'
+          assign vt_icon = 'eco-friendly'
+        when 'water'
+          assign vt_icon = 'drop'
+        when 'carbon'
+          assign vt_icon = 'carbon'
+        else
+          assign vt_icon = 'none'
+      endcase
+    endif
+
+    assign vt_badge_list = vt_texts | split: vt_delim
+  -%}
+
+  {%- for vt_text in vt_badge_list -%}
+    {%- if vt_text != blank -%}     
+      <span
+        class="vt-product-badge vt-product-badge--{{ badge_type }}{% if variant == 'inline' %} vt-product-badge--inline{% endif %} {{ text_size | default: 'vt-paragraph-extra-small' }}"
+        {% if bg_color != blank or text_color != blank %}
+          style="
+            {%- if bg_color != blank %}--vt-badge-bg: {{ bg_color }};{% endif -%}
+            {%- if text_color != blank %}--vt-badge-fg: {{ text_color }};{% endif -%}
+          "
+        {% endif %}
+        {% if forloop.first %}
+          {{ attributes }}
+        {% endif %}
+      >
+        {%- if vt_icon != 'none' -%}
+          <span class="vt-product-badge__icon" aria-hidden="true">
+            {%- render 'icons', icon: vt_icon -%}
+          </span>
+        {%- endif -%}
+        
+        {%- case badge_type -%}
+          {%- when 'water' -%}
+            <span class="vt-product-badge__sr">{{ 'products.product.water_usage_label' | t }}</span>
+          {%- when 'carbon' -%}
+            <span class="vt-product-badge__sr">{{ 'products.product.carbon_footprint_label' | t }}</span>
+        {%- endcase -%}
+        <span class="vt-product-badge__text">{{ vt_text | strip | escape }}</span>
+      </span>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}

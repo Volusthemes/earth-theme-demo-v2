@@ -1,0 +1,258 @@
+{% # theme-check-disable UndefinedObject %}
+
+{% doc %}
+  Renders a button block.
+  Inside a collection card, the URL comes from closest.collection.url.
+  The label is set per-block (each card can have its own CTA text).
+
+  @example
+  {% content_for 'block', type: 'collection-button', id: 'collection-button' %}
+{% enddoc %}
+
+{%- liquid
+  # -----------------------------------------------------------------
+  # URL: prefer closest.collection.url, fallback to block setting
+  # Label: block setting only (per-card custom)
+  # -----------------------------------------------------------------
+  assign vt_button_label = block.settings.button_label
+  assign vt_button_link = block.settings.button_link
+
+  if closest.collection != blank
+    assign vt_button_link = closest.collection.url
+  endif
+-%}
+
+{%- assign button_class = 'vt-button' -%}
+
+{%- case block.settings.button_style -%}
+  {%- when 'primary' -%}
+    {%- assign button_class = button_class | append: ' vt-button--primary' -%}
+  {%- when 'secondary' -%}
+    {%- assign button_class = button_class | append: ' vt-button--secondary' -%}
+  {%- when 'outline' -%}
+    {%- assign button_class = button_class | append: ' vt-button--outline' -%}
+  {%- when 'accent' -%}
+    {%- assign button_class = button_class | append: ' vt-button--accent' -%}
+  {%- when 'link' -%}
+    {%- assign button_class = button_class | append: ' vt-button--link' -%}
+  {%- when 'link-light' -%}
+    {%- assign button_class = button_class | append: ' vt-button--link-light' -%}
+{%- endcase -%}
+
+{%- if settings.buttons_hover_effect == 'standard' -%}
+  {%- assign button_class = button_class | append: ' vt-button--hover-standard' -%}
+{%- endif -%}
+
+{%- comment -%} Animation classes {%- endcomment -%}
+{%- assign animation_type = block.settings.animation_type -%}
+{%- assign vt_anim_classes = '' -%}
+
+{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
+
+  {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
+    {%- assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction -%}
+  {%- endif -%}
+{%- endunless -%}
+
+{%- comment -%} Animation CSS custom properties {%- endcomment -%}
+{%- assign vt_style = '' -%}
+
+{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- assign vt_style = vt_style | append: '--vt-duration: ' | append: block.settings.animation_duration | append: 's;' -%}
+  {%- assign vt_style = vt_style | append: ' --vt-delay: ' | append: block.settings.animation_delay | append: 's;' -%}
+
+  {%- if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur' -%}
+    {%- case block.settings.animation_easing -%}
+      {%- when 'linear' -%}
+        {%- assign vt_easing_value = 'linear' -%}
+      {%- when 'ease-out-sine' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+      {%- when 'ease-in-sine' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)' -%}
+      {%- when 'ease-in-out-sine' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)' -%}
+      {%- when 'ease-in-cubic' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)' -%}
+      {%- when 'ease-out-cubic' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)' -%}
+      {%- when 'ease-in-out-cubic' -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)' -%}
+      {%- else -%}
+        {%- assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)' -%}
+    {%- endcase -%}
+
+    {%- assign vt_style = vt_style | append: ' --vt-easing: ' | append: vt_easing_value | append: ';' -%}
+  {%- endif -%}
+
+  {%- if animation_type == 'blur' -%}
+    {%- assign vt_style = vt_style | append: ' --vt-blur: ' | append: block.settings.animation_blur_intensity | append: 'px;' -%}
+  {%- endif -%}
+{%- endunless -%}
+
+{%- if vt_button_label != blank -%}
+  <div class="vt-buttons">
+    <a
+      {% if vt_button_link == blank %}
+        role="link"
+        aria-disabled="true"
+      {% else %}
+        href="{{ vt_button_link }}"
+      {% endif %}
+      aria-label="{{ vt_button_label }}"
+      {% if block.settings.open_in_new_tab %}
+        target="_blank"
+        rel="noopener noreferrer"
+      {% endif %}
+      class="{{ button_class }} {{ vt_anim_classes }}"
+      {% if vt_style != blank %}
+        style="{{ vt_style | strip }}"
+      {% endif %}
+      {{ block.shopify_attributes }}
+    >
+      <span class="vt-button-label" data-label="{{ vt_button_label }}">
+        {{ vt_button_label }}
+      </span>
+
+      {% if block.settings.button_style == 'link' or block.settings.button_style == 'link-light' %}
+        <span role="button" class="vt-button-icon vt-button__arrow" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10">
+            <path d="M0,5.58H10.05l-3.6,3.77,.59,.61c.05,.05,.1,.05,.15,0l4.77-4.83c.05-.05,.05-.15,0-.2L7.19,.04c-.05-.05-.1-.05-.15,0l-.59,.66,3.69,3.77H0" fill="currentColor" fill-rule="evenodd"/>
+          </svg>
+        </span>
+      {% endif %}
+    </a>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Collection button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "button_label",
+      "default": "Shop collection",
+      "label": "t:blocks.button.settings.button_label.label",
+      "info": "Set a custom CTA label for each collection card."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "t:blocks.button.settings.button_link.label",
+      "info": "Overridden by collection URL inside a collection card."
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "default": false,
+      "label": "t:blocks.button.settings.open_in_new_tab.label"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "options": [
+        { "value": "primary",    "label": "t:blocks.button.settings.button_style.primary.label" },
+        { "value": "secondary",  "label": "t:blocks.button.settings.button_style.secondary.label" },
+        { "value": "outline",    "label": "t:blocks.button.settings.button_style.outline.label" },
+        { "value": "accent",     "label": "t:blocks.button.settings.button_style.accent.label" },
+        { "value": "link",       "label": "t:blocks.button.settings.button_style.link.label" },
+        { "value": "link-light", "label": "t:blocks.button.settings.button_style.link_light.label" }
+      ],
+      "default": "primary",
+      "label": "t:blocks.button.settings.button_style.label"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.button.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none",  "label": "t:blocks.button.settings.animation_type.options__1.label" },
+        { "value": "fade",  "label": "t:blocks.button.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.button.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.button.settings.animation_type.options__4.label" },
+        { "value": "blur",  "label": "t:blocks.button.settings.animation_type.options__5.label" }
+      ],
+      "default": "slide",
+      "label": "t:blocks.button.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left",   "label": "t:blocks.button.settings.animation_direction.options__1.label" },
+        { "value": "from-right",  "label": "t:blocks.button.settings.animation_direction.options__2.label" },
+        { "value": "from-top",    "label": "t:blocks.button.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.button.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.button.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1, "max": 3, "step": 0.1, "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.button.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0, "max": 2, "step": 0.1, "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.button.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear",            "label": "t:blocks.button.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine",     "label": "t:blocks.button.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine",      "label": "t:blocks.button.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine",  "label": "t:blocks.button.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic",     "label": "t:blocks.button.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic",    "label": "t:blocks.button.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.button.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.button.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5, "max": 50, "step": 1, "unit": "px",
+      "default": 5,
+      "label": "t:blocks.button.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection button",
+      "category": "Collection item",
+      "settings": {
+        "button_label": "Shop collection",
+        "button_link": "",
+        "open_in_new_tab": false,
+        "button_style": "primary",
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5
+      }
+    }
+  ]
+}
+{% endschema %}
+
+{% # theme-check-enable UndefinedObject %}

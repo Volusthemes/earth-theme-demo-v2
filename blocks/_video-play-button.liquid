@@ -1,0 +1,243 @@
+{% doc %}
+
+  Round play / pause button of the video-with-text-overlay section. The section's
+  script (assets/video-with-text-overlay.js) handles the click and swaps the icon.
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_video-play-button', id: 'play' %}
+{% enddoc %}
+
+{% liquid
+  assign animation_type = block.settings.animation_type
+
+  assign vt_anim_classes = ''
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = ' vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing = 'linear'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  endcase
+%}
+
+<div
+  class="vt-video-play{{ vt_anim_classes }}"
+  style="
+    --vt-video-play-size: {% render 'fluid-clamp', min_px: block.settings.size_mobile, max_px: block.settings.size_desktop %};
+    --vt-video-play-bg: {{ block.settings.button_color | default: 'var(--vt-color-secondary)' }};
+    --vt-video-play-color: {{ block.settings.icon_color | default: 'var(--vt-foreground-color)' }};
+    {%- if vt_anim_classes != blank %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    --vt-easing: {{ vt_easing }};
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  <button
+    type="button"
+    class="vt-video-overlay__play-btn"
+    aria-label="{{ 'accessibility.play_video' | t }}"
+    data-label-play="{{ 'accessibility.play_video' | t }}"
+    data-label-pause="{{ 'accessibility.pause_video' | t }}"
+  >
+    <span class="vt-video-overlay__play-icon" aria-hidden="true">{% render 'icons', icon: 'play' %}</span>
+    <span class="vt-video-overlay__pause-icon" aria-hidden="true">{% render 'icons', icon: 'pause' %}</span>
+  </button>
+</div>
+
+{% stylesheet %}
+  .vt-video-overlay__play-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--vt-video-play-size, 5rem);
+    height: var(--vt-video-play-size, 5rem);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: var(--vt-video-play-color, var(--vt-foreground-color));
+    background-color: var(--vt-video-play-bg, var(--vt-color-secondary));
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .vt-video-overlay__play-btn:hover {
+    transform: scale(1.06);
+  }
+
+  .vt-video-overlay__play-btn:focus-visible {
+    outline: 0.125rem solid var(--vt-video-play-bg, currentColor);
+    outline-offset: 0.25rem;
+  }
+
+  .vt-video-overlay__play-icon,
+  .vt-video-overlay__pause-icon {
+    display: flex;
+    width: 36%;
+    height: 36%;
+  }
+
+  .vt-video-overlay__play-icon svg,
+  .vt-video-overlay__pause-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .vt-video-overlay__pause-icon,
+  .is-playing .vt-video-overlay__play-icon {
+    display: none;
+  }
+
+  .is-playing .vt-video-overlay__pause-icon {
+    display: flex;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-video-overlay__play-btn {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Play button",
+  "tag": null,
+  "settings": [
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "range",
+      "id": "size_desktop",
+      "min": 40,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Size (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "size_mobile",
+      "min": 40,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 60,
+      "label": "Size (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
+        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+      ],
+      "default": "slide",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.4,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Play button"
+    }
+  ]
+}
+{% endschema %}

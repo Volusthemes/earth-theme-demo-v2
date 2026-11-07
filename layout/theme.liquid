@@ -1,0 +1,72 @@
+<!doctype html>
+<html class="js" lang="{{ request.locale.iso_code }}">
+  <head>
+    {% # Inlined CSS Variables %}
+    {% render 'css-variables' %}
+
+    {% # Page transition and scroll animations; must run before the body paints %}
+    {% render 'animate' %}
+
+    {% comment %}
+      Font preloading:
+      1. Preconnect to font CDN for faster connection
+      2. Preload only the critical font variant (base weight)
+      3. Additional variants load on-demand via @font-face
+    {% endcomment %}
+    
+    {% unless settings.type_body_font.system? %}
+      <link rel="preconnect" href="https://fonts.shopifycdn.com" crossorigin>
+
+      {% comment %} Preload the base font variant for initial page render {% endcomment %}
+      {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
+    {% endunless %}
+
+    {% # Load and preload the critical CSS %}
+    {{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Load and preload the swiper CSS %}
+    {{ 'swiper-bundle.min.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Load and preload the Tailwind CSS %}
+    {{ 'tailwind.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Product card CSS (shared by every product card); after the base CSS so it keeps priority %}
+    {{ 'product-card.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Collection card CSS (collections section and collection-* blocks); after the base CSS so it keeps priority %}
+    {{ 'collection-card.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Header CSS (header section and its blocks) %}
+    {{ 'theme-header.css' | asset_url | stylesheet_tag: preload: true }}
+
+    {% # Load and preload the swiperjs %}
+
+    <script src="{{ 'swiper-bundle.min.js' | asset_url }}" defer="defer"></script>
+
+    {% # Shared carousel built on Swiper (sections and blocks reuse it) %}
+    <script src="{{ 'theme-slider.js' | asset_url }}" defer="defer"></script>
+
+    {% # Tabs row that swipes when it doesn't fit (products-tab-carousel, slideshow) %}
+    <script src="{{ 'theme-tabs-scroller.js' | asset_url }}" defer="defer"></script>
+
+    {% # Social, title, etc. %}
+    {% render 'meta-tags' %}
+    
+    {{ content_for_header }}
+  </head>  
+
+  <body class="template-{{ request.page_type | handleize }} vt-link-hover--{{ settings.link_hover_effect }}{% if settings.enable_image_hover_effects %} vt-image-hover{% endif %}">
+    <a class="skip-to-content-link visually-hidden" href="#MainContent">
+      {{ 'accessibility.skip_to_text' | t }}
+    </a>
+
+    {% sections 'header-group' %}
+
+    <main id="MainContent" class="vt-content-for-layout overflow-x-clip overflow-y-clip grow" role="main" tabindex="-1">      
+      {{ content_for_layout }}
+    </main>    
+
+    {% sections 'footer-group' %}
+
+  </body>
+</html>

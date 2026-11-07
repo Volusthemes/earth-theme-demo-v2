@@ -1,0 +1,33 @@
+{% doc %}
+  Shopify's account component in the header. It only shows when the store has
+  customer accounts. Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-account', id: 'account' %}
+{% enddoc %}
+
+<div class="vt-header__account" {{ block.shopify_attributes }}>
+  {%- if shop.customer_accounts_enabled -%}
+    <shopify-account menu="customer-account-main-menu">
+      <span class="vt-header__icon" slot="signed-out-avatar">{% render 'icons', icon: 'account' %}</span>
+    </shopify-account>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "Account",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Shows when customer accounts are on in [customer account settings](/settings/customer_accounts)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Account"
+    }
+  ]
+}
+{% endschema %}

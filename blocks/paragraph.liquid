@@ -1,0 +1,338 @@
+{% doc %}
+  Renders a paragraph block.
+
+  @example
+  {% content_for 'block', type: 'paragraph', id: 'paragraph' %}
+{% enddoc %}
+
+{% liquid
+  assign animation_type = block.settings.animation_type
+
+  # -----------------------------------------------------------------------
+  # Animation classes / custom properties. Skipped inside the visual preset
+  # preview so presets render fully visible instead of waiting on an
+  # IntersectionObserver that may never fire inside the preview frame.
+  # -----------------------------------------------------------------------
+  assign vt_anim_classes = ''
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type
+
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing_value = 'linear'
+    when 'ease-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    when 'ease-in-sine'
+      assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Class list (built with assign + append, no capture needed)
+  # -----------------------------------------------------------------------
+  assign vt_class_list = 'vt-paragraph ' | append: block.settings.paragraph_size | append: ' ' | append: block.settings.paragraph_alignment | append: ' vt-paragraph--width-' | append: block.settings.paragraph_width
+
+  if vt_anim_classes != blank
+    assign vt_class_list = vt_class_list | append: ' ' | append: vt_anim_classes
+  endif
+%}
+
+{%- if block.settings.text != blank -%}
+  <div
+    class="{{ vt_class_list }}"
+    style="
+      {%- if block.settings.paragraph_width == 'custom' %}--vt-paragraph-width: {{ block.settings.width_custom }}%;{% endif -%}
+      {%- if block.settings.enable_max_width %}--vt-paragraph-max-width: {% render 'fluid-clamp', min_px: block.settings.paragraph_max_width, max_px: block.settings.paragraph_max_width %};{% endif -%}
+      {%- if vt_anim_classes != blank -%}
+        --vt-duration: {{ block.settings.animation_duration }}s;
+        --vt-delay: {{ block.settings.animation_delay }}s;
+      {%- endif -%}
+      {%- if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur' -%}
+        --vt-easing: {{ vt_easing_value }};
+      {%- endif -%}
+      {%- if animation_type == 'blur' -%}
+        --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+      {%- endif -%}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {{ block.settings.text }}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+    "name": "t:blocks.paragraph.name",
+    "tag": null,
+    "settings":
+    [
+        {
+            "type": "richtext",
+            "id": "text",            
+            "default": "t:blocks.paragraph.settings.text.default",
+            "label": "t:blocks.paragraph.settings.text.label"
+        },      
+        {
+            "type": "header",
+            "content": "Content"
+        }, 
+        {
+            "type": "select",
+            "id": "paragraph_alignment",
+            "options":
+            [
+                {
+                    "value": "text-left",
+                    "label": "t:blocks.paragraph.settings.paragraph_alignment.options__1.label"
+                },
+                {
+                    "value": "text-center",
+                    "label": "t:blocks.paragraph.settings.paragraph_alignment.options__2.label"
+                },
+                {
+                    "value": "text-right",
+                    "label": "t:blocks.paragraph.settings.paragraph_alignment.options__3.label"
+                },
+                {
+                    "value": "text-inherit",
+                    "label": "Inherit"
+                }            
+            ],
+            "default": "text-inherit",
+            "label": "t:blocks.paragraph.settings.paragraph_alignment.label"
+        },
+        {            
+            "type": "header",
+            "content": "Size"
+        }, 
+        {
+            "type": "select",
+            "id": "paragraph_size",
+            "options":
+            [
+                {
+                    "value": "vt-paragraph-extra-small",
+                    "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label"
+                },
+                {
+                    "value": "vt-paragraph-small",
+                    "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+                },
+                {
+                    "value": "vt-paragraph-medium",
+                    "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+                },
+                {
+                    "value": "vt-paragraph-large",
+                    "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+                }
+            ],
+            "default": "vt-paragraph-medium",
+            "label": "t:blocks.paragraph.settings.paragraph_size.label"
+        },        
+        {
+            "type": "select",
+            "id": "paragraph_width",
+            "label": "Width",
+            "options": [
+                { "value": "fit", "label": "Fit" },
+                { "value": "fill", "label": "Fill" },
+                { "value": "max-content", "label": "Max content" },
+                { "value": "min-content", "label": "Min content" },
+                { "value": "custom", "label": "Custom" }
+            ],
+            "default": "fit"
+        },
+        {
+            "type": "range",
+            "id": "width_custom",
+            "label": "Custom width",
+            "min": 1,
+            "max": 100,
+            "step": 1,
+            "unit": "%",
+            "default": 50,
+            "visible_if": "{{ block.settings.paragraph_width == 'custom' }}"
+        },
+        {
+            "type": "checkbox",
+            "id": "enable_max_width",
+            "label": "Width limit",            
+            "default": false
+        },
+        {
+            "type": "range",
+            "id": "paragraph_max_width",
+            "min": 100,
+            "max": 1200,
+            "step": 20,
+            "unit": "px",
+            "default": 600,
+            "label": "t:blocks.paragraph.settings.paragraph_max_width.label",
+            "visible_if": "{{ block.settings.enable_max_width == true }}"
+        },
+        {
+            "type": "header",
+            "content": "t:blocks.paragraph.settings.header_animation.content"
+        },
+        {
+            "type": "select",
+            "id": "animation_type",
+            "options":
+            [
+                {
+                    "value": "none",
+                    "label": "t:blocks.paragraph.settings.animation_type.options__1.label"
+                },
+                {
+                    "value": "fade",
+                    "label": "t:blocks.paragraph.settings.animation_type.options__2.label"
+                },
+                {
+                    "value": "slide",
+                    "label": "t:blocks.paragraph.settings.animation_type.options__3.label"
+                },
+                {
+                    "value": "reveal",
+                    "label": "t:blocks.paragraph.settings.animation_type.options__4.label"
+                },
+                {
+                    "value": "blur",
+                    "label": "t:blocks.paragraph.settings.animation_type.options__5.label"
+                }
+            ],
+            "default": "none",
+            "label": "t:blocks.paragraph.settings.animation_type.label"
+        },
+        {
+            "type": "select",
+            "id": "animation_direction",
+            "options":
+            [
+                {
+                    "value": "from-left",
+                    "label": "t:blocks.paragraph.settings.animation_direction.options__1.label"
+                },
+                {
+                    "value": "from-right",
+                    "label": "t:blocks.paragraph.settings.animation_direction.options__2.label"
+                },
+                {
+                    "value": "from-top",
+                    "label": "t:blocks.paragraph.settings.animation_direction.options__3.label"
+                },
+                {
+                    "value": "from-bottom",
+                    "label": "t:blocks.paragraph.settings.animation_direction.options__4.label"
+                }
+            ],
+            "default": "from-bottom",
+            "label": "t:blocks.paragraph.settings.animation_direction.label",
+            "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+        },
+        {
+            "type": "range",
+            "id": "animation_duration",
+            "min": 0.1,
+            "max": 3,
+            "step": 0.1,
+            "unit": "s",
+            "default": 1.2,
+            "label": "t:blocks.paragraph.settings.animation_duration.label",
+            "visible_if": "{{ block.settings.animation_type != 'none' }}"
+        },
+        {
+            "type": "range",
+            "id": "animation_delay",
+            "min": 0,
+            "max": 2,
+            "step": 0.1,
+            "unit": "s",
+            "default": 0.2,
+            "label": "t:blocks.paragraph.settings.animation_delay.label",
+            "visible_if": "{{ block.settings.animation_type != 'none' }}"
+        },
+        {
+            "type": "select",
+            "id": "animation_easing",
+            "options":
+            [
+                {
+                    "value": "linear",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__1.label"
+                },
+                {
+                    "value": "ease-out-sine",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__2.label"
+                },
+                {
+                    "value": "ease-in-sine",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__3.label"
+                },
+                {
+                    "value": "ease-in-out-sine",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__4.label"
+                },
+                {
+                    "value": "ease-in-cubic",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__5.label"
+                },
+                {
+                    "value": "ease-out-cubic",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__6.label"
+                },
+                {
+                    "value": "ease-in-out-cubic",
+                    "label": "t:blocks.paragraph.settings.animation_easing.options__7.label"
+                }
+            ],
+            "default": "ease-out-sine",
+            "label": "t:blocks.paragraph.settings.animation_easing.label",
+            "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+        },
+        {
+            "type": "range",
+            "id": "animation_blur_intensity",
+            "min": 5,
+            "max": 50,
+            "step": 1,
+            "unit": "px",
+            "default": 5,
+            "label": "t:blocks.paragraph.settings.animation_blur_intensity.label",
+            "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+        }
+    ],
+    "presets":
+    [
+        {
+            "name": "t:blocks.paragraph.presets.name",
+            "category": "t:general.categories.basic",   
+            "settings":{
+                "text": "<p>Discover our latest collection of premium goods designed for modern living. Enjoy free shipping on orders over $50.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_max_width": 800,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5                
+            }
+        }
+    ]
+}
+{% endschema %}

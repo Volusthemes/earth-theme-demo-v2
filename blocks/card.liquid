@@ -1,0 +1,893 @@
+{% doc %}
+  Renders a statistic card with customizable background color, text color,
+  border, padding, gap, position, alignment, decorative icon, and
+  scroll-triggered entrance animation.
+
+  @example
+  {% content_for 'block', type: 'card', id: 'card' %}
+{% enddoc %}
+
+{% liquid
+  # -----------------------------------------------------------------------
+  # Padding / gap fluid source values (mobile baseline -> desktop baseline)
+  # -----------------------------------------------------------------------
+  assign vt_padding_block_min = block.settings.padding_vertical
+  if block.settings.enable_padding_mobile
+    assign vt_padding_block_min = block.settings.padding_vertical_mobile
+  endif
+
+  assign vt_padding_inline_min = block.settings.padding_horizontal
+  if block.settings.enable_padding_mobile
+    assign vt_padding_inline_min = block.settings.padding_horizontal_mobile
+  endif
+
+  assign vt_gap_min = block.settings.gap
+  if block.settings.enable_gap_mobile
+    assign vt_gap_min = block.settings.gap_mobile
+  endif
+
+  # -----------------------------------------------------------------------
+  # Position / alignment -> flex keywords (text-align keeps the raw value)
+  # -----------------------------------------------------------------------
+  case block.settings.position
+    when 'top'
+      assign vt_justify = 'flex-start'
+    when 'bottom'
+      assign vt_justify = 'flex-end'
+    when 'between'
+      assign vt_justify = 'space-between'
+    else
+      assign vt_justify = 'center'
+  endcase
+
+  # vt_align_margin: logical margin-inline that places fit-width children
+  # set to "Inherit" (see --vt-align-* alignment context in theme.css)
+  case block.settings.alignment
+    when 'left'
+      assign vt_align = 'flex-start'
+      assign vt_align_margin = '0 auto'
+    when 'right'
+      assign vt_align = 'flex-end'
+      assign vt_align_margin = 'auto 0'
+    else
+      assign vt_align = 'center'
+      assign vt_align_margin = 'auto'
+  endcase
+
+  case block.settings.decorative_icon_position
+    when 'left'
+      assign vt_icon_justify = 'flex-start'
+    when 'right'
+      assign vt_icon_justify = 'flex-end'
+    else
+      assign vt_icon_justify = 'center'
+  endcase
+
+  case block.settings.decorative_icon_alignment
+    when 'top'
+      assign vt_icon_align = 'flex-start'
+    when 'bottom'
+      assign vt_icon_align = 'flex-end'
+    else
+      assign vt_icon_align = 'center'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Animation easing keyword -> real CSS timing function
+  # -----------------------------------------------------------------------
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing = 'linear'
+    when 'ease-out-sine'
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Animation classes. Skipped entirely inside the theme editor's visual
+  # preview so presets render fully visible instead of waiting on an
+  # IntersectionObserver that may never fire inside the preview frame.
+  # -----------------------------------------------------------------------
+  assign vt_animate_classes = ''
+  if block.settings.animation_type != 'none' and request.visual_preview_mode != true
+    assign vt_animate_classes = 'vt-animate vt-animate--' | append: block.settings.animation_type
+    if block.settings.animation_type == 'slide'
+      assign vt_animate_classes = vt_animate_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endif
+
+  # -----------------------------------------------------------------------
+  # Final class list
+  # -----------------------------------------------------------------------
+  assign vt_class_list = 'vt-card vt-card--width-' | append: block.settings.width | append: ' vt-card--height-' | append: block.settings.height
+
+  if block.settings.border == 'solid'
+    assign vt_class_list = vt_class_list | append: ' vt-card--border-solid'
+  endif
+
+  if vt_animate_classes != blank
+    assign vt_class_list = vt_class_list | append: ' ' | append: vt_animate_classes
+  endif
+%}
+
+<div  
+  class="{{ vt_class_list }}"
+  style="
+    --vt-bg: {{ block.settings.background_color | default: 'var(--vt-color-primary)' }};
+    --vt-heading-color: {{ block.settings.heading_color | default: 'var(--vt-background-color)' }};
+    --vt-text-color: {{ block.settings.text_color | default: 'var(--vt-background-color)' }};
+    --vt-justify: {{ vt_justify }};
+    --vt-align: {{ vt_align }};
+    --vt-text-align: {{ block.settings.alignment }};
+    --vt-align-justify: {{ vt_align }};
+    --vt-align-margin: {{ vt_align_margin }};
+    --vt-padding-block: {% render 'fluid-clamp', min_px: vt_padding_block_min, max_px: block.settings.padding_vertical %};
+    --vt-padding-inline: {% render 'fluid-clamp', min_px: vt_padding_inline_min, max_px: block.settings.padding_horizontal %};
+    --vt-gap: {% render 'fluid-clamp', min_px: vt_gap_min, max_px: block.settings.gap %};
+    --vt-border-width: {{ block.settings.border_width }};
+    --vt-border-radius: {{ block.settings.border_radius }};
+    --vt-border-color: {{ block.settings.border_color | default: 'var(--vt-foreground-color)' }};
+    --vt-border-opacity: {{ block.settings.border_opacity }}%;
+    {%- if block.settings.width == 'custom' %}
+    --vt-width: {{ block.settings.width_custom }}%;
+    {%- endif %}
+
+    {%- if block.settings.height == 'custom' %}
+    --vt-min-height: {% render 'fluid-clamp', min_px: block.settings.min_height, max_px: block.settings.min_height %};
+    --vt-min-height-mobile: {% render 'fluid-clamp', min_px: block.settings.min_height_mobile, max_px: block.settings.min_height_mobile %};
+    {%- endif %}
+
+    {%- if vt_animate_classes != blank %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    {%- endif %}
+    {%- if block.settings.animation_type == 'slide' or block.settings.animation_type == 'blur' %}
+    --vt-easing: {{ vt_easing }};
+    {%- endif %}
+    {%- if block.settings.animation_type == 'blur' %}
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.enable_decorative_icon %}
+    <div
+      class="vt-card__decorative-icon"
+      style="
+        --vt-icon-justify: {{ vt_icon_justify }};
+        --vt-icon-align: {{ vt_icon_align }};
+        --vt-decorative-icon-size: {% render 'fluid-clamp', min_px: block.settings.decorative_icon_size_mobile, max_px: block.settings.decorative_icon_size_desktop %};
+        --vt-decorative-icon-color: {{ block.settings.decorative_icon_color | default: 'var(--vt-background-color)' }};
+        --vt-decorative-icon-opacity: {{ block.settings.decorative_icon_opacity | times: 1.0 | divided_by: 100 }};
+        --vt-decorative-icon-blend: {{ block.settings.decorative_icon_blend_mode }};
+      "
+      aria-hidden="true"
+    >
+      {%- render 'icons', icon: block.settings.decorative_icon -%}
+    </div>
+  {%- endif %}
+
+  <div class="vt-card__content">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-card {
+    position: relative;
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;    
+    justify-content: var(--vt-justify, center);
+    align-items: var(--vt-align, center);
+    gap: var(--vt-gap, 1rem);
+    box-sizing: border-box;
+    padding-block: var(--vt-padding-block, 1rem);
+    padding-inline: var(--vt-padding-inline, 1rem);
+    text-align: var(--vt-text-align, center);
+    color: var(--vt-text-color, inherit);
+    background-color: var(--vt-bg, transparent);
+    border-style: none;
+    border-radius: calc(var(--vt-border-radius, 0) / 16 * 1rem);
+    contain: layout style;
+    /* The decorative icon only blends with this card, never with the page behind it */
+    isolation: isolate;
+  }
+
+  .vt-card .vt-heading{
+    color: var(--vt-heading-color);
+  }
+
+  .vt-card .vt-paragraph{
+    color: var(--vt-text-color);
+  }
+
+  .vt-card--border-solid {
+    border-style: solid;
+    border-width: calc(var(--vt-border-width, 0) / 16 * 1rem);
+    border-color: color-mix(in srgb, var(--vt-border-color, currentColor) var(--vt-border-opacity, 100%), transparent);
+  }
+
+  .vt-card--width-fit {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .vt-card--width-fill {
+    width: 100%;
+  }
+
+  .vt-card--width-custom {
+    width: var(--vt-width, auto);
+  }
+
+  .vt-card--height-fit {
+    height: fit-content;
+  }
+
+  .vt-card--height-fill {
+    height: 100%;
+  }
+
+  .vt-card--height-custom {
+    height: auto;
+    min-height: var(--vt-min-height, auto);
+  }
+
+  /* Custom height on mobile */
+  @media screen and (max-width: 749px) {
+    .vt-card--height-custom {
+      min-height: var(--vt-min-height-mobile, auto);
+    }
+  }
+
+  .vt-card__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: inherit;
+    align-items: inherit;
+    gap: inherit;
+    width: 100%;
+  }
+
+  /* Decorative watermark icon: purely visual, never affects layout flow */
+  .vt-card__decorative-icon {    
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding-block: var(--vt-padding-block, 1rem);
+    padding-inline: var(--vt-padding-inline, 1rem);
+    justify-content: var(--vt-icon-justify, center);
+    align-items: var(--vt-icon-align, center);    
+    pointer-events: none;
+    color: var(--vt-decorative-icon-color, currentColor);
+    opacity: var(--vt-decorative-icon-opacity, 0.12);
+    mix-blend-mode: var(--vt-decorative-icon-blend, normal);
+  }
+
+  .vt-card__decorative-icon svg {
+    width: var(--vt-decorative-icon-size, 14rem);
+    height: var(--vt-decorative-icon-size, 14rem);
+    max-width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Card",
+  "tag": null,  
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    }, 
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },    
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "between",
+          "label": "Between"
+        }
+      ],
+      "default": "middle"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",          
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],      
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Decorative icon"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_decorative_icon",
+      "label": "Show decorative icon",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "decorative_icon",
+      "options": [
+        { "value": "leaf", "label": "t:blocks.icon.settings.icon.options__1.label" },
+        { "value": "carbon", "label": "t:blocks.icon.settings.icon.options__2.label" },
+        { "value": "cotton-plant", "label": "t:blocks.icon.settings.icon.options__20.label" },
+        { "value": "tree", "label": "t:blocks.icon.settings.icon.options__3.label" },
+        { "value": "zero-emissions", "label": "t:blocks.icon.settings.icon.options__4.label" },
+        { "value": "quality", "label": "t:blocks.icon.settings.icon.options__5.label" },
+        { "value": "drop", "label": "t:blocks.icon.settings.icon.options__6.label" },
+        { "value": "ecology", "label": "t:blocks.icon.settings.icon.options__7.label" },
+        { "value": "flower", "label": "t:blocks.icon.settings.icon.options__11.label" },
+        { "value": "sparkle", "label": "t:blocks.icon.settings.icon.options__12.label" },
+        { "value": "organic-cotton", "label": "t:blocks.icon.settings.icon.options__14.label" },
+        { "value": "recycled-materials", "label": "t:blocks.icon.settings.icon.options__15.label" },
+        { "value": "vegan-cruelty-free", "label": "t:blocks.icon.settings.icon.options__16.label" },
+        { "value": "eco", "label": "t:blocks.icon.settings.icon.options__17.label" },
+        { "value": "certificate-regulation", "label": "t:blocks.icon.settings.icon.options__18.label" },
+        { "value": "shake-hand-cooperate", "label": "t:blocks.icon.settings.icon.options__19.label" }
+      ],
+      "default": "cotton-plant",
+      "label": "t:blocks.icon.settings.icon.label",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "color",
+      "id": "decorative_icon_color",
+      "label": "Color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "decorative_icon_size_desktop",
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "px",
+      "default": 226,
+      "label": "Size (desktop)",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "decorative_icon_size_mobile",
+      "min": 100,
+      "max": 300,
+      "step": 2,
+      "unit": "px",
+      "default": 212,
+      "label": "Size (mobile)",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "range",
+      "id": "decorative_icon_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Opacity",
+      "default": 5,     
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "select",
+      "id": "decorative_icon_blend_mode",
+      "label": "Blend mode",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "multiply", "label": "Multiply" },
+        { "value": "screen", "label": "Screen" },
+        { "value": "overlay", "label": "Overlay" },
+        { "value": "soft-light", "label": "Soft light" }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "select",
+      "id": "decorative_icon_position",
+      "label": "Horizontal position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "select",
+      "id": "decorative_icon_alignment",
+      "label": "Vertical position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },    
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 16,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical (desktop)",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Horizontal (desktop)",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_padding_mobile",
+      "label": "Custom for mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_mobile",
+      "min": 16,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical (mobile)",
+      "default": 30,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Horizontal (mobile)",
+      "default": 20,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "label": "Custom width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Min height (desktop)",
+      "min": 250,
+      "max": 750,
+      "step": 5,
+      "unit": "px",
+      "default": 250,
+      "visible_if": "{{ block.settings.height == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "min_height_mobile",
+      "label": "Min height (mobile)",
+      "min": 250,
+      "max": 750,
+      "step": 5,
+      "unit": "px",
+      "default": 250,
+      "visible_if": "{{ block.settings.height == 'custom' }}"
+    },    
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Desktop",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gap_mobile",
+      "label": "Custom for mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 4,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile",
+      "default": 12,
+      "visible_if": "{{ block.settings.enable_gap_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        }   
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1,
+      "visible_if": "{{ block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Border opacity",
+      "default": 100,          
+      "visible_if": "{{ block.settings.border == 'solid' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0      
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },        
+        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }   
+  ],
+  "blocks": [ { "type": "icons" }, { "type": "heading" }, {"type": "paragraph"}, {"type": "heading-group"}, {"type": "stack"}, {"type": "sub-heading"}, {"type": "badge"}, {"type": "button"}],       
+  "presets": [
+    {
+      "name": "Card",
+      "category": "t:general.categories.basic",   
+      "settings": {
+        "position": "top",
+        "alignment": "center",
+        "enable_decorative_icon": false,
+        "decorative_icon": "cotton-plant",
+        "decorative_icon_position": "center",
+        "decorative_icon_alignment": "center",
+        "decorative_icon_size_desktop": 226,
+        "decorative_icon_size_mobile": 212,
+        "decorative_icon_opacity": 5,
+        "decorative_icon_blend_mode": "normal",
+        "padding_vertical": 40,
+        "padding_horizontal": 26,
+        "enable_padding_mobile": true,
+        "padding_vertical_mobile": 30,
+        "padding_horizontal_mobile": 24,
+        "width": "fit",
+        "width_custom": 50,
+        "height": "fit",
+        "min_height": 250,
+        "min_height_mobile": 250,
+        "gap": 10,
+        "enable_gap_mobile": true,
+        "gap_mobile": 5,
+        "border": "none",
+        "border_width": 0,
+        "border_opacity": 100,
+        "border_radius": 0,
+        "animation_type": "none",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1,
+        "animation_delay": 0.1,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 1
+      },
+      "blocks": [
+        {
+          "type": "icons",
+          "settings": {
+            "icon": "cotton-plant",
+            "icon_size_desktop": 36,
+            "icon_size_mobile": 28,
+            "show_box": false,
+            "box_size_desktop": 60,
+            "box_size_mobile": 42,
+            "box_radius": "50%",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.1,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Card heading",
+            "heading_size": "vt-heading-h3",
+            "heading_alignment": "text-inherit",
+            "heading_tag": "h3",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.1,
+            "animation_delay": 0.3,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Add a short description</p>",
+            "paragraph_size": "vt-paragraph-medium",
+            "paragraph_alignment": "text-inherit",
+            "paragraph_width": "fit",
+            "width_custom": 100,
+            "enable_max_width": false,
+            "paragraph_max_width": 120,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.1,
+            "animation_delay": 0.4,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Add more details</p>",
+            "paragraph_size": "vt-paragraph-small",
+            "paragraph_alignment": "text-inherit",
+            "paragraph_width": "fit",
+            "width_custom": 100,
+            "enable_max_width": false,
+            "paragraph_max_width": 160,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.1,
+            "animation_delay": 0.5,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

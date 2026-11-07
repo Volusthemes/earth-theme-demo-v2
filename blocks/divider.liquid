@@ -1,0 +1,140 @@
+{% doc %}
+  Renders a visual divider line to separate blocks vertically or horizontally.
+  Supports responsive margins, custom thickness, color, and border style.
+  @example
+  {% content_for 'block', type: 'divider', id: 'divider' %}
+{% enddoc %}
+
+{%- liquid
+  assign color_setting = block.settings.divider_color
+  if color_setting != blank and color_setting != 'rgba(0,0,0,0)' and color_setting != '#00000000' and color_setting != 'transparent'
+    assign final_color = color_setting
+  else
+    assign final_color = 'rgba(0, 50, 37, 0.2)'
+  endif
+-%}
+
+<div 
+  class="vt-divider"
+  {{ block.shopify_attributes }}
+  style="
+    --vt-divider-color: {{ final_color }};
+    --vt-divider-height: {{ block.settings.height }}px;
+    --vt-divider-style: {{ block.settings.style }};
+    --vt-divider-mt: {% render 'fluid-clamp', min_px: block.settings.margin_top_mobile, max_px: block.settings.margin_top_desktop %};
+    --vt-divider-mb: {% render 'fluid-clamp', min_px: block.settings.margin_bottom_mobile, max_px: block.settings.margin_bottom_desktop %};
+  "
+>
+  <hr class="vt-divider__line" aria-hidden="true">
+</div>
+
+{% stylesheet %}
+  .vt-divider {
+    width: 100%;
+    margin-top: var(--vt-divider-mt);
+    margin-bottom: var(--vt-divider-mb);
+    box-sizing: border-box;
+  }
+
+  .vt-divider__line {
+    border: none;
+    border-top: var(--vt-divider-height) var(--vt-divider-style) var(--vt-divider-color);
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Divider",
+  "tag": null,
+  "settings": [
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#00000000"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "label": "Line thickness",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Line style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin top (desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin bottom (desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin top (mobile)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Margin bottom (mobile)",
+      "default": 24
+    }
+  ],
+  "presets": [
+    {
+      "name": "Divider",
+      "category": "t:general.categories.basic",   
+      "settings": {
+        "height": 1,
+        "style": "solid",
+        "margin_top_desktop": 32,
+        "margin_bottom_desktop": 32,
+        "margin_top_mobile": 24,
+        "margin_bottom_mobile": 24
+      }
+    }
+  ]
+}
+{% endschema %}

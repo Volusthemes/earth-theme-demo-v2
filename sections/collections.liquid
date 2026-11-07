@@ -1,0 +1,430 @@
+{% comment %}
+  This section is used in the list-collections template to render a list of
+  collections.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+{% endcomment %}
+
+{%- liquid
+  assign make_section_page_width = section.settings.make_section_page_width
+
+  # Outer class list
+  assign section_classes = 'vt-section'
+
+  # Inner class list
+  assign inner_classes = 'vt-section__inner'
+  if make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+  
+  # -----------------------------------------------------------------
+  # Grid columns. Full Tailwind class names are written as literals
+  # so the Tailwind scanner never purges them.
+  # -----------------------------------------------------------------
+
+  case section.settings.grid_mobile
+    when '2'
+      assign vt_grid_mobile = 'grid-cols-2'
+    else
+      assign vt_grid_mobile = 'grid-cols-1'
+  endcase
+
+  # Tablet has no setting: always 2 columns, desktop comes from the setting
+  assign vt_grid_tablet = 'md:grid-cols-2'
+
+  case section.settings.grid_desktop
+    when '2'
+      assign vt_grid_desktop = 'lg:grid-cols-2'
+    when '4'
+      assign vt_grid_desktop = 'lg:grid-cols-4'
+    else
+      assign vt_grid_desktop = 'lg:grid-cols-3'
+  endcase
+
+  assign vt_list_classes = 'vt-collections-list ' | append: vt_grid_mobile | append: ' ' | append: vt_grid_tablet | append: ' ' | append: vt_grid_desktop
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div class="{{ section_classes }}" {{ section.shopify_attributes }}>
+  <div class="{{ inner_classes }}">
+    
+    {% content_for 'blocks' %}
+
+    {%- paginate collections by 50 -%}
+      {%- liquid
+        # Sort the current page of collections (Shopify allows max 50 per page)
+        case section.settings.sort_collections
+          when 'z_a'
+            assign vt_sorted = collections | sort_natural: 'title' | reverse
+          when 'new'
+            assign vt_sorted = collections | sort: 'published_at' | reverse
+          when 'old'
+            assign vt_sorted = collections | sort: 'published_at'
+          when 'high'
+            assign vt_sorted = collections | sort: 'products_count' | reverse
+          when 'low'
+            assign vt_sorted = collections | sort: 'products_count'
+          else
+            assign vt_sorted = collections | sort_natural: 'title'
+        endcase
+      -%}
+
+      {%- if vt_sorted.size > 0 -%}        
+        <ul
+          class="{{ vt_list_classes }}"
+          role="list"
+          aria-label="{{ page_title | escape }}"
+          style="
+            --vt-collections-gap-mobile: {% render 'fluid-clamp', min_px: section.settings.column_gap_mobile, max_px: section.settings.column_gap_mobile, unit: 'rem' %};
+            --vt-collections-gap-desktop: {% render 'fluid-clamp', min_px: section.settings.column_gap_desktop, max_px: section.settings.column_gap_desktop, unit: 'rem' %};
+          "
+        >
+          {%- for collection in vt_sorted -%}
+            {% content_for 'block', type: 'collection-card', id: 'vt-collection-card', closest.collection: collection %}
+          {%- endfor -%}
+        </ul>
+
+        {%- assign vt_pagination_label = 'collections.pagination_label' | t -%}
+        {% content_for 'block', type: 'pagination', id: 'vt-pagination', paginate: paginate, aria_label: vt_pagination_label %}
+      {%- else -%}
+        <p class="vt-collections-empty">{{ 'collections.empty' | t }}</p>
+      {%- endif -%}
+      
+    {%- endpaginate -%}
+  </div>
+</div>
+
+
+{% schema %}
+{
+  "name": "t:general.collections_grid",
+  "tag": "section",
+  "class": "collections-grid-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "sort_collections",
+      "label": "Sort collections by",
+      "options": [
+        {
+          "value": "a_z",
+          "label": "Alphabetically, A-Z"
+        },
+        {
+          "value": "z_a",
+          "label": "Alphabetically, Z-A"
+        },
+        {
+          "value": "new",
+          "label": "Date, new to old"
+        },
+        {
+          "value": "old",
+          "label": "Date, old to new"
+        },
+        {
+          "value": "high",
+          "label": "Product count, high to low"
+        },
+        {
+          "value": "low",
+          "label": "Product count, low to high"
+        }
+      ],
+      "default": "a_z"
+    },
+    {
+      "type": "header",
+      "content": "Collection layout"
+    },
+    {
+      "type": "select",
+      "id": "grid_desktop",
+      "label": "Desktop column",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "grid_mobile",
+      "label": "Mobile column",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 column"
+        },
+        {
+          "value": "2",
+          "label": "2 columns"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "column_gap_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Column gap (desktop)",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "column_gap_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Column gap (mobile)",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Section gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 64,
+      "label": "Gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.collections_grid",
+      "settings": {
+        "sort_collections": "a_z",
+        "grid_desktop": "3",
+        "grid_mobile": "1",
+        "column_gap_desktop": 32,
+        "column_gap_mobile": 20,
+        "gap": 64,
+        "gap_mobile": 40,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [        
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "width": "fill",
+            "gap_desktop": 10,
+            "gap_mobile": 5
+          },
+          "blocks": [
+            {
+              "type": "breadcrumbs",
+              "settings": {
+                "show_home": true,
+                "show_previous_icon": true,
+                "previous_icon": "arrow",
+                "show_separator_icon": true,
+                "separator_icon": "chevron",
+                "icon_size": 14,
+                "text_size": "vt-paragraph-medium",
+                "gap_desktop": 12,
+                "gap_mobile": 10
+              }
+            }
+          ] 
+        }
+      ]
+    }
+  ],
+  "blocks": [{ "type": "stack" } ] 
+}
+{% endschema %}

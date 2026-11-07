@@ -1,0 +1,24 @@
+{%- doc -%}
+  Card actions bar on the product image: Add to cart / Quick add and Quick view.
+  Used by snippets/product-card with Theme settings > Product cards.
+
+  @param {object} product - The product
+  @param {boolean} show_add_to_cart - Show the Add to cart / Quick add button
+  @param {boolean} show_quick_view - Show the Quick view button (desktop only)
+  @param {string} desktop_alignment - left | center | right
+  @param {string} mobile_alignment - left | center | right
+
+  @example
+  {% render 'card-actions', product: product, show_add_to_cart: true, show_quick_view: true, desktop_alignment: 'center', mobile_alignment: 'left' %}
+{%- enddoc -%}
+
+{%- if show_add_to_cart or show_quick_view -%}
+  <div {% render 'card-actions-attrs', desktop_alignment: desktop_alignment, mobile_alignment: mobile_alignment %}>
+    {%- if show_add_to_cart -%}
+      {% render 'card-add-to-cart', product: product %}
+    {%- endif -%}
+    {%- if show_quick_view -%}
+      {% render 'card-quick-view', product: product %}
+    {%- endif -%}
+  </div>
+{%- endif -%}

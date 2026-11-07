@@ -1,0 +1,627 @@
+{% doc %}
+  Renders a group of blocks with configurable layout direction, gap,
+  alignment, position, wrap, size and optional padding.
+
+  This component is a flex wrapper that renders its children in the
+  specified responsive layout direction with appropriate spacing and alignment.
+
+  @example
+  {% content_for 'block', type: 'stack', id: 'stack' %}
+{% enddoc %}
+
+{%- liquid
+  assign gap_mobile_px = block.settings.gap_mobile
+  assign gap_desktop_px = block.settings.gap_desktop
+
+  assign dir_desktop = block.settings.layout_direction_desktop | remove: 'vt-stack--'
+  assign dir_tablet = block.settings.layout_direction_tablet | remove: 'vt-stack--'
+  assign dir_mobile = block.settings.layout_direction_mobile | remove: 'vt-stack--'
+-%}
+
+<div
+  class="
+    vt-stack
+    flex
+    vt-stack--desktop-{{ dir_desktop }}
+    vt-stack--tablet-{{ dir_tablet }}
+    vt-stack--mobile-{{ dir_mobile }}
+    vt-stack--align-{{ block.settings.alignment }}
+    vt-stack--position-{{ block.settings.position }}
+    vt-stack--wrap-{{ block.settings.wrap_content }}
+    vt-stack--width-{{ block.settings.width }}
+    vt-stack--height-{{ block.settings.height }}
+    {% if block.settings.position_type != 'default' %}vt-stack--{{ block.settings.position_type }}{% endif %}"  
+  style="
+    --vt-stack-gap: {% render 'fluid-clamp', min_px: gap_mobile_px, max_px: gap_desktop_px %};
+    {%- if block.settings.width == 'custom' -%}
+      --vt-stack-width: {{ block.settings.width_custom }}%;
+    {%- endif -%}
+    {%- if block.settings.height == 'custom' -%}
+      --vt-min-height: {% render 'fluid-clamp', min_px: block.settings.min_height, max_px: block.settings.min_height %};
+    {%- endif -%}
+    {%- if block.settings.enable_padding -%}
+      --vt-padding-block-start: {% render 'fluid-clamp', min_px: block.settings.padding_top_mobile, max_px: block.settings.padding_top_desktop %};
+      --vt-padding-block-end: {% render 'fluid-clamp', min_px: block.settings.padding_bottom_mobile, max_px: block.settings.padding_bottom_desktop %};
+      --vt-padding-inline-start: {% render 'fluid-clamp', min_px: block.settings.padding_left_mobile, max_px: block.settings.padding_left_desktop %};
+      --vt-padding-inline-end: {% render 'fluid-clamp', min_px: block.settings.padding_right_mobile, max_px: block.settings.padding_right_desktop %};
+    {%- endif -%}
+  "
+  role="group"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  /* Base stack styles */
+  .vt-stack {
+    display: flex;
+    width: 100%;
+    gap: var(--vt-stack-gap);
+    padding-block-start: var(--vt-padding-block-start, 0);
+    padding-block-end: var(--vt-padding-block-end, 0);
+    padding-inline-start: var(--vt-padding-inline-start, 0);
+    padding-inline-end: var(--vt-padding-inline-end, 0);
+  }
+
+  /* Alignment context: text-align plus inherited custom properties, so
+     children set to "Inherit" also place flex items and fit-width boxes.
+     Margin is logical, so start/end also follow RTL. */
+  .vt-stack--align-flex-start {
+    --vt-align-justify: flex-start;
+    --vt-align-margin: 0 auto;
+    text-align: start;
+  }
+
+  .vt-stack--align-center {
+    --vt-align-justify: center;
+    --vt-align-margin: auto;
+    text-align: center;
+  }
+
+  .vt-stack--align-flex-end {
+    --vt-align-justify: flex-end;
+    --vt-align-margin: auto 0;
+    text-align: end;
+  }
+
+  /* Responsive direction – mobile first */
+  .vt-stack--mobile-horizontal {
+    flex-direction: row;
+  }
+
+  .vt-stack--mobile-vertical {
+    flex-direction: column;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-stack--tablet-horizontal {
+      flex-direction: row;
+    }
+
+    .vt-stack--tablet-vertical {
+      flex-direction: column;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-stack--desktop-horizontal {
+      flex-direction: row;
+    }
+
+    .vt-stack--desktop-vertical {
+      flex-direction: column;
+    }
+  }
+
+  /*
+    Alignment = horizontal placement (left / center / right / space-*)
+    Position  = vertical placement   (top / center / bottom / stretch)
+
+    Mapping swaps based on flex-direction so merchant settings stay consistent.
+  */
+
+  /* ===== Mobile (default) ===== */
+  /* Horizontal (row): alignment → justify-content | position → align-items */
+  .vt-stack--mobile-horizontal.vt-stack--align-flex-start { justify-content: flex-start; }
+  .vt-stack--mobile-horizontal.vt-stack--align-center { justify-content: center; }
+  .vt-stack--mobile-horizontal.vt-stack--align-flex-end { justify-content: flex-end; }
+  .vt-stack--mobile-horizontal.vt-stack--align-space-between { justify-content: space-between; }
+  .vt-stack--mobile-horizontal.vt-stack--align-stretch { justify-content: stretch; }
+  .vt-stack--mobile-horizontal.vt-stack--align-space-around { justify-content: space-around; }
+  .vt-stack--mobile-horizontal.vt-stack--align-space-evenly { justify-content: space-evenly; }
+
+  .vt-stack--mobile-horizontal.vt-stack--position-flex-start { align-items: flex-start; }
+  .vt-stack--mobile-horizontal.vt-stack--position-center { align-items: center; }
+  .vt-stack--mobile-horizontal.vt-stack--position-flex-end { align-items: flex-end; }
+  .vt-stack--mobile-horizontal.vt-stack--position-stretch { align-items: stretch; }
+
+  /* Vertical (column): alignment → align-items | position → justify-content */
+  .vt-stack--mobile-vertical.vt-stack--align-flex-start { align-items: flex-start; }
+  .vt-stack--mobile-vertical.vt-stack--align-center { align-items: center; }
+  .vt-stack--mobile-vertical.vt-stack--align-flex-end { align-items: flex-end; }
+  .vt-stack--mobile-vertical.vt-stack--align-space-between { align-items: space-between; }
+  .vt-stack--mobile-vertical.vt-stack--align-stretch { align-items: stretch; }
+  .vt-stack--mobile-vertical.vt-stack--align-space-around { align-items: space-around; }
+  .vt-stack--mobile-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+
+  .vt-stack--mobile-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
+  .vt-stack--mobile-vertical.vt-stack--position-center { justify-content: center; }
+  .vt-stack--mobile-vertical.vt-stack--position-flex-end { justify-content: flex-end; }
+  .vt-stack--mobile-vertical.vt-stack--position-stretch { justify-content: stretch; }
+
+  /* ===== Tablet (≥ 750px) ===== */
+  @media screen and (min-width: 750px) {
+    .vt-stack--tablet-horizontal.vt-stack--align-flex-start { justify-content: flex-start; }
+    .vt-stack--tablet-horizontal.vt-stack--align-center { justify-content: center; }
+    .vt-stack--tablet-horizontal.vt-stack--align-flex-end { justify-content: flex-end; }
+    .vt-stack--tablet-horizontal.vt-stack--align-space-between { justify-content: space-between; }
+    .vt-stack--tablet-horizontal.vt-stack--align-stretch { justify-content: stretch; }
+    .vt-stack--tablet-horizontal.vt-stack--align-space-around { justify-content: space-around; }
+    .vt-stack--tablet-horizontal.vt-stack--align-space-evenly { justify-content: space-evenly; }
+
+    .vt-stack--tablet-horizontal.vt-stack--position-flex-start { align-items: flex-start; }
+    .vt-stack--tablet-horizontal.vt-stack--position-center { align-items: center; }
+    .vt-stack--tablet-horizontal.vt-stack--position-flex-end { align-items: flex-end; }
+    .vt-stack--tablet-horizontal.vt-stack--position-stretch { align-items: stretch; }
+
+    .vt-stack--tablet-vertical.vt-stack--align-flex-start { align-items: flex-start; }
+    .vt-stack--tablet-vertical.vt-stack--align-center { align-items: center; }
+    .vt-stack--tablet-vertical.vt-stack--align-flex-end { align-items: flex-end; }
+    .vt-stack--tablet-vertical.vt-stack--align-space-between { align-items: space-between; }
+    .vt-stack--tablet-vertical.vt-stack--align-stretch { align-items: stretch; }
+    .vt-stack--tablet-vertical.vt-stack--align-space-around { align-items: space-around; }
+    .vt-stack--tablet-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+
+    .vt-stack--tablet-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
+    .vt-stack--tablet-vertical.vt-stack--position-center { justify-content: center; }
+    .vt-stack--tablet-vertical.vt-stack--position-flex-end { justify-content: flex-end; }
+    .vt-stack--tablet-vertical.vt-stack--position-stretch { justify-content: stretch; }
+  }
+
+  /* ===== Desktop (≥ 990px) ===== */
+  @media screen and (min-width: 990px) {
+    .vt-stack--desktop-horizontal.vt-stack--align-flex-start { justify-content: flex-start; }
+    .vt-stack--desktop-horizontal.vt-stack--align-center { justify-content: center; }
+    .vt-stack--desktop-horizontal.vt-stack--align-flex-end { justify-content: flex-end; }
+    .vt-stack--desktop-horizontal.vt-stack--align-space-between { justify-content: space-between; }
+    .vt-stack--desktop-horizontal.vt-stack--align-stretch { justify-content: stretch; }
+    .vt-stack--desktop-horizontal.vt-stack--align-space-around { justify-content: space-around; }
+    .vt-stack--desktop-horizontal.vt-stack--align-space-evenly { justify-content: space-evenly; }
+
+    .vt-stack--desktop-horizontal.vt-stack--position-flex-start { align-items: flex-start; }
+    .vt-stack--desktop-horizontal.vt-stack--position-center { align-items: center; }
+    .vt-stack--desktop-horizontal.vt-stack--position-flex-end { align-items: flex-end; }
+    .vt-stack--desktop-horizontal.vt-stack--position-stretch { align-items: stretch; }
+
+    .vt-stack--desktop-vertical.vt-stack--align-flex-start { align-items: flex-start; }
+    .vt-stack--desktop-vertical.vt-stack--align-center { align-items: center; }
+    .vt-stack--desktop-vertical.vt-stack--align-flex-end { align-items: flex-end; }
+    .vt-stack--desktop-vertical.vt-stack--align-space-between { align-items: space-between; }
+    .vt-stack--desktop-vertical.vt-stack--align-stretch { align-items: stretch; }
+    .vt-stack--desktop-vertical.vt-stack--align-space-around { align-items: space-around; }
+    .vt-stack--desktop-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+
+    .vt-stack--desktop-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
+    .vt-stack--desktop-vertical.vt-stack--position-center { justify-content: center; }
+    .vt-stack--desktop-vertical.vt-stack--position-flex-end { justify-content: flex-end; }
+    .vt-stack--desktop-vertical.vt-stack--position-stretch { justify-content: stretch; }
+  }
+
+  /* Flex wrap */
+  .vt-stack--wrap-nowrap {
+    flex-wrap: nowrap;
+  }
+
+  .vt-stack--wrap-wrap {
+    flex-wrap: wrap;
+  }
+
+  /* Width variants */
+  .vt-stack--width-fit {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .vt-stack--width-fill {
+    width: 100%;
+  }
+
+  .vt-stack--width-custom {
+    width: var(--vt-stack-width);
+  }
+
+  /* Height variants */
+  .vt-stack--height-fit {
+    height: fit-content;
+  }
+
+  .vt-stack--height-fill {
+    height: 100%;
+  }
+
+  .vt-stack--height-custom {
+    min-height: var(--vt-min-height);
+  }
+
+  /* Position type */
+  .vt-stack--sticky {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  /* Pinned: fixed to viewport */
+  .vt-stack--pin {
+    position: fixed;
+    top: 0;
+    inset-inline: 0;
+    z-index: 10;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:general.group",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "layout_direction_desktop",
+      "label": "Direction (desktop)",
+      "default": "vt-stack--horizontal",
+      "options": [
+        { "value": "vt-stack--horizontal", "label": "t:options.direction.horizontal" },
+        { "value": "vt-stack--vertical", "label": "t:options.direction.vertical" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout_direction_tablet",
+      "label": "Direction (tablet)",
+      "default": "vt-stack--horizontal",
+      "options": [
+        { "value": "vt-stack--horizontal", "label": "t:options.direction.horizontal" },
+        { "value": "vt-stack--vertical", "label": "t:options.direction.vertical" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "layout_direction_mobile",
+      "label": "Direction (mobile)",
+      "default": "vt-stack--vertical",
+      "options": [
+        { "value": "vt-stack--horizontal", "label": "t:options.direction.horizontal" },
+        { "value": "vt-stack--vertical", "label": "t:options.direction.vertical" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "t:labels.alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "t:options.alignment.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.alignment.center"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:options.alignment.right"
+        },
+        {
+          "value": "space-between",
+          "label": "Space between"
+        },
+        {
+          "value": "stretch",
+          "label": "Stretch"
+        },
+        {
+          "value": "space-around",
+          "label": "Space around"
+        },
+        {
+          "value": "space-evenly",
+          "label": "Space evenly"
+        }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "t:labels.position",
+      "options": [
+        { "value": "flex-start", "label": "t:options.position.top" },
+        { "value": "center", "label": "t:options.position.center" },
+        { "value": "flex-end", "label": "t:options.position.bottom" },
+        { "value": "stretch", "label": "t:options.position.stretch" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "position_type",
+      "label": "Position type",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "sticky",
+          "label": "Sticky"
+        },
+        {
+          "value": "pin",
+          "label": "Pinned"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "select",
+      "id": "wrap_content",
+      "label": "Items wrap",
+      "options": [
+        {
+          "value": "nowrap",
+          "label": "Nowrap"
+        },
+        {
+          "value": "wrap",
+          "label": "Wrap"
+        }
+      ],
+      "default": "nowrap"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "width_custom",
+      "label": "Custom width",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Height",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "min_height",
+      "label": "Min height",
+      "min": 50,
+      "max": 450,
+      "step": 5,
+      "unit": "px",
+      "default": 450,
+      "visible_if": "{{ block.settings.height == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:labels.gap_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:labels.gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_padding",
+      "label": "Enable padding",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Padding desktop",
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Top (desktop)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom (desktop)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Left (desktop)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Right (desktop)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding mobile",
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Top (mobile)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Bottom (mobile)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Left (mobile)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Right (mobile)",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding == true }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Stack vertical",
+      "category": "Stack layout",
+      "settings": {
+        "layout_direction_desktop": "vt-stack--vertical",
+        "layout_direction_tablet": "vt-stack--vertical",
+        "layout_direction_mobile": "vt-stack--vertical",
+        "alignment": "flex-start",
+        "position": "flex-start",
+        "position_type": "default",
+        "wrap_content": "nowrap",
+        "width": "fill",
+        "width_custom": 100,
+        "height": "fill",
+        "min_height": 450,
+        "gap_desktop": 32,
+        "gap_mobile": 16,
+        "enable_padding": true,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "padding_left_desktop": 0,
+        "padding_right_desktop": 0,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_left_mobile": 0,
+        "padding_right_mobile": 0
+      },
+      "blocks": [{ "type": "@theme" }]
+    },
+    {
+      "name": "Stack horizontal",
+      "category": "Stack layout",
+      "settings": {
+        "layout_direction_desktop": "vt-stack--horizontal",
+        "layout_direction_tablet": "vt-stack--horizontal",
+        "layout_direction_mobile": "vt-stack--vertical",
+        "alignment": "flex-start",
+        "position": "flex-start",
+        "position_type": "default",
+        "wrap_content": "nowrap",
+        "width": "fill",
+        "width_custom": 100,
+        "height": "fill",
+        "min_height": 450,
+        "gap_desktop": 32,
+        "gap_mobile": 16,
+        "enable_padding": true,
+        "padding_top_desktop": 0,
+        "padding_bottom_desktop": 0,
+        "padding_left_desktop": 0,
+        "padding_right_desktop": 0,
+        "padding_top_mobile": 0,
+        "padding_bottom_mobile": 0,
+        "padding_left_mobile": 0,
+        "padding_right_mobile": 0
+      },
+      "blocks": [{ "type": "@theme" }]
+    }
+  ]
+}
+{% endschema %}

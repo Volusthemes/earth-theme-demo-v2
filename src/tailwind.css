@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@source "../sections/**/*.liquid"; 
+@source "../blocks/**/*.liquid"; 
+@source "../snippets/**/*.liquid"; 
+@source "../templates/**/*.liquid"; 
+@source "../layout/**/*.liquid";

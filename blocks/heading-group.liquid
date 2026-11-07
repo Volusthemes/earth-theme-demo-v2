@@ -1,0 +1,285 @@
+{%- doc -%}
+  Renders a heading group of blocks with configurable direction, gap,
+  alignment, width and optional icon hiding on mobile.
+
+  @example
+  {% content_for 'block', type: 'heading-group', id: 'heading-group' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign gap_mobile_px = block.settings.gap_mobile
+  assign gap_desktop_px = block.settings.gap_desktop
+-%}
+
+<div
+  class="
+    vt-heading-group
+    flex
+    vt-heading-group--direction-{{ block.settings.direction }}
+    vt-heading-group--align-{{ block.settings.alignment }}
+    vt-heading-group--valign-{{ block.settings.vertical_alignment }}
+    vt-heading-group--width-{{ block.settings.width }}
+    {% if block.settings.hide_icon_mobile %}vt-heading-group--hide-icon-mobile{% endif %}
+  "
+  style="
+    --vt-heading-group-gap: {% render 'fluid-clamp', min_px: gap_mobile_px, max_px: gap_desktop_px %};
+    {%- if block.settings.width == 'custom' -%}      
+      --vt-heading-group-max-width: {% render 'fluid-clamp', min_px: block.settings.max_width, max_px: block.settings.max_width %};
+    {%- endif -%}
+  "
+  role="group"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .vt-heading-group {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: var(--vt-heading-group-gap, 1rem);
+  }
+
+  /* Direction */
+  .vt-heading-group--direction-horizontal {
+    flex-direction: row;
+  }
+
+  .vt-heading-group--direction-vertical {
+    flex-direction: column;
+  }
+
+  /*
+    Alignment = horizontal (left / center / right / inherit)
+    Vertical  = vertical   (top / center / bottom)
+
+    Mapping swaps based on flex-direction so settings stay consistent.
+  */
+
+  /* Alignment context for children set to "Inherit" (see theme.css).
+     "inherit" sets nothing, so the parent's context passes through. */
+  .vt-heading-group--align-left {
+    --vt-align-justify: flex-start;
+    --vt-align-margin: 0 auto;
+  }
+
+  .vt-heading-group--align-center {
+    --vt-align-justify: center;
+    --vt-align-margin: auto;
+  }
+
+  .vt-heading-group--align-right {
+    --vt-align-justify: flex-end;
+    --vt-align-margin: auto 0;
+  }
+
+  /* Horizontal direction: align → justify-content | valign → align-items */
+  .vt-heading-group--direction-horizontal.vt-heading-group--align-left {
+    justify-content: flex-start;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--align-center {
+    justify-content: center;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--align-right {
+    justify-content: flex-end;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--align-inherit {
+    justify-content: inherit;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--valign-top {
+    align-items: flex-start;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--valign-center {
+    align-items: center;
+  }
+
+  .vt-heading-group--direction-horizontal.vt-heading-group--valign-bottom {
+    align-items: flex-end;
+  }
+
+  /* Vertical direction: align → align-items | valign → justify-content */
+  .vt-heading-group--direction-vertical.vt-heading-group--align-left {
+    align-items: flex-start;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--align-center {
+    align-items: center;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--align-right {
+    align-items: flex-end;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--align-inherit {
+    align-items: inherit;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--valign-top {
+    justify-content: flex-start;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--valign-center {
+    justify-content: center;
+  }
+
+  .vt-heading-group--direction-vertical.vt-heading-group--valign-bottom {
+    justify-content: flex-end;
+  }
+
+  /* Width */
+  .vt-heading-group--width-fit {
+    width: fit-content;
+    max-width: 100%;
+  }
+
+  .vt-heading-group--width-fill {
+    width: 100%;
+  }
+
+  .vt-heading-group--width-custom {
+    width: 100%;
+    max-width: var(--vt-heading-group-max-width, 500px);
+  }
+
+  /* Hide first/last child (icon blocks) on mobile */
+  @media screen and (max-width: 749px) {
+    .vt-heading-group--hide-icon-mobile > .vt-icon{    
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Heading group",
+  "tag": null,
+  "blocks": [
+    { "type": "icons" },
+    { "type": "heading" }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "horizontal", "label": "Horizontal" },
+        { "value": "vertical", "label": "Vertical" }
+      ],
+      "default": "horizontal"
+    },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Horizontal",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "inherit", "label": "Inherit" }
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fit", "label": "Fit" },
+        { "value": "fill", "label": "Fill" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "fit"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 100,
+      "max": 1200,
+      "step": 20,
+      "unit": "px",
+      "default": 500,
+      "visible_if": "{{ block.settings.width == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_icon_mobile",
+      "label": "Hide icon block on mobile",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Heading group",
+      "category": "t:general.categories.basic",   
+      "settings": {
+        "direction": "horizontal",
+        "alignment": "inherit",
+        "vertical_alignment": "center",
+        "gap_desktop": 12,
+        "gap_mobile": 8,
+        "width": "fit",
+        "max_width": 500,
+        "hide_icon_mobile": true
+      },
+      "blocks": [
+        { "type": "icons" },
+        { "type": "heading" }
+      ]
+    }
+  ]
+}
+{% endschema %}

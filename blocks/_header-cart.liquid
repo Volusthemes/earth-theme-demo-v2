@@ -1,0 +1,38 @@
+{% doc %}
+  Cart icon of the header with the item count, linking to the cart page.
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_header-cart', id: 'cart' %}
+{% enddoc %}
+
+<a
+  class="vt-header__action vt-header__cart"
+  href="{{ routes.cart_url }}"
+  data-header-cart
+  {{ block.shopify_attributes }}
+>
+  <span class="vt-header__icon" aria-hidden="true">{% render 'icons', icon: 'shopping-cart' %}</span>
+  <span class="vt-visually-hidden">{{ 'accessibility.cart' | t }}</span>
+  <span
+    class="vt-header__cart-count"
+    data-header-cart-count
+    {% if cart.item_count == 0 %}
+      hidden
+    {% endif %}
+  >
+    {{- cart.item_count -}}
+  </span>
+</a>
+
+{% schema %}
+{
+  "name": "Cart",
+  "tag": null,
+  "presets": [
+    {
+      "name": "Cart"
+    }
+  ]
+}
+{% endschema %}

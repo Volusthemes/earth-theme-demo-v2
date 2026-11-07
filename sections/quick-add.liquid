@@ -1,0 +1,154 @@
+{% comment %}
+
+  Quick add / quick view modal content.
+
+{% endcomment %}
+
+{%- liquid
+  assign vt_variant = product.selected_or_first_available_variant
+  assign vt_title_id = 'vt-quick-add-title'
+-%}
+
+{%- if product != blank -%}
+  <div class="vt-quick-add__content" data-vt-qa-content>
+    <button type="button" class="vt-quick-add__close" data-vt-qa-close aria-label="{{ 'products.quick_add.close' | t }}">
+      <span aria-hidden="true">{% render 'icons', icon: 'close' %}</span>
+    </button>
+
+    <div class="vt-quick-add__header">
+      {%- if product.featured_media -%}
+        <a href="{{ product.url }}" class="vt-quick-add__media" tabindex="-1" aria-hidden="true">
+          {{
+            product.featured_media
+            | image_url: width: 400
+            | image_tag:
+              loading: 'eager',
+              widths: '200,300,400',
+              sizes: '12rem',
+              class: 'vt-quick-add__image',
+              alt: ''
+          }}
+        </a>
+      {%- endif -%}
+
+      <div class="vt-quick-add__summary">
+        <h2 id="{{ vt_title_id }}" class="vt-quick-add__title vt-heading-h5">
+          <a href="{{ product.url }}">{{ product.title | escape }}</a>
+        </h2>
+        <p class="vt-quick-add__price vt-paragraph-medium" data-vt-qa-price>
+          {%- if vt_variant.compare_at_price > vt_variant.price -%}
+            <span class="vt-quick-add__sr">{{ 'products.product.sale_price' | t }}</span>
+            {{ vt_variant.price | money }}
+            <span class="vt-quick-add__sr">{{ 'products.product.regular_price' | t }}</span>
+            <s class="vt-quick-add__compare">{{ vt_variant.compare_at_price | money }}</s>
+          {%- else -%}
+            {{ vt_variant.price | money }}
+          {%- endif -%}
+        </p>
+      </div>
+    </div>
+
+    {%- form 'product', product, class: 'vt-quick-add__form', data-vt-cart-form: '', novalidate: 'novalidate' -%}
+      <input type="hidden" name="id" value="{{ vt_variant.id }}" data-vt-qa-variant-id>
+      <input type="hidden" name="quantity" value="1">
+
+      {%- unless product.has_only_default_variant -%}
+        {%- for option in product.options_with_values -%}
+          {%- liquid
+            assign vt_option_handle = option.name | handle
+            assign vt_is_color = false
+            if vt_option_handle == 'color' or vt_option_handle == 'colour' or option.values.first.swatch
+              assign vt_is_color = true
+            endif
+          -%}
+          {%- comment -%} fieldset + legend name each group of radios for screen readers {%- endcomment -%}
+          <fieldset class="vt-quick-add__option" data-vt-qa-option>
+            <legend class="vt-quick-add__legend vt-paragraph-medium">
+              {{ option.name | escape }}:
+              <span class="vt-quick-add__selected" data-vt-qa-selected>{{ option.selected_value | escape }}</span>
+            </legend>
+
+            <div class="vt-quick-add__values{% if vt_is_color %} vt-quick-add__values--swatch{% endif %}">
+              {%- for value in option.values -%}
+                {%- assign vt_input_id = 'vt-qa-' | append: product.id | append: '-' | append: option.position | append: '-' | append: forloop.index -%}
+                <input
+                  type="radio"
+                  class="vt-quick-add__radio"
+                  id="{{ vt_input_id }}"
+                  name="vt-qa-option-{{ option.position }}"
+                  value="{{ value | escape }}"
+                  {% if value == option.selected_value %}
+                    checked
+                  {% endif %}
+                >
+                {%- if vt_is_color -%}
+                  {%- comment -%} Swatch color from Shopify swatches, else the color name itself {%- endcomment -%}
+                  <label
+                    for="{{ vt_input_id }}"
+                    class="vt-quick-add__swatch"
+                    style="--vt-swatch: {{ value.swatch.color | default: value | handle | replace: '-', '' }};{% if value.swatch.image %} --vt-swatch-image: url({{ value.swatch.image | image_url: width: 64 }});{% endif %}"
+                    title="{{ value | escape }}"
+                  >
+                    <span class="vt-quick-add__sr">{{ value | escape }}</span>
+                  </label>
+                {%- else -%}
+                  <label for="{{ vt_input_id }}" class="vt-quick-add__pill vt-paragraph-medium">{{ value | escape }}</label>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </fieldset>
+        {%- endfor -%}
+      {%- endunless -%}
+
+      <button
+        type="submit"
+        name="add"
+        class="vt-quick-add__submit"
+        data-vt-qa-submit
+        data-label-add="{{ 'products.product.add_to_cart' | t }}"
+        data-label-sold-out="{{ 'products.product.sold_out' | t }}"
+        data-label-unavailable="{{ 'products.quick_add.unavailable' | t }}"
+        {% unless vt_variant.available %}
+          disabled
+        {% endunless %}
+      >
+        {%- if vt_variant.available -%}
+          {{ 'products.product.add_to_cart' | t }}
+        {%- else -%}
+          {{ 'products.product.sold_out' | t }}
+        {%- endif -%}
+      </button>
+
+      {%- comment -%} Announces add-to-cart results {%- endcomment -%}
+      <p class="vt-quick-add__status vt-paragraph-small" role="status" data-vt-cart-status data-added="{{ 'products.product.added_to_cart' | t }}"></p>
+    {%- endform -%}
+
+    {%- comment -%} Variant data for the option picker; prices pre-formatted by Liquid {%- endcomment -%}
+    <script type="application/json" data-vt-qa-variants>
+      [
+        {%- for variant in product.variants -%}
+          {
+            "id": {{ variant.id }},
+            "options": {{ variant.options | json }},
+            "available": {{ variant.available | json }},
+            "price": {{ variant.price | money | json }},
+            "compare": {% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money | json }}{% else %}null{% endif %}
+          }{% unless forloop.last %},{% endunless %}
+        {%- endfor -%}
+      ]
+    </script>
+    <template data-vt-qa-price-labels>
+      <span data-sale>{{ 'products.product.sale_price' | t }}</span>
+      <span data-regular>{{ 'products.product.regular_price' | t }}</span>
+    </template>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Quick add",
+  "tag": "section",
+  "class": "vt-quick-add-section",
+  "settings": []
+}
+{% endschema %}

@@ -1,0 +1,55 @@
+{%- doc -%}
+
+  @param {object} product - The product
+  @param {string} [bg_color] - Button background override (default: color palette)
+  @param {string} [icon_color] - Icon color override
+  @param {string} [attributes] - Extra attributes for the wrapper
+
+  @example
+  {% render 'card-add-to-cart', product: product %}
+{%- enddoc -%}
+
+{%- if product != blank -%}
+  {%- liquid
+    assign vt_style = ''
+    if bg_color != blank
+      assign vt_style = vt_style | append: '--vt-card-action-bg: ' | append: bg_color | append: ';'
+    endif
+    if icon_color != blank
+      assign vt_style = vt_style | append: '--vt-card-action-fg: ' | append: icon_color | append: ';'
+    endif
+  -%}
+
+  <div class="vt-product-atc" {% if vt_style != blank %}style="{{ vt_style }}"{% endif %} {{ attributes }}>
+    {%- if product.available == false -%}
+      {%- assign vt_label = 'products.product.sold_out' | t -%}
+      {%- assign vt_aria = 'products.product.sold_out_label' | t: title: product.title -%}
+      {% render 'card-action-button', label: vt_label, aria_label: vt_aria, icon: 'sold-out', disabled: true %}
+
+    {%- elsif product.has_only_default_variant -%}
+      {%- liquid
+        assign vt_label = 'products.product.add_to_cart' | t
+        assign vt_aria = 'products.product.add_to_cart_label' | t: title: product.title
+        assign vt_added = 'products.product.added_to_cart' | t
+      -%}
+      {%- form 'product', product, class: 'vt-product-atc__form', data-vt-cart-form: '', data-vt-added: vt_added -%}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+        <input type="hidden" name="quantity" value="1">
+        {% render 'card-action-button', label: vt_label, aria_label: vt_aria, icon: 'add-to-cart', type: 'submit' %}
+      {%- endform -%}
+
+    {%- else -%}
+      {%- liquid
+        assign vt_label = 'products.product.quick_add' | t
+        assign vt_aria = 'products.product.quick_add_label' | t: title: product.title
+        assign vt_attrs = 'data-vt-quick-add data-product-url="' | append: product.url | append: '" aria-haspopup="dialog"'
+      -%}
+      {% render 'card-action-button', label: vt_label, aria_label: vt_aria, icon: 'cart-quick', attributes: vt_attrs %}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Module scripts run once per page, however many cards include it {%- endcomment -%}
+
+  <script src="{{ 'quick-add.js' | asset_url }}" type="module"></script>
+  
+{%- endif -%}

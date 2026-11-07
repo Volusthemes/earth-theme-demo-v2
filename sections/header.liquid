@@ -1,0 +1,190 @@
+{% comment %}
+  Header Section
+  Three fixed columns keep the middle one truly centered. Their content comes from
+  child blocks, which merchants can reorder or move between columns.
+{% endcomment %}
+
+<vt-header
+  class="vt-header"
+  data-sticky="{{ section.settings.sticky_header }}"
+  style="
+    --vt-header-background: {{ section.settings.background_color | default: 'var(--vt-background-color)' }};
+    --vt-header-text: {{ section.settings.text_color | default: 'var(--vt-color-primary)' }};
+    --vt-header-logo-text: {{ section.settings.text_color | default: 'var(--vt-foreground-color)' }};
+    --vt-header-padding-block: {% render 'fluid-clamp', min_px: section.settings.padding_block_mobile, max_px: section.settings.padding_block_desktop %};
+    --vt-header-padding-inline: {% render 'fluid-clamp', min_px: section.settings.padding_inline_mobile, max_px: section.settings.padding_inline_desktop %};
+  "
+>
+  <div class="vt-header__inner{% if section.settings.make_section_page_width %} vt-header__inner--page-width{% endif %}">
+    <div class="vt-header__zone vt-header__zone--start">
+      {% content_for 'block', type: '_header-column', id: 'left' %}
+    </div>
+    <div class="vt-header__zone vt-header__zone--center">
+      {% content_for 'block', type: '_header-column', id: 'center' %}
+    </div>
+    <div class="vt-header__zone vt-header__zone--end">
+      {% content_for 'block', type: '_header-column', id: 'right' %}
+    </div>
+  </div>
+</vt-header>
+
+<script src="{{ 'theme-header.js' | asset_url }}" defer="defer"></script>
+
+{% schema %}
+{
+  "name": "t:general.header",
+  "tag": "header",
+  "class": "section-header",
+  "limit": 1,  
+  "enabled_on": {
+    "groups": [
+      "header"      
+    ]
+  },
+  "settings": [    
+    {
+      "type": "select",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "always",
+          "label": "Always"
+        },
+        {
+          "value": "scroll-up",
+          "label": "On scroll up"
+        }
+      ],
+      "default": "scroll-up"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "label": "Apply max width",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and icons",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_block_desktop",
+      "label": "Top and bottom (desktop)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "Top and bottom (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_desktop",
+      "label": "Left and right (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Left and right (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:general.header",
+      "settings": {
+        "sticky_header": "scroll-up",
+        "make_section_page_width": false,
+        "padding_block_desktop": 14,
+        "padding_block_mobile": 4,
+        "padding_inline_desktop": 34,
+        "padding_inline_mobile": 20
+      },
+      "blocks": [
+        {
+          "type": "_header-column",
+          "id": "left",
+          "name": "Left",
+          "static": true,
+          "blocks": [
+            {
+              "type": "_header-menu"
+            }
+          ]
+        },
+        {
+          "type": "_header-column",
+          "id": "center",
+          "name": "Center",
+          "static": true,
+          "blocks": [
+            {
+              "type": "_header-logo"
+            }
+          ]
+        },
+        {
+          "type": "_header-column",
+          "id": "right",
+          "name": "Right",
+          "static": true,
+          "blocks": [
+            {
+              "type": "_header-localization"
+            },
+            {
+              "type": "_header-search"
+            },
+            {
+              "type": "_header-account"
+            },
+            {
+              "type": "_header-cart"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,618 @@
+{% # theme-check-disable UndefinedObject %}
+
+{% doc %}
+  Renders a breadcrumb trail: Home > parent > current page.
+  The trail is built from the current template. Every item is a link
+  except the last one (current page), which is plain text with aria-current.
+
+  @example
+  {% content_for 'block', type: 'breadcrumbs', id: 'breadcrumbs' %}
+{% enddoc %}
+
+{%- liquid
+  # -----------------------------------------------------------------
+  # 1. Build the trail. Items are joined with a delimiter and split
+  #    once at the end, so no capture tag is needed.
+  # -----------------------------------------------------------------
+  assign vt_delim = '~~'
+  assign vt_labels = ''
+  assign vt_urls = ''
+  assign vt_parent_label = ''
+  assign vt_parent_url = ''
+  assign vt_current = ''
+
+  # Parent level + current page, depending on the template
+  case template.name
+    when 'list-collections'
+      assign vt_current = 'accessibility.breadcrumbs.collections' | t
+    when 'collection'
+      assign vt_parent_label = 'accessibility.breadcrumbs.collections' | t
+      assign vt_parent_url = routes.collections_url
+      assign vt_current = collection.title
+    when 'product'
+      if collection != blank
+        assign vt_parent_label = collection.title
+        assign vt_parent_url = collection.url
+      endif
+      assign vt_current = product.title
+    when 'article'
+      assign vt_parent_label = blog.title
+      assign vt_parent_url = blog.url
+      assign vt_current = article.title
+    when 'blog'
+      assign vt_current = blog.title
+    when 'page'
+      assign vt_current = page.title
+    when 'index'
+      # No breadcrumb on the home page
+      assign vt_current = ''
+    else
+      assign vt_current = page_title
+  endcase
+
+  if vt_current != blank
+    if block.settings.show_home
+      assign vt_home_label = 'accessibility.breadcrumbs.home' | t
+      assign vt_labels = vt_labels | append: vt_delim | append: vt_home_label
+      assign vt_urls = vt_urls | append: vt_delim | append: routes.root_url
+    endif
+
+    if vt_parent_label != blank
+      assign vt_labels = vt_labels | append: vt_delim | append: vt_parent_label
+      assign vt_urls = vt_urls | append: vt_delim | append: vt_parent_url
+    endif
+
+    assign vt_labels = vt_labels | append: vt_delim | append: vt_current
+
+    # Drop the leading delimiter, then split into arrays
+    assign vt_labels = vt_labels | remove_first: vt_delim | split: vt_delim
+    assign vt_urls = vt_urls | remove_first: vt_delim | split: vt_delim
+  endif
+
+  # -----------------------------------------------------------------
+  # 2. Icons
+  # -----------------------------------------------------------------
+  assign vt_show_previous = block.settings.show_previous_icon
+  assign vt_show_separator = block.settings.show_separator_icon
+
+  # -----------------------------------------------------------------
+  # 3. Color: block setting first, then the color palette
+  # -----------------------------------------------------------------
+  assign vt_text_color = block.settings.text_color | default: 'var(--vt-foreground-color)'
+
+  # -----------------------------------------------------------------
+  # 4. Truncation. Tailwind classes are written in full so they are
+  #    never purged. "mobile" only truncates below the md breakpoint.
+  # -----------------------------------------------------------------
+  assign vt_truncate_style = block.settings.truncate_style
+  assign vt_truncate_classes = ''
+
+  case vt_truncate_style
+    when 'always'
+      assign vt_truncate_classes = 'truncate max-w-[var(--vt-breadcrumbs-max-mobile)] md:max-w-[var(--vt-breadcrumbs-max-desktop)]'
+    when 'mobile'
+      assign vt_truncate_classes = 'truncate max-w-[var(--vt-breadcrumbs-max-mobile)] md:max-w-none md:overflow-visible md:whitespace-normal md:text-clip'
+  endcase
+
+  # -----------------------------------------------------------------
+  # 5. Animation classes / custom properties. Skipped inside the
+  #    theme editor visual preview so the block stays fully visible.
+  # -----------------------------------------------------------------
+  assign vt_animation_type = block.settings.animation_type
+  assign vt_anim_classes = ''
+
+  unless vt_animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type
+
+    if vt_animation_type == 'slide' or vt_animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing_value = 'linear'
+    when 'ease-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.61, 1, 0.88, 1)'
+    when 'ease-in-sine'
+      assign vt_easing_value = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing_value = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing_value = 'cubic-bezier(0.65, 0, 0.35, 1)'
+  endcase
+
+  # -----------------------------------------------------------------
+  # 6. Class list (assign + append, no capture needed)
+  # -----------------------------------------------------------------
+  assign vt_class_list = 'vt-breadcrumbs ' | append: block.settings.text_size
+
+  if vt_anim_classes != blank
+    assign vt_class_list = vt_class_list | append: ' ' | append: vt_anim_classes
+  endif
+-%}
+
+{%- if vt_labels.size > 0 -%}
+  <nav
+    class="{{ vt_class_list }}"
+    aria-label="{{ 'accessibility.breadcrumbs.aria_label' | t }}"
+    style="
+      --vt-breadcrumbs-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop, unit: 'rem' %};
+      --vt-breadcrumbs-icon-size: {% render 'fluid-clamp', min_px: block.settings.icon_size, max_px: block.settings.icon_size, unit: 'rem' %};
+      --vt-breadcrumbs-color: {{ vt_text_color }};
+      {%- if block.settings.hover_color != blank -%}
+        --vt-link-hover-color: {{ block.settings.hover_color }};
+      {%- endif -%}
+      {%- if vt_truncate_style != 'none' -%}
+        --vt-breadcrumbs-max-mobile: {% render 'fluid-clamp', min_px: block.settings.max_width_mobile, max_px: block.settings.max_width_mobile, unit: 'rem' %};
+      {%- endif -%}
+      {%- if vt_truncate_style == 'always' -%}
+        --vt-breadcrumbs-max-desktop: {% render 'fluid-clamp', min_px: block.settings.max_width_desktop, max_px: block.settings.max_width_desktop, unit: 'rem' %};
+      {%- endif -%}
+      {%- if vt_anim_classes != blank -%}
+        --vt-duration: {{ block.settings.animation_duration }}s;
+        --vt-delay: {{ block.settings.animation_delay }}s;
+      {%- endif -%}
+      {%- if vt_anim_classes != blank -%}
+        {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' or vt_animation_type == 'blur' -%}
+          --vt-easing: {{ vt_easing_value }};
+        {%- endif -%}
+        {%- if vt_animation_type == 'blur' -%}
+          --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+        {%- endif -%}
+      {%- endif -%}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- comment -%} role="list" keeps list semantics in Safari/VoiceOver when list-style is none {%- endcomment -%}
+    <ol class="vt-breadcrumbs__list" role="list" itemscope itemtype="https://schema.org/BreadcrumbList">
+      {%- for vt_label in vt_labels -%}
+        <li
+          class="vt-breadcrumbs__item"
+          itemprop="itemListElement"
+          itemscope
+          itemtype="https://schema.org/ListItem"
+        >
+          {%- if forloop.last -%}
+            {%- comment -%} Current page: plain text, not a link {%- endcomment -%}
+            <span
+              class="vt-breadcrumbs__current {{ vt_truncate_classes }}"
+              itemprop="name"
+              aria-current="page"
+              {% if vt_truncate_style != 'none' %}title="{{ vt_label | escape }}"{% endif %}
+            >{{ vt_label | escape }}</span>
+          {%- else -%}
+            <a
+              class="vt-breadcrumbs__link vt-link"
+              href="{{ vt_urls[forloop.index0] | default: routes.root_url }}"
+              itemprop="item"
+              {% if vt_truncate_style != 'none' %}title="{{ vt_label | escape }}"{% endif %}
+            >
+              {%- if forloop.first and vt_show_previous -%}
+                {% render 'breadcrumb-icon', icon: block.settings.previous_icon, direction: 'previous' %}
+              {%- endif -%}
+              <span class="vt-breadcrumbs__label vt-link-label {{ vt_truncate_classes }}" itemprop="name">{{ vt_label | escape }}</span>
+            </a>
+          {%- endif -%}
+
+          <meta itemprop="position" content="{{ forloop.index }}">
+
+          {%- unless forloop.last -%}
+            {%- if vt_show_separator -%}
+              {% render 'breadcrumb-icon', icon: block.settings.separator_icon, direction: 'next' %}
+            {%- endif -%}
+          {%- endunless -%}
+        </li>
+      {%- endfor -%}
+    </ol>
+  </nav>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-breadcrumbs {
+    min-width: 0;
+    /* Block color first, then the color palette */
+    color: var(--vt-breadcrumbs-color, var(--vt-foreground-color));
+  }
+
+  .vt-breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--vt-breadcrumbs-gap, 0.75rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-breadcrumbs__item {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: var(--vt-breadcrumbs-gap, 0.75rem);
+  }
+
+  .vt-breadcrumbs__link {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    /* Space between the previous icon and the label */
+    gap: calc(var(--vt-breadcrumbs-gap, 0.75rem) / 2);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Keeps the current page in line with the links when the bar effect reserves space */
+  .vt-link-hover--border .vt-breadcrumbs__current {
+    padding-inline-start: 0.6em;
+  }
+
+  .vt-breadcrumbs__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .vt-breadcrumbs__icon {
+    flex: none;
+    width: var(--vt-breadcrumbs-icon-size, 1rem);
+    height: var(--vt-breadcrumbs-icon-size, 1rem);
+  }
+
+  /* Previous icon points left in LTR, right in RTL. Next icon is the opposite. */
+  .vt-breadcrumbs__icon--previous {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .vt-breadcrumbs__icon--next {
+    transform: scaleX(-1);
+  }
+
+  [dir='rtl'] .vt-breadcrumbs__icon--previous {
+    transform: none;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "label": "Show home link",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_previous_icon",
+      "label": "Show previous icon",
+      "info": "Shown before the first item.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "previous_icon",
+      "label": "Previous icon",
+      "options": [
+        { "value": "arrow", "label": "Arrow" },
+        { "value": "chevron", "label": "Chevron" },
+        { "value": "caret", "label": "Caret" }
+      ],
+      "default": "arrow",
+      "visible_if": "{{ block.settings.show_previous_icon }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_separator_icon",
+      "label": "Show separator icon",
+      "info": "Shown between items.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "separator_icon",
+      "label": "Separator icon",
+      "options": [
+        { "value": "chevron", "label": "Chevron" },
+        { "value": "arrow", "label": "Arrow" },
+        { "value": "caret", "label": "Caret" },
+        { "value": "slash", "label": "Slash" },
+        { "value": "dot", "label": "Dot" }
+      ],
+      "default": "chevron",
+      "visible_if": "{{ block.settings.show_separator_icon }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Icon size",
+      "default": 14,
+      "visible_if": "{{ block.settings.show_previous_icon or block.settings.show_separator_icon }}"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "{{ settings.color_palette.foreground }}",
+      "info": "Uses the color palette foreground when empty."
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text size",
+      "options": [
+        { "value": "vt-paragraph-extra-small", "label": "Extra small" },
+        { "value": "vt-paragraph-small", "label": "Small" },
+        { "value": "vt-paragraph-medium", "label": "Medium" },
+        { "value": "vt-paragraph-large", "label": "Large" }
+      ],
+      "default": "vt-paragraph-small"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "truncate_style",
+      "label": "Truncation behavior",
+      "info": "Prevents lengthy titles from breaking structure.",
+      "default": "mobile",
+      "options": [
+        {
+          "value": "none",
+          "label": "Disabled"
+        },
+        {
+          "value": "always",
+          "label": "Truncate on all devices"
+        },
+        {
+          "value": "mobile",
+          "label": "Truncate on mobile only"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "max_width_mobile",
+      "min": 80,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Mobile element limit",
+      "info": "Longer text is cut off with an ellipsis (...).",
+      "default": 250,
+      "visible_if": "{{ block.settings.truncate_style != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "max_width_desktop",
+      "min": 150,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "label": "Desktop element limit",
+      "info": "Active exclusively when global truncation is enabled.",
+      "default": 600,
+      "visible_if": "{{ block.settings.truncate_style == 'always' }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Hover"
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "Hover color",
+      "default": "{{ settings.color_palette.foreground }}",
+      "info": "Used for the line, bar and wave. Uses a lighter text color when empty."
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.heading.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }    
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs",
+      "category": "Navigation",
+      "settings": {
+        "show_home": true,
+        "show_previous_icon": true,
+        "previous_icon": "arrow",
+        "show_separator_icon": true,
+        "separator_icon": "chevron",
+        "icon_size": 14,
+        "text_size": "vt-paragraph-medium",
+        "gap_desktop": 12,
+        "gap_mobile": 10,
+        "truncate_style": "mobile",
+        "max_width_mobile": 250,
+        "max_width_desktop": 600,
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5
+      }
+    }
+  ]
+}
+{% endschema %}
+
+{% # theme-check-enable UndefinedObject %}

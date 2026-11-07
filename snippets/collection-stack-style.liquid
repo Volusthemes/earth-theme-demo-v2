@@ -1,0 +1,9 @@
+{% doc %}
+
+  @param {object} block - the calling block, used to read its settings
+
+  @example
+  style="{% render 'card-stack-style', block: block %}"
+{% enddoc %}
+
+--vt-card-stack-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop %};{% if block.settings.width == 'custom' %} --vt-card-stack-width: {{ block.settings.width_custom }}%;{% endif %}

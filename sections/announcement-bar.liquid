@@ -1,0 +1,567 @@
+{% comment %}
+  Announcement Bar Section
+  Announcements come from child blocks. Desktop: the chosen effect with autoplay and
+  an optional close button. Mobile: a slide carousel with arrows and swipe.
+{% endcomment %}
+
+{%- liquid
+  assign announcement_count = section.blocks.size
+
+  # Space the text keeps clear of the buttons on each side (the text stays centered)
+  assign buttons_desktop = 0
+  assign buttons_mobile = 0
+  if section.settings.show_close_button
+    assign buttons_desktop = 56
+  endif
+  if announcement_count > 1
+    assign buttons_mobile = 56
+    assign buttons_desktop = buttons_desktop | plus: 44 | at_least: 56
+  endif
+
+  assign bar_classes = 'announcement-bar'
+  unless section.settings.autoplay
+    assign bar_classes = bar_classes | append: ' announcement-bar--manual'
+  endunless
+  if section.settings.show_close_button
+    assign bar_classes = bar_classes | append: ' announcement-bar--has-close'
+  endif
+-%}
+
+{%- if announcement_count > 0 -%}
+  <vt-announcement-bar
+    id="announcement-bar-{{ section.id }}"
+    class="{{ bar_classes }}"
+    data-autoplay="{{ section.settings.autoplay }}"
+    data-effect="{{ section.settings.transition_effect }}"
+    data-speed="{{ section.settings.transition_speed }}"
+    data-close-persistence="{{ section.settings.close_persistence }}"
+    style="
+      --announcement-bar-background: {{ section.settings.background_color | default: 'var(--vt-color-primary)' }};
+      --announcement-bar-text: {{ section.settings.text_color | default: 'var(--vt-background-color)' }};
+      --announcement-bar-padding-block: {% render 'fluid-clamp', min_px: section.settings.padding_block_mobile, max_px: section.settings.padding_block_desktop %};
+      --announcement-bar-padding-inline: {% render 'fluid-clamp', min_px: section.settings.padding_inline_mobile, max_px: section.settings.padding_inline_desktop %};
+      --announcement-bar-buttons-desktop: {{ buttons_desktop }}px;
+      --announcement-bar-buttons-mobile: {{ buttons_mobile }}px;
+      --announcement-bar-close-icon-size: {{ section.settings.close_icon_size }}px;
+    "
+    {{ section.shopify_attributes }}
+  >
+    <div class="announcement-bar__inner">
+      <div
+        class="announcement-bar__slideshow swiper"
+        role="region"
+        aria-roledescription="carousel"
+        aria-label="{{ 'accessibility.announcement_bar' | t }}"
+        data-swiper
+        data-slides-desktop="1"
+        data-slides-tablet="1"
+        data-slides-mobile="1"
+        data-loop="{{ section.settings.rewind }}"
+        data-autoplay-delay="{{ section.settings.autoplay_speed | times: 1000 }}"
+      >
+        <div class="swiper-wrapper">
+          {% content_for 'blocks' %}
+        </div>
+
+        {%- if announcement_count > 1 -%}
+          <button
+            class="announcement-bar__button announcement-bar__button--previous"
+            type="button"
+            data-swiper-prev
+            aria-label="{{ 'accessibility.previous_announcement' | t }}"
+          >
+            <span class="announcement-bar__arrow-icon" aria-hidden="true">{% render 'icons', icon: 'arrow-left' %}</span>
+          </button>
+
+          <button
+            class="announcement-bar__button announcement-bar__button--next"
+            type="button"
+            data-swiper-next
+            aria-label="{{ 'accessibility.next_announcement' | t }}"
+          >
+            <span class="announcement-bar__arrow-icon" aria-hidden="true">{% render 'icons', icon: 'arrow-right' %}</span>
+          </button>
+        {%- endif -%}
+      </div>
+
+      {%- if announcement_count > 1 and section.settings.autoplay -%}
+        <button
+          class="announcement-bar__button announcement-bar__button--playback"
+          type="button"
+          data-announcement-playback
+          aria-pressed="false"
+          aria-label="{{ 'accessibility.pause_announcements' | t }}"
+          data-label-play="{{ 'accessibility.play_announcements' | t }}"
+          data-label-pause="{{ 'accessibility.pause_announcements' | t }}"
+        >
+          <span class="announcement-bar__play-icon" aria-hidden="true" hidden>{% render 'icons', icon: 'play' %}</span>
+          <span class="announcement-bar__pause-icon" aria-hidden="true">{% render 'icons', icon: 'pause' %}</span>
+        </button>
+      {%- endif -%}
+
+      {%- if section.settings.show_close_button -%}
+        <button
+          class="announcement-bar__button announcement-bar__button--close"
+          type="button"
+          data-announcement-close
+          aria-label="{{ 'accessibility.close_announcement' | t }}"
+        >
+          <span class="announcement-bar__close-icon" aria-hidden="true">{% render 'icons', icon: 'close' %}</span>
+        </button>
+      {%- endif -%}
+    </div>
+  </vt-announcement-bar>
+
+  <script src="{{ 'announcement-bar.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .announcement-bar {
+    position: relative;
+    display: block;
+    width: 100%;
+    background: var(--announcement-bar-background);
+    color: var(--announcement-bar-text);
+  }
+
+  .announcement-bar[hidden],
+  .announcement-bar__button[hidden] {
+    display: none;
+  }
+
+  .announcement-bar__inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .announcement-bar__slideshow {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .announcement-bar .swiper-wrapper {
+    align-items: stretch;
+  }
+
+  .announcement-bar__slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: var(--announcement-bar-padding-block);
+    padding-inline: max(var(--announcement-bar-padding-inline), var(--announcement-bar-buttons-desktop));
+    text-align: center;
+  }
+
+  .announcement-bar__text {
+    display: inline-block;
+    color: var(--announcement-bar-text);
+  }
+
+  .announcement-bar__link {
+    display: inline-flex;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .announcement-bar__link:hover {
+    text-decoration: underline;
+  }
+
+  .announcement-bar__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    min-width: 44px;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--announcement-bar-text);
+    cursor: pointer;
+  }
+
+  .announcement-bar__button:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .announcement-bar__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  .announcement-bar__button--previous,
+  .announcement-bar__button--next {
+    position: absolute;
+    top: 0;
+    z-index: 3;
+  }
+
+  .announcement-bar__button--previous {
+    left: 12px;
+  }
+
+  .announcement-bar__button--next {
+    right: 12px;
+  }
+
+  .announcement-bar__button--playback {
+    position: absolute;
+    top: 0;
+    right: 56px;
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+
+  .announcement-bar:hover .announcement-bar__button--playback,
+  .announcement-bar__button--playback:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* No hover on touch screens: the control stays visible */
+  @media (hover: none) {
+    .announcement-bar__button--playback {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  /* Without a close button, playback takes its place */
+  .announcement-bar__button--playback:last-child {
+    right: 12px;
+  }
+
+  .announcement-bar__play-icon,
+  .announcement-bar__pause-icon {
+    display: flex;
+    width: 12px;
+    height: 12px;
+  }
+
+  .announcement-bar__play-icon[hidden],
+  .announcement-bar__pause-icon[hidden] {
+    display: none;
+  }
+
+  .announcement-bar__button--close {
+    position: absolute;
+    top: 0;
+    right: 12px;
+    z-index: 5;
+  }
+
+  .announcement-bar__close-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--announcement-bar-close-icon-size);
+    height: var(--announcement-bar-close-icon-size);
+  }
+
+  .announcement-bar__close-icon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .announcement-bar__arrow-icon {
+    display: flex;
+    width: 16px;
+  }
+
+  .announcement-bar__arrow-icon svg {
+    width: 100%;
+    height: auto;
+  }
+
+  /* Desktop */
+
+  @media screen and (min-width: 750px) {
+    .announcement-bar__button--previous,
+    .announcement-bar__button--next {
+      display: none;
+    }
+
+    /* Without autoplay, the arrows are the only way to reach the other announcements */
+    .announcement-bar--manual .announcement-bar__button--previous,
+    .announcement-bar--manual .announcement-bar__button--next {
+      display: flex;
+    }
+
+    .announcement-bar--has-close .announcement-bar__button--next {
+      right: 56px;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (prefers-reduced-motion: reduce) {
+    .announcement-bar__button--previous,
+    .announcement-bar__button--next {
+      display: flex;
+    }
+  }
+
+  /* Mobile */
+
+  @media screen and (max-width: 749px) {
+    .announcement-bar__slide {
+      padding-inline: max(var(--announcement-bar-padding-inline), var(--announcement-bar-buttons-mobile));
+    }
+
+    .announcement-bar__button--close {
+      display: none;
+    }
+
+    .announcement-bar__button--playback {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__button--playback {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.name",
+  "tag": "section",
+  "class": "section-announcement-bar",
+  "limit": 1,
+  "max_blocks": 12,
+  "enabled_on": {
+    "groups": [
+      "header"
+    ]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.appearance.content"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:sections.announcement_bar.settings.background_color.label",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:sections.announcement_bar.settings.text_color.label",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {      
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.typography.content"
+    },
+    {
+      "type": "select",
+      "id": "paragraph_size",
+      "options":
+      [
+        {
+            "value": "vt-paragraph-extra-small",
+            "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label"
+        },
+        {
+            "value": "vt-paragraph-small",
+            "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+        },
+        {
+            "value": "vt-paragraph-medium",
+            "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+        },
+        {
+            "value": "vt-paragraph-large",
+            "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+        }
+    ],
+    "default": "vt-paragraph-small",
+    "label": "Font size",
+    "info": "This setting controls the size of the announcement text."    
+    }, 
+    {
+      "type": "header",
+      "content": "Padding"      
+    },
+    {
+      "type": "range",
+      "id": "padding_block_desktop",
+      "label": "Top and bottom (desktop)",
+      "min": 1,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "Top and bottom (mobile)",
+      "min": 1,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_desktop",
+      "label": "Left and right (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Left and right (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.rotation.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.announcement_bar.settings.autoplay.label",
+      "default": true,
+      "info": "Desktop only. When off, desktop shows arrows like mobile."
+    },
+    {
+      "type": "range",      
+      "id": "autoplay_speed",
+      "label": "t:sections.announcement_bar.settings.autoplay_speed.label",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "transition_effect",
+      "label": "t:sections.announcement_bar.settings.transition_effect.label",
+      "options": [
+        {
+          "value": "slide",
+          "label": "t:sections.announcement_bar.settings.transition_effect.options.slide"
+        },
+        {
+          "value": "fade",
+          "label": "t:sections.announcement_bar.settings.transition_effect.options.fade"
+        }
+      ],
+      "default": "fade",
+      "info": "Desktop only. Mobile always slides."
+    },
+    {
+      "type": "range",
+      "id": "transition_speed",
+      "label": "t:sections.announcement_bar.settings.transition_speed.label",
+      "min": 100,
+      "max": 1500,
+      "step": 100,
+      "unit": "ms",
+      "default": 1000
+    },
+    {
+      "type": "checkbox",
+      "id": "rewind",
+      "label": "t:sections.announcement_bar.settings.rewind.label",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:sections.announcement_bar.settings.close_button.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_close_button",
+      "label": "t:sections.announcement_bar.settings.show_close_button.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "close_icon_size",
+      "label": "t:sections.announcement_bar.settings.close_icon_size.label",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "close_persistence",
+      "label": "t:sections.announcement_bar.settings.close_persistence.label",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:sections.announcement_bar.settings.close_persistence.options.none"
+        },
+        {
+          "value": "session",
+          "label": "t:sections.announcement_bar.settings.close_persistence.options.session"
+        }
+      ],
+      "default": "session"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_announcement"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement_bar.presets.name",
+      "blocks": [
+        {
+          "type": "_announcement",
+          "settings": {
+            "text": "Add your first announcement"
+          }
+        },
+        {
+          "type": "_announcement",
+          "settings": {
+            "text": "Add another announcement"
+          }
+        }
+      ],
+      "settings": {
+        "paragraph_size": "vt-paragraph-small",
+        "padding_block_desktop": 8,
+        "padding_block_mobile": 8,
+        "padding_inline_desktop": 20,
+        "padding_inline_mobile": 20,
+        "autoplay": true,
+        "autoplay_speed": 3,
+        "transition_effect": "fade",
+        "transition_speed": 1000,
+        "rewind": true,
+        "show_close_button": true,
+        "close_icon_size": 10,
+        "close_persistence": "session"        
+      }
+    }
+  ]
+}
+{% endschema %}

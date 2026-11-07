@@ -1,0 +1,93 @@
+{% doc %}
+  One announcement of the announcement-bar section. It is a slide of the section's
+  carousel. Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: '_announcement', id: 'announcement' %}
+{% enddoc %}
+
+{%- comment -%} The block picker previews this block alone, so it gets the background of the bar there {%- endcomment -%}
+<div
+  class="announcement-bar__slide swiper-slide"
+  {% if request.visual_preview_mode %}
+    style="padding: 0.5rem 1rem; background-color: var(--vt-color-primary); --announcement-bar-text: var(--vt-background-color);"
+  {% elsif block.settings.color_type == 'custom' and block.settings.text_color != blank %}
+    style="--announcement-bar-text: {{ block.settings.text_color }};"
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.link != blank -%}
+    <a
+      class="announcement-bar__link"
+      href="{{ block.settings.link }}"
+      {% if block.settings.open_in_new_tab %}
+        target="_blank"
+        rel="noopener noreferrer"
+      {% endif %}
+    >
+      <span class="announcement-bar__text {{ section.settings.paragraph_size }}">{{ block.settings.text | escape }}</span>
+    </a>
+  {%- else -%}
+    <span class="announcement-bar__text {{ section.settings.paragraph_size }}">{{ block.settings.text | escape }}</span>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.announcement_bar.blocks.announcement.name",
+  "tag": null,
+  "settings": [    
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:sections.announcement_bar.blocks.announcement.settings.text.label",
+      "default": "Add your announcement"
+    },
+    {
+      "type": "select",
+      "id": "color_type",
+      "label": "Text color",
+      "options": [
+        {
+          "value": "inherit",
+          "label": "Inherit"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }        
+      ],
+      "default": "inherit"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Custom color",
+      "info": "Choose a color that contrasts with the background.",
+      "visible_if": "{{ block.settings.color_type == 'custom' }}"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:sections.announcement_bar.blocks.announcement.settings.link.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:blocks.button.settings.open_in_new_tab.label",
+      "default": false,
+      "visible_if": "{{ block.settings.link != blank }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.announcement_bar.blocks.announcement.name",
+      "settings": {
+        "text": "Add your announcement",
+        "color_type": "inherit",        
+        "open_in_new_tab": false
+      }
+    }    
+  ]
+}
+{% endschema %}

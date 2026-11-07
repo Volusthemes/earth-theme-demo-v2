@@ -1,0 +1,278 @@
+{%- doc -%}
+
+  @param {object} [product] - Product to render. Leave blank for a placeholder card.
+  @param {number} [placeholder_index] - 1-based index, picks a different placeholder image
+  @param {string} [card_style] - Extra classes for the card
+
+  @example
+  {% render 'product-card', product: product %}
+  {% render 'product-card', placeholder_index: forloop.index %}
+{%- enddoc -%}
+
+{%- liquid
+  assign s = settings
+  assign card_style = card_style | default: ''
+-%}
+
+{%- if product == blank -%}
+  {%- liquid    
+    assign vt_placeholder_number = placeholder_index | default: 1 | minus: 1 | modulo: 6 | plus: 1
+    assign vt_placeholder_name = 'product-' | append: vt_placeholder_number
+    assign vt_ratio = s.image_ratio
+    if vt_ratio == 'adapt' or vt_ratio == blank
+      assign vt_ratio = 'portrait'
+    endif    
+  -%}
+
+  {%- comment -%}
+    No links or buttons: a placeholder has nothing to open or buy, so it
+    exposes no dead controls to keyboard or screen reader users.
+  {%- endcomment -%}
+
+  <article
+    class="vt-products-card vt-product-card vt-product-card--placeholder {{ card_style }}"
+    style="--vt-card-gap: {% render 'fluid-clamp', min_px: s.card_gap_mobile, max_px: s.card_gap_desktop %}; --vt-badge-gap: {% render 'fluid-clamp', min_px: s.badge_group_gap, max_px: s.badge_group_gap %};"
+  >
+    <div class="vt-product-media" style="--vt-media-radius: {% render 'fluid-clamp', min_px: s.card_image_radius, max_px: s.card_image_radius %};">
+      <div class="vt-product-media__wrapper vt-product-media__wrapper--{{ vt_ratio }}" aria-hidden="true">
+        {{ vt_placeholder_name | placeholder_svg_tag: 'vt-product-media__image vt-product-media__placeholder' }}
+      </div>
+    </div>
+    <h3 class="vt-product-card__title vt-heading-h6">{{ 'products.product.placeholder_title' | t }}</h3>
+    <p class="vt-product-card__price vt-paragraph-extra-small">{{ 1999 | money }}</p>
+  </article>
+{%- else -%}
+  {%- liquid
+    # Top badge group: badge types in display order, from theme settings
+    assign vt_top_types = ''
+    if s.badge_show_best_seller
+      assign vt_top_types = vt_top_types | append: ',best_seller'
+    endif
+    if s.badge_show_new
+      assign vt_top_types = vt_top_types | append: ',new'      
+    endif
+    if s.badge_show_sale
+      assign vt_top_types = vt_top_types | append: ',sale'
+    endif
+    if s.badge_show_metaobject and s.badge_metafield_key != blank
+      assign vt_top_types = vt_top_types | append: ',metafield'
+    endif
+    assign vt_top_types = vt_top_types | remove_first: ','
+
+    # Eco badge group at the bottom of the image
+    assign vt_eco_types = ''
+    if s.badge_show_impact
+      assign vt_eco_types = vt_eco_types | append: ',impact'
+    endif
+    if s.badge_show_water
+      assign vt_eco_types = vt_eco_types | append: ',water'
+    endif
+    if s.badge_show_carbon
+      assign vt_eco_types = vt_eco_types | append: ',carbon'
+    endif
+    assign vt_eco_types = vt_eco_types | remove_first: ','
+
+    # Sold out: every image badge is replaced by a single "Sold out" badge
+    assign vt_sold_out = false
+    unless product.available
+      assign vt_sold_out = true
+    endunless
+
+    # Product information
+    assign vt_on_sale = false
+    if product.compare_at_price > product.price
+      assign vt_on_sale = true
+    endif
+    assign vt_material = product.metafields.custom.material | default: product.metafields.custom.composition
+    assign vt_subtitle = vt_material.value | default: product.type
+    assign vt_origin = product.metafields.custom.origin | default: product.metafields.custom.made_in
+  -%}
+
+  <article
+    class="vt-products-card vt-product-card{% if vt_sold_out %} vt-products-card--sold-out{% endif %} {{ card_style }}"
+    data-product-id="{{ product.id }}"
+    style="--vt-card-gap: {% render 'fluid-clamp', min_px: s.card_gap_mobile, max_px: s.card_gap_desktop %}; --vt-badge-gap: {% render 'fluid-clamp', min_px: s.badge_group_gap, max_px: s.badge_group_gap %};"
+  >
+    <div class="vt-product-media" style="--vt-media-radius: {% render 'fluid-clamp', min_px: s.card_image_radius, max_px: s.card_image_radius %};">
+      {% render 'card-media',
+        product: product,
+        ratio: s.image_ratio,
+        show_secondary_image: s.show_secondary_image,
+        hover_effect: s.card_hover_image_effect,
+        reveal_direction: s.card_hover_reveal_direction
+      %}
+
+      {%- if vt_sold_out -%}        
+        {%- if s.badge_show_sold_out -%}
+          {% render 'card-badges',
+            product: product,
+            types: 'sold_out',
+            position: 'top',
+            alignment: 'right',
+            direction: 'row',
+            mobile_badge: 'sold_out',
+            max_width: 240,
+            gap: s.badge_group_gap
+          %}
+        {%- endif -%}
+      {%- elsif vt_top_types != blank -%}
+        {% render 'card-badges',
+          product: product,
+          types: vt_top_types,
+          position: 'top',
+          alignment: s.badges_top_alignment,
+          direction: s.badges_top_layout,
+          mobile_badge: s.badges_top_mobile,
+          max_width: s.badges_top_max_width,
+          gap: s.badge_group_gap,
+          tag_match: s.badge_best_seller_tag,
+          new_days: s.badge_new_days,
+          metafield_namespace: s.badge_metafield_namespace,
+          metafield_key: s.badge_metafield_key,
+          metaobject_field: s.badge_metaobject_field
+        %}
+      {%- endif -%}
+
+      {%- if vt_eco_types != blank and vt_sold_out == false -%}
+        {% render 'card-badges',
+          product: product,
+          types: vt_eco_types,
+          position: 'bottom',
+          alignment: s.badges_bottom_alignment,
+          direction: 'row',
+          mobile_badge: 'none',
+          max_width: 600,
+          gap: s.badge_group_gap
+        %}
+      {%- endif -%}
+
+      {% render 'card-actions',
+        product: product,
+        show_add_to_cart: s.enable_add_to_cart,
+        show_quick_view: s.enable_quick_view,
+        desktop_alignment: s.actions_alignment_desktop,
+        mobile_alignment: s.actions_alignment_mobile
+      %}
+    </div>
+
+    {%- comment -%}
+      Mobile only (under 750px): Sold out / Best seller sit here as text instead
+      of on the image, so long labels don't cover the photo.
+    {%- endcomment -%}
+    
+    {%- if vt_sold_out and s.badge_show_sold_out -%}
+      <div class="vt-product-card__flags">
+        {% render 'card-badge', product: product, type: 'sold_out', variant: 'inline', icon: 'none' %}
+      </div>
+    {%- elsif vt_sold_out == false and s.badge_show_best_seller -%}
+      <div class="vt-product-card__flags">
+        {% render 'card-badge', product: product, type: 'best_seller', variant: 'inline', icon: 'star', tag_match: s.badge_best_seller_tag %}
+      </div>
+    {%- endif -%}
+
+    {%- if s.show_subtitle and vt_subtitle != blank -%}
+      <p class="vt-product-card__subtitle vt-paragraph-small">
+        {%- if vt_material.value != blank -%}
+          {{ 'products.product.material' | t }}&nbsp;
+        {%- endif -%}
+        {{- vt_subtitle | escape -}}
+      </p>
+    {%- endif -%}
+
+    {%- if s.show_vendor and product.vendor != blank -%}
+      <p class="vt-product-card__vendor vt-paragraph-extra-small">
+        <span class="vt-product-card__sr">{{ 'products.product.vendor' | t }}:</span>
+        {{ product.vendor | escape }}
+      </p>
+    {%- endif -%}
+
+    <h3 class="vt-product-card__title vt-heading-h6">
+      <a href="{{ product.url }}" class="vt-product-card__title-link">{{ product.title | escape }}</a>
+    </h3>
+    
+    <p class="vt-product-card__price vt-paragraph-extra-small">
+      {%- if vt_on_sale -%}
+        <span class="vt-product-card__sr">{{ 'products.product.sale_price' | t }}</span>
+        <span class="vt-product-card__price-sale">{{ product.price | money }}</span>
+        <span class="vt-product-card__sr">{{ 'products.product.regular_price' | t }}</span>
+        <s class="vt-product-card__price-compare">{{ product.compare_at_price | money }}</s>
+      {%- else -%}
+        {{ product.price | money }}
+      {%- endif -%}
+    </p>
+
+    {%- if s.show_tags and product.tags.size > 0 -%}
+      {%- liquid
+        assign vt_best_seller_handle = s.badge_best_seller_tag | handle
+        assign vt_hidden_tags = ',' | append: vt_best_seller_handle | append: ','
+        if s.badge_show_new
+          assign vt_hidden_tags = vt_hidden_tags | append: 'new,'
+        endif
+        assign vt_hidden_list = s.tags_hidden | split: ','
+        for vt_hidden in vt_hidden_list
+          assign vt_hidden_handle = vt_hidden | strip | handle
+          if vt_hidden_handle != blank
+            assign vt_hidden_tags = vt_hidden_tags | append: vt_hidden_handle | append: ','
+          endif
+        endfor
+
+        assign vt_tag_count = 0
+        assign vt_visible_tags = ''
+        for tag in product.tags
+          assign vt_tag_handle = tag | handle
+          assign vt_needle = ',' | append: vt_tag_handle | append: ','
+          unless vt_hidden_tags contains vt_needle
+            assign vt_visible_tags = vt_visible_tags | append: '~~' | append: tag
+            assign vt_tag_count = vt_tag_count | plus: 1
+            if vt_tag_count >= s.tags_limit
+              break
+            endif
+          endunless
+        endfor
+        assign vt_visible_tags = vt_visible_tags | remove_first: '~~' | split: '~~'
+      -%}
+
+      {%- if vt_visible_tags.size > 0 -%}
+        <ul class="vt-product-card__tags" role="list" aria-label="{{ 'products.product.tags' | t }}">
+          {%- for tag in vt_visible_tags -%}
+            <li class="vt-product-card__tag vt-paragraph-extra-small">{{ tag | escape }}</li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- assign vt_show_origin = false -%}
+    {%- if s.show_origin and vt_origin != blank -%}
+      {%- assign vt_show_origin = true -%}
+    {%- endif -%}
+    {%- assign vt_show_discount = false -%}
+    {%- if s.show_discount_note and vt_on_sale -%}
+      {%- assign vt_show_discount = true -%}
+    {%- endif -%}
+
+    {%- if vt_show_origin or vt_show_discount -%}
+      <p class="vt-product-card__meta vt-paragraph-extra-small">
+        {%- if vt_show_origin -%}
+          <span class="vt-product-card__meta-item">
+            <span class="vt-product-card__meta-icon" aria-hidden="true">
+              {%- render 'icons', icon: 'location' -%}
+            </span>
+            {{ 'products.product.made_in' | t: country: vt_origin.value }}
+          </span>
+        {%- endif -%}
+        {%- if vt_show_discount -%}
+          {%- liquid
+            assign vt_save = product.compare_at_price | minus: product.price
+            assign vt_percent = vt_save | times: 100.0 | divided_by: product.compare_at_price | round
+          -%}
+          <span class="vt-product-card__meta-item">
+            <span class="vt-product-card__meta-icon" aria-hidden="true">
+              {%- render 'icons', icon: 'discount' -%}
+            </span>
+            {{ 'products.product.discount_note' | t: percent: vt_percent }}
+          </span>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+  </article>
+{%- endif -%}

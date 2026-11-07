@@ -1,0 +1,234 @@
+{%- doc -%}
+
+  @param {object} section - The parent section (carousel settings)
+  @param {string} panel_id - Unique id; the panel element id is "vt-panel-<panel_id>"
+  @param {string} tab_type - all | collection | tag | new_arrivals | sale | best_sellers
+  @param {object} [collection] - Source collection (Collection tab), or collection to filter
+  @param {string} [filter_tag] - Product tag to match (Tag tab)
+  @param {number} [new_days] - New arrivals window in days
+  @param {boolean} [is_active] - Visible on load
+  @param {boolean} [is_tabpanel] - Adds tabpanel semantics, labelled by "vt-tab-<panel_id>"
+  @param {string} [mode] - "count": output only the matching product count (for the tab label)
+  using the same source and filters as the panel. Outputs nothing for placeholder tabs.
+
+  @example
+  {% render 'products-tab-panel', section: section, panel_id: block.id, tab_type: 'sale', is_tabpanel: true %}
+  {% render 'products-tab-panel', section: section, panel_id: block.id, tab_type: 'sale', mode: 'count' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign s = section.settings
+  assign products_to_show = s.products_to_show | default: 8  
+  assign new_days = new_days | default: 30
+  assign count_only = false
+  if mode == 'count'
+    assign count_only = true
+  endif
+
+  # Resolve the source collection per tab type
+  assign source_collection = nil
+  assign has_source = true
+
+  case tab_type
+    when 'all'
+      # Every product in the store
+      assign source_collection = collections.all
+    when 'collection'
+      if collection != blank
+        assign source_collection = collection
+      elsif s.collection_list.size > 0
+        assign source_collection = s.collection_list.first
+      else
+        # Nothing selected yet
+        assign has_source = false
+      endif
+    when 'best_sellers'
+      # Liquid has no sales data and can't re-sort products. Best sellers come
+      # from a collection whose sort order is "Best selling" in the admin;
+      # its first products are the top sellers.
+      if collection != blank
+        assign source_collection = collection
+      else
+        # Nothing selected yet: placeholders instead of unsorted products
+        assign has_source = false
+      endif
+    else
+      # tag / new_arrivals / sale filter the chosen
+      # collection, or all products when none is chosen
+      if collection != blank
+        assign source_collection = collection
+      else
+        assign source_collection = collections.all
+      endif
+  endcase
+
+  assign source_products = source_collection.products
+
+  # Sale / New arrivals / Tag keep only some products; other types show them all
+  assign needs_filter = false
+  case tab_type
+    when 'sale', 'new_arrivals'
+      assign needs_filter = true
+    when 'tag'
+      if filter_tag != blank
+        assign needs_filter = true
+      endif
+  endcase
+
+  # Placeholder cards: empty store, or a collection tab not set up yet
+  assign show_placeholders = false
+  if collections.all.products_count == 0 or has_source == false
+    assign show_placeholders = true
+  endif
+
+  # New arrivals threshold, computed once per panel
+  assign now_ts = 'now' | date: '%s'
+  assign window_seconds = new_days | times: 86400
+  assign new_threshold = now_ts | minus: window_seconds
+
+  if filter_tag != blank
+    assign filter_tag_handle = filter_tag | handle
+  endif
+
+  assign matched = 0
+-%}
+
+{%- unless count_only -%}
+<div
+  class="vt-products-tab-carousel__panel{% if is_active %} is-active{% endif %}"
+  id="vt-panel-{{ panel_id }}"
+  {% if is_tabpanel %}
+    role="tabpanel"
+    aria-labelledby="vt-tab-{{ panel_id }}"
+  {% endif %}
+  data-tab-id="{{ panel_id }}"
+  data-tab-type="{{ tab_type }}"
+  {% unless is_active %}
+    hidden
+  {% endunless %}
+>
+  {%- comment -%} Theme editor only: Best sellers tab with no collection yet shows placeholders, so say why {%- endcomment -%}
+  {%- if request.design_mode and tab_type == 'best_sellers' and has_source == false -%}
+    <p class="vt-products-tab-carousel__empty">{{ 'products.tabs.best_sellers_setup' | t }}</p>
+  {%- endif -%}
+
+  <div
+    class="swiper vt-products-swiper{% if s.slide_style == 'offset' %} vt-products-swiper--offset{% endif %}"
+    data-swiper
+    data-slides-desktop="{{ s.slides_per_view_desktop | default: 4 }}"
+    data-slides-tablet="{% if s.tablet_card_size == 'large' %}2{% else %}3{% endif %}"
+    data-slides-mobile="{% if s.mobile_card_size == 'compact' %}2{% else %}1{% endif %}"
+    data-loop="{{ s.loop }}"
+    data-autoplay="{{ s.autoplay }}"
+    data-autoplay-delay="{{ s.autoplay_delay | default: 4000 }}"
+    data-slide-style="{{ s.slide_style | default: 'standard' }}"
+    data-slide-offset="{{ s.slide_offset | default: 15 }}"
+    {%- comment -%} Next product always peeks in on tablet / mobile (same values as --vt-slides-peek); desktop moves with the arrows only {%- endcomment %}
+    data-peek-tablet="0.5"
+    data-peek-mobile="0.3"
+    data-desktop-drag="false"
+  >
+    <div class="swiper-wrapper">
+{%- endunless -%}
+      {%- if show_placeholders -%}
+        {%- unless count_only -%}
+          {%- for i in (1..products_to_show) -%}
+            <div class="swiper-slide vt-products-swiper__slide">
+              {% render 'product-card', placeholder_index: i %}
+            </div>
+          {%- endfor -%}
+        {%- endunless -%}
+      {%- elsif count_only and needs_filter == false -%}
+        {%- comment -%} Unfiltered: the collection's total, no loop needed {%- endcomment -%}
+        {%- assign matched = source_collection.products_count -%}
+      {%- else -%}
+        {%- for product in source_products -%}
+          {%- liquid
+            assign include_product = true
+
+            case tab_type
+              when 'sale'
+                unless product.compare_at_price > product.price
+                  assign include_product = false
+                endunless
+              when 'new_arrivals'
+                assign created_at = product.created_at | date: '%s' | plus: 0
+                if created_at < new_threshold
+                  assign include_product = false
+                endif
+              when 'tag'
+                if filter_tag != blank
+                  assign tag_matched = false
+                  for t in product.tags
+                    assign t_handle = t | handle
+                    if t_handle == filter_tag_handle
+                      assign tag_matched = true
+                      break
+                    endif
+                  endfor
+                  unless tag_matched
+                    assign include_product = false
+                  endunless
+                endif
+            endcase
+          -%}
+
+          {%- if include_product -%}
+            {%- assign matched = matched | plus: 1 -%}
+            {%- unless count_only -%}
+              {%- if matched > products_to_show -%}
+                {%- break -%}
+              {%- endif -%}
+
+              <div class="swiper-slide vt-products-swiper__slide">
+                {%- comment -%} Card options come from Theme settings > Product card {%- endcomment -%}
+                {% render 'product-card', product: product %}
+              </div>
+            {%- endunless -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endif -%}
+{%- if count_only -%}
+  {%- unless show_placeholders -%}    
+    <span class="vt-tab-title__count vt-paragraph-extra-small" aria-hidden="true">{{ matched }}</span>
+    <span class="vt-tab-title__sr">{{ 'products.tabs.count' | t: count: matched }}</span>
+  {%- endunless -%}
+{%- else -%}
+    </div>
+
+    {%- if s.show_arrows -%}
+      {%- liquid        
+        assign vt_arrow_style = s.arrows_style | default: 'primary'
+        assign vt_arrow_class = 'vt-arrow vt-arrow--' | append: vt_arrow_style
+        if settings.arrows_hover_effect == 'standard'
+          assign vt_arrow_class = vt_arrow_class | append: ' vt-arrow--hover-standard'
+        endif
+        assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn'
+        if s.arrows_on_hover
+          assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn--hover-only'
+        endif
+      -%}
+      <button
+        type="button"
+        class="{{ vt_arrow_class }} vt-swiper-btn--prev"
+        aria-label="{{ 'content.pagination.previous' | t }}"
+        data-swiper-prev
+      >
+        <span class="vt-arrow__icon vt-arrow__icon--previous" aria-hidden="true">{% render 'icons', icon: 'arrow-previous' %}</span>
+      </button>
+      <button
+        type="button"
+        class="{{ vt_arrow_class }} vt-swiper-btn--next"
+        aria-label="{{ 'content.pagination.next' | t }}"
+        data-swiper-next
+      >
+        <span class="vt-arrow__icon vt-arrow__icon--next" aria-hidden="true">{% render 'icons', icon: 'arrow-next' %}</span>
+      </button>
+    {%- endif -%}
+  </div>
+  
+  {%- if show_placeholders == false and matched == 0 -%}
+    <p class="vt-products-tab-carousel__empty">{{ 'products.tabs.empty' | t }}</p>
+  {%- endif -%}
+</div>
+{%- endif -%}

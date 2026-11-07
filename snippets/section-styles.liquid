@@ -1,0 +1,86 @@
+{%- comment -%}
+  Section Styles (Block 2.0 reusable snippet)
+  Renders shared CSS custom properties for section styling.
+  Scoped by #shopify-section-{{ section.id }} to avoid cross-section conflicts.
+
+  Usage:
+    {% render 'section-styles', section: section %}
+
+  Required section settings:
+    - background_style, background_color, background_gradient
+    - heading_color, paragraph_color
+    - padding_top_desktop, padding_bottom_desktop
+    - padding_left_desktop, padding_right_desktop
+    - enable_custom_mobile_padding
+    - padding_top_mobile, padding_bottom_mobile
+    - padding_left_mobile, padding_right_mobile
+    - gap, gap_mobile
+
+  Output CSS variables:
+    --vt-section-bg
+    --vt-section-color
+    --vt-section-paragraph-color
+    --vt-section-padding-block-start / -end
+    --vt-section-padding-inline-start / -end (mobile value below 990px, desktop value from 990px)
+    --vt-section-gap
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  # Desktop padding
+  assign pad_top = s.padding_top_desktop | default: 0
+  assign pad_bottom = s.padding_bottom_desktop | default: 0
+  assign pad_left = s.padding_left_desktop | default: 0
+  assign pad_right = s.padding_right_desktop | default: 0
+
+  # Mobile padding: explicit if enabled, otherwise 75% of desktop
+  if s.enable_custom_mobile_padding
+    assign pad_top_mobile = s.padding_top_mobile | default: pad_top
+    assign pad_bottom_mobile = s.padding_bottom_mobile | default: pad_bottom
+    assign pad_left_mobile = s.padding_left_mobile | default: pad_left
+    assign pad_right_mobile = s.padding_right_mobile | default: pad_right
+  else
+    assign pad_top_mobile = pad_top | times: 0.75 | round
+    assign pad_bottom_mobile = pad_bottom | times: 0.75 | round
+    assign pad_left_mobile = pad_left | times: 0.75 | round
+    assign pad_right_mobile = pad_right | times: 0.75 | round
+  endif
+
+  # Gap
+  assign gap = s.gap | default: 0
+  assign gap_mobile = s.gap_mobile | default: gap
+
+  # Background: a blank gradient follows the color palette
+  if s.background_style == 'gradient'
+    assign section_bg = s.background_gradient | default: 'linear-gradient(135deg, var(--vt-color-accent) 0%, var(--vt-color-secondary) 100%)'
+  else
+    assign section_bg = s.background_color
+  endif
+
+  # Color inheritance: setting first, theme palette fallback second
+  # (heading -> inherited foreground, paragraph -> palette primary)
+  assign section_color = s.heading_color | default: nil
+  assign paragraph_color = s.paragraph_color | default: nil
+-%}
+
+{%- style -%}
+  #shopify-section-{{ section.id }} {
+    --vt-section-bg: {{ section_bg | default: 'transparent' }};
+    --vt-section-color: {{ section_color | default: 'inherit' }};
+    --vt-section-paragraph-color: {{ paragraph_color | default: 'var(--vt-color-primary)' }};
+    --vt-section-padding-block-start: {% render 'fluid-clamp', min_px: pad_top_mobile, max_px: pad_top %};
+    --vt-section-padding-block-end: {% render 'fluid-clamp', min_px: pad_bottom_mobile, max_px: pad_bottom %};
+    /* Side gutters: mobile value below 990px, desktop value from 990px (no fluid ramp) */
+    --vt-section-padding-inline-start: {{ pad_left_mobile | divided_by: 16.0 }}rem;
+    --vt-section-padding-inline-end: {{ pad_right_mobile | divided_by: 16.0 }}rem;
+    --vt-section-gap: {% render 'fluid-clamp', min_px: gap_mobile, max_px: gap %};
+  }
+
+  @media screen and (min-width: 990px) {
+    #shopify-section-{{ section.id }} {
+      --vt-section-padding-inline-start: {{ pad_left | divided_by: 16.0 }}rem;
+      --vt-section-padding-inline-end: {{ pad_right | divided_by: 16.0 }}rem;
+    }
+  }
+{%- endstyle -%}

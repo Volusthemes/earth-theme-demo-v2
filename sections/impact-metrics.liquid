@@ -1,0 +1,814 @@
+{%- liquid
+  assign make_section_page_width = section.settings.make_section_page_width
+
+  # Outer class list
+  assign section_classes = 'vt-section'
+
+  # Inner class list
+  assign inner_classes = 'vt-section__inner'
+  if make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  class="{{ section_classes }}"
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Impact Metrics",
+  "tag": "section",
+  "class": "impact-metrics-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 64,
+      "label": "Gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",      
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    { "type": "stack" },
+    { "type": "heading-group" },
+    { "type": "paragraph" },    
+    { "type": "column-layout" }
+  ],
+  "presets": [
+    {
+      "name": "Impact Metrics",
+      "settings": {
+        "gap": 64,
+        "gap_mobile": 32,
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 32,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",                           
+            "position": "flex-start",
+            "alignment": "center",     
+            "position_type": "default",
+            "wrap_content": "nowrap",   
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,               
+            "gap_desktop": 22,
+            "gap_mobile": 16,
+            "enable_padding": true,
+            "padding_top_desktop": 0,
+            "padding_bottom_desktop": 0,
+            "padding_left_desktop": 0,
+            "padding_right_desktop": 0,
+            "padding_top_mobile": 0,
+            "padding_bottom_mobile": 0,
+            "padding_left_mobile": 0,
+            "padding_right_mobile": 0                        
+          },
+          "blocks": [
+            {
+              "type": "heading-group",
+              "settings": {
+                "direction": "horizontal",
+                "alignment": "inherit",
+                "vertical_alignment": "center",
+                "gap_desktop": 20,
+                "gap_mobile": 14,
+                "width": "fit",                                
+                "max_width": 420,
+                "hide_icon_mobile": true
+              },  
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_color": "#71CC3B",
+                    "icon_size_desktop": 40,
+                    "icon_size_mobile": 30,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 64,
+                    "box_size_mobile": 54,
+                    "box_radius": "50%"                                        
+                  }
+                },
+                {
+                  "type": "heading",                                    
+                  "settings": {
+                    "heading": "<span>Our Impact</span>",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",                                        
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },                
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_color": "#71CC3B",
+                    "icon_size_desktop": 40,
+                    "icon_size_mobile": 30,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 64,
+                    "box_size_mobile": 54,
+                    "box_radius": "50%"                                        
+                  }
+                }
+              ]
+            },
+            {
+              "type": "paragraph",   
+              "settings": {
+                "text": "<p>Track your environmental and social impact.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-inherit", 
+                "paragraph_width": "fit",       
+                "enable_max_width": true,                  
+                "paragraph_max_width": 560,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            }
+          ]
+        },
+        {
+          "type": "column-layout",
+          "settings": {
+            "desktop_column_count": 4,
+            "tablet_column_count": 2,
+            "mobile_column_count": 2,
+            "desktop_column_1_width": "lg:w-1/4|25",
+            "desktop_column_2_width": "lg:w-1/4|25",
+            "desktop_column_3_width": "lg:w-1/4|25",
+            "desktop_column_4_width": "lg:w-1/4|25",
+            "tablet_column_1_width": "md:w-1/2|50",
+            "tablet_column_2_width": "md:w-1/2|50",
+            "mobile_column_1_width": "w-full|100",
+            "mobile_column_2_width": "w-full|100",
+            "desktop_gap_x": "lg:gap-x-8",
+            "desktop_gap_y": "lg:gap-y-8",
+            "tablet_gap_x": "md:gap-x-6",
+            "tablet_gap_y": "md:gap-y-6",
+            "mobile_gap_x": "gap-x-4",
+            "mobile_gap_y": "gap-y-4"
+          },
+          "blocks": [
+            {
+              "type": "card",
+              "settings": {
+                "position": "middle",
+                "alignment": "center",
+                "enable_decorative_icon": true,
+                "decorative_icon": "ecology",
+                "decorative_icon_position": "center",
+                "decorative_icon_alignment": "center",
+                "decorative_icon_size_desktop": 226,
+                "decorative_icon_size_mobile": 212,
+                "decorative_icon_opacity": 5,
+                "padding_vertical": 30,
+                "padding_horizontal": 26,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 24,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "custom",
+                "min_height": 250,
+                "min_height_mobile": 250,
+                "gap": 6,
+                "enable_gap_mobile": true,
+                "gap_mobile": 5,
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "cotton-plant",
+                    "icon_color": "#F8F9DC",
+                    "icon_size_desktop": 36,
+                    "icon_size_mobile": 28,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 60,
+                    "box_size_mobile": 42,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "000+",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.4,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Trees Planted</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "paragraph_max_width": 180,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.5,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Since launch</p>",
+                    "paragraph_size": "vt-paragraph-small",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": true,
+                    "paragraph_max_width": 200,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.6,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              ]    
+            },
+            {
+              "type": "card",
+              "settings": {
+                "position": "middle",
+                "alignment": "center",
+                "enable_decorative_icon": true,
+                "decorative_icon": "ecology",
+                "decorative_icon_position": "center",
+                "decorative_icon_alignment": "center",
+                "decorative_icon_size_desktop": 226,
+                "decorative_icon_size_mobile": 212,
+                "decorative_icon_opacity": 5,
+                "padding_vertical": 30,
+                "padding_horizontal": 26,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 24,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "custom",
+                "min_height": 250,
+                "min_height_mobile": 250,
+                "gap": 6,
+                "enable_gap_mobile": true,
+                "gap_mobile": 5,
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.3,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "zero-emissions",
+                    "icon_color": "#F8F9DC",
+                    "icon_size_desktop": 36,
+                    "icon_size_mobile": 28,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 60,
+                    "box_size_mobile": 42,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "000T",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.4,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>CO₂ Saved</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "paragraph_max_width": 180,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.5,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Through our efforts</p>",
+                    "paragraph_size": "vt-paragraph-small",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": true,
+                    "paragraph_max_width": 200,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.6,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "position": "middle",
+                "alignment": "center",
+                "enable_decorative_icon": true,
+                "decorative_icon": "ecology",
+                "decorative_icon_position": "center",
+                "decorative_icon_alignment": "center",
+                "decorative_icon_size_desktop": 226,
+                "decorative_icon_size_mobile": 212,
+                "decorative_icon_opacity": 5,
+                "padding_vertical": 30,
+                "padding_horizontal": 26,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 24,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "custom",
+                "min_height": 250,
+                "min_height_mobile": 250,
+                "gap": 6,
+                "enable_gap_mobile": true,
+                "gap_mobile": 5,
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.4,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              },
+              "blocks": [                
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "quality",
+                    "icon_color": "#F8F9DC",
+                    "icon_size_desktop": 36,
+                    "icon_size_mobile": 28,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 60,
+                    "box_size_mobile": 42,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "00%",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.4,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Certified Materials</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "paragraph_max_width": 180,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.5,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment":"center",
+                    "gap_desktop": 5,
+                    "gap_mobile": 5
+                  },
+                  "blocks": [
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "GOTS",
+                        "radius": "3.125rem",
+                        "badge_size": "vt-paragraph-small",
+                        "font_size": 14,
+                        "width": "fit",
+                        "width_custom": 50,
+                        "show_border": false,
+                        "border_size": 1
+                      }
+                    },
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "B Corp",
+                        "radius": "3.125rem",
+                        "badge_size": "vt-paragraph-small",
+                        "font_size": 14,
+                        "width": "fit",
+                        "width_custom": 50,
+                        "show_border": false,
+                        "border_size": 1
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "position": "middle",
+                "alignment": "center",
+                "enable_decorative_icon": true,
+                "decorative_icon": "ecology",
+                "decorative_icon_position": "center",
+                "decorative_icon_alignment": "center",
+                "decorative_icon_size_desktop": 226,
+                "decorative_icon_size_mobile": 212,
+                "decorative_icon_opacity": 5,
+                "padding_vertical": 30,
+                "padding_horizontal": 26,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 24,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "custom",
+                "min_height": 250,
+                "min_height_mobile": 250,
+                "gap": 6,
+                "enable_gap_mobile": true,
+                "gap_mobile": 5,
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.5,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "drop",
+                    "icon_color": "#F8F9DC",
+                    "icon_size_desktop": 36,
+                    "icon_size_mobile": 28,
+                    "show_box": false,
+                    "box_bg_color": "#003225",
+                    "box_size_desktop": 60,
+                    "box_size_mobile": 42,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "000,000",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.4,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Liters Water Saved</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "paragraph_max_width": 180,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.5,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Updated regularly</p>",
+                    "paragraph_size": "vt-paragraph-small",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": true,
+                    "paragraph_max_width": 200,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.6,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              ]
+            }
+          ]
+        }       
+      ]
+    }
+  ]
+}
+{% endschema %}

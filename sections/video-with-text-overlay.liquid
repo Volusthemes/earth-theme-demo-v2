@@ -1,0 +1,825 @@
+{%- comment -%}
+  Section: Video with text overlay
+  - Background video from Shopify Files, YouTube / Vimeo or a direct MP4 link,
+    with an optional second video for mobile
+  - Poster until the video plays, Shopify placeholder when no video is set
+  - Content comes from child blocks (heading, play button, sub-heading...)  
+{%- endcomment -%}
+
+{%- liquid
+  assign video_source = section.settings.video_source
+
+  case video_source
+    when 'external'
+      assign video_desktop = section.settings.video_url
+      assign video_mobile = section.settings.video_url_mobile
+    when 'mp4'
+      assign video_desktop = section.settings.video_mp4 | strip
+      assign video_mobile = section.settings.video_mp4_mobile | strip
+    else
+      assign video_desktop = section.settings.video
+      assign video_mobile = section.settings.video_mobile
+  endcase
+
+  assign has_video = false
+  if video_desktop != blank
+    assign has_video = true
+  endif
+
+  assign has_mobile_video = false
+  if has_video and video_mobile != blank
+    assign has_mobile_video = true
+  endif
+
+  # Autoplay only works without sound
+  assign is_muted = section.settings.muted
+  if section.settings.autoplay
+    assign is_muted = true
+  endif
+
+  # Poster: merchant image first, then the frame Shopify saved with the video
+  assign poster = section.settings.poster
+  assign poster_mobile = section.settings.poster_mobile
+  if video_source == 'shopify'
+    if poster == blank
+      assign poster = video_desktop.preview_image
+    endif
+    if poster_mobile == blank and has_mobile_video
+      assign poster_mobile = video_mobile.preview_image
+    endif
+  endif
+
+  # The first section on the page is usually the largest paint: don't lazy load it
+  assign poster_loading = 'lazy'
+  assign poster_priority = 'auto'
+  if section.index == 1
+    assign poster_loading = 'eager'
+    assign poster_priority = 'high'
+  endif
+
+  assign poster_widths = '750, 940, 1080, 1296, 1512, 1728, 1950, 2100, 2560, 3200' | split: ', '
+
+  # Inner class list: mobile alignment applies at every width, desktop (md:) overrides from 750px
+  assign inner_classes = 'vt-section__inner vt-video-overlay__inner'
+  assign inner_classes = inner_classes | append: ' ' | append: section.settings.mobile_content_alignment
+  assign inner_classes = inner_classes | append: ' md:' | append: section.settings.desktop_content_alignment
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  assign overlay_opacity = section.settings.overlay_opacity | default: 0 | divided_by: 100.0
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<vt-video-overlay
+  class="vt-section vt-video-overlay"
+  data-autoplay="{{ section.settings.autoplay }}"
+  style="
+    --vt-video-overlay-ratio-desktop: {{ section.settings.ratio_desktop }};
+    --vt-video-overlay-ratio-mobile: {{ section.settings.ratio_mobile }};
+    --vt-video-overlay-focal-x-desktop: {{ section.settings.focal_x_desktop }}%;
+    --vt-video-overlay-focal-y-desktop: {{ section.settings.focal_y_desktop }}%;
+    --vt-video-overlay-focal-x-mobile: {{ section.settings.focal_x_mobile }}%;
+    --vt-video-overlay-focal-y-mobile: {{ section.settings.focal_y_mobile }}%;
+    --vt-video-overlay-position: {{ section.settings.content_position }};
+    --vt-video-overlay-text-align: {{ section.settings.text_alignment }};
+    --vt-video-overlay-color: {{ section.settings.overlay_color | default: 'var(--vt-color-primary)' }};
+    --vt-video-overlay-opacity: {{ overlay_opacity }};
+    --vt-section-color: {{ section.settings.heading_color | default: 'var(--vt-background-color)' }};
+    --vt-section-paragraph-color: {{ section.settings.paragraph_color | default: 'var(--vt-background-color)' }};
+    {%- if poster != blank %}
+    --vt-video-overlay-poster-focal: {{ poster.presentation.focal_point }};
+    --vt-video-overlay-poster-focal-mobile: {{ poster_mobile.presentation.focal_point | default: poster.presentation.focal_point }};
+    {%- endif %}
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="vt-video-overlay__media">
+    {%- if has_video -%}
+      {%- if poster != blank -%}
+        <picture>
+          {%- if poster_mobile != blank -%}
+            <source
+              media="(max-width: 749px)"
+              srcset="{% for w in poster_widths %}{{ poster_mobile | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+              sizes="100vw"
+              width="{{ poster_mobile.width }}"
+              height="{{ poster_mobile.height }}"
+            >
+          {%- endif -%}
+          <img
+            src="{{ poster | image_url: width: 1950 }}"
+            srcset="{% for w in poster_widths %}{{ poster | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+            sizes="100vw"
+            width="{{ poster.width }}"
+            height="{{ poster.height }}"
+            alt=""
+            loading="{{ poster_loading }}"
+            fetchpriority="{{ poster_priority }}"
+            class="vt-video-overlay__poster"
+          >
+        </picture>
+      {%- endif -%}
+
+      {%- if has_mobile_video -%}
+        {% render 'video-overlay-player', video_source: video_source, video: video_desktop, modifier: 'desktop', muted: is_muted, loop: section.settings.loop, alt: section.settings.video_alt %}
+        {% render 'video-overlay-player', video_source: video_source, video: video_mobile, modifier: 'mobile', muted: is_muted, loop: section.settings.loop, alt: section.settings.video_alt %}
+      {%- else -%}
+        {% render 'video-overlay-player', video_source: video_source, video: video_desktop, muted: is_muted, loop: section.settings.loop, alt: section.settings.video_alt %}
+      {%- endif -%}
+    {%- else -%}
+      {{ 'hero-apparel-3' | placeholder_svg_tag: 'vt-video-overlay__poster vt-video-overlay__poster--placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="vt-video-overlay__scrim" aria-hidden="true"></div>
+
+  {%- if has_video -%}
+    {%- comment -%} Pause control for moving content (WCAG 2.2.2): the whole video is the click area {%- endcomment -%}
+    <button
+      type="button"
+      class="vt-video-overlay__toggle"
+      aria-label="{{ 'accessibility.play_video' | t }}"
+      data-label-play="{{ 'accessibility.play_video' | t }}"
+      data-label-pause="{{ 'accessibility.pause_video' | t }}"
+    >
+      <span class="vt-video-overlay__toggle-icon" aria-hidden="true">
+        <span class="vt-video-overlay__toggle-play">{% render 'icons', icon: 'play' %}</span>
+        <span class="vt-video-overlay__toggle-pause">{% render 'icons', icon: 'pause' %}</span>
+      </span>
+    </button>
+  {%- endif -%}
+
+  <div class="{{ inner_classes }}">
+    {% content_for 'blocks' %}
+  </div>
+</vt-video-overlay>
+
+{%- if has_video -%}
+  <script src="{{ 'video-with-text-overlay.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
+
+{% stylesheet %}    
+  .vt-video-overlay {
+    --vt-video-overlay-focal-x: var(--vt-video-overlay-focal-x-mobile, 50%);
+    --vt-video-overlay-focal-y: var(--vt-video-overlay-focal-y-mobile, 50%);
+    --vt-sub-heading-text-transform: uppercase;
+    --vt-sub-heading-letter-spacing: 0.08em;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    box-sizing: border-box;
+    aspect-ratio: var(--vt-video-overlay-ratio-mobile, 9 / 16);
+  }
+
+  .vt-video-overlay__media,
+  .vt-video-overlay__scrim {
+    position: absolute;
+    inset: 0;    
+  }
+
+  .vt-video-overlay__media {
+    z-index: -2;    
+    overflow: hidden;
+    container-type: size;
+    background-color: var(--vt-color-primary);
+  }
+
+  .vt-video-overlay__poster,
+  .vt-video-overlay__player {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* The poster keeps the focal point set on the image; the video uses the section settings */
+  .vt-video-overlay__poster {
+    object-position: var(--vt-video-overlay-poster-focal-mobile, center);
+  }
+
+  .vt-video-overlay__player {
+    object-position: var(--vt-video-overlay-focal-x) var(--vt-video-overlay-focal-y);
+  }
+
+  .vt-video-overlay__poster--placeholder {
+    color: var(--vt-background-color);
+    opacity: 0.25;
+  }
+
+  /* Hidden until it really plays, so the poster covers loading and blocked autoplay */
+  .vt-video-overlay__player {
+    border: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+
+  .vt-video-overlay__player.is-started {
+    opacity: 1;
+  }
+
+  .vt-video-overlay__player--desktop {
+    display: none;
+  }
+
+  /* An iframe can't use object-fit: size it to cover the frame, then move it to the focal point */
+  .vt-video-overlay__player--embed {
+    --vt-video-overlay-embed-ratio: 1.7778;
+    inset: auto;
+    top: var(--vt-video-overlay-focal-y);
+    left: var(--vt-video-overlay-focal-x);
+    width: max(100cqw, 100cqh * var(--vt-video-overlay-embed-ratio));
+    height: max(100cqh, 100cqw / var(--vt-video-overlay-embed-ratio));
+    max-width: none;
+    transform: translate(calc(var(--vt-video-overlay-focal-x) * -1), calc(var(--vt-video-overlay-focal-y) * -1));
+  }
+
+  .vt-video-overlay__player--embed.vt-video-overlay__player--mobile {
+    --vt-video-overlay-embed-ratio: 0.5625;
+  }
+
+  .vt-video-overlay__scrim {
+    z-index: -1;
+    background-color: var(--vt-video-overlay-color);
+    opacity: var(--vt-video-overlay-opacity, 0);
+    pointer-events: none;
+  }
+
+  /* Above the scrim, below the content */
+  .vt-video-overlay__toggle {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .vt-video-overlay__toggle:focus-visible {
+    outline: none;
+  }
+
+  .vt-video-overlay__toggle-icon {
+    position: absolute;
+    inset-block-end: 1rem;
+    inset-inline-end: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    color: var(--vt-background-color);
+    background-color: color-mix(in srgb, var(--vt-foreground-color) 75%, transparent);
+  }
+
+  /* Fixed black and white on purpose: the ring has to show on any video and any palette */
+  .vt-video-overlay__toggle:focus-visible .vt-video-overlay__toggle-icon {
+    outline: 0.125rem solid #fff;
+    outline-offset: 0.125rem;
+    box-shadow: 0 0 0 0.25rem #000;
+  }
+
+  .vt-video-overlay__toggle-play,
+  .vt-video-overlay__toggle-pause {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .vt-video-overlay__toggle-play svg,
+  .vt-video-overlay__toggle-pause svg {
+    width: 100%;    
+    height: 100%;
+  }
+
+  .vt-video-overlay__toggle-pause,
+  .is-playing .vt-video-overlay__toggle-play {
+    display: none;
+  }
+
+  .is-playing .vt-video-overlay__toggle-pause {
+    display: flex;
+  }
+
+  /* Clicks on the empty area reach the toggle; the content blocks stay clickable */
+  .vt-video-overlay__inner {
+    pointer-events: none;
+  }
+
+  .vt-video-overlay__inner > * {
+    pointer-events: auto;
+  }
+
+  /* Unlayered, so it wins over Tailwind's justify-* on this column: those classes only set the alignment here */
+  .vt-video-overlay__inner {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    justify-content: var(--vt-video-overlay-position, center);
+  }
+
+  /* Text alignment is its own setting, so it overrides the text-align of the justify-* rules */
+  .vt-video-overlay .vt-video-overlay__inner.vt-video-overlay__inner {
+    text-align: var(--vt-video-overlay-text-align, center);
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-video-overlay {
+      --vt-video-overlay-focal-x: var(--vt-video-overlay-focal-x-desktop, 50%);
+      --vt-video-overlay-focal-y: var(--vt-video-overlay-focal-y-desktop, 50%);
+      aspect-ratio: var(--vt-video-overlay-ratio-desktop, 16 / 9);
+    }
+
+    .vt-video-overlay__poster {
+      object-position: var(--vt-video-overlay-poster-focal, center);
+    }
+
+    .vt-video-overlay__player--desktop {
+      display: block;
+    }
+
+    .vt-video-overlay__player--mobile {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-video-overlay__player {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Video with text overlay",
+  "tag": "section",
+  "class": "video-with-text-overlay-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video"
+    },
+    {
+      "type": "select",
+      "id": "video_source",
+      "label": "Source",
+      "options": [
+        { "value": "shopify", "label": "Shopify" },
+        { "value": "external", "label": "YouTube or Vimeo" },
+        { "value": "mp4", "label": "MP4 link" }
+      ],
+      "default": "shopify"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "Video",
+      "visible_if": "{{ section.settings.video_source == 'shopify' }}"
+    },
+    {
+      "type": "video",
+      "id": "video_mobile",
+      "label": "Mobile video",
+      "info": "Optional. Uses the video above when empty.",
+      "visible_if": "{{ section.settings.video_source == 'shopify' }}"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Video link",
+      "accept": ["youtube", "vimeo"],
+      "visible_if": "{{ section.settings.video_source == 'external' }}"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url_mobile",
+      "label": "Mobile video link",
+      "accept": ["youtube", "vimeo"],
+      "info": "Optional. Use a vertical video.",
+      "visible_if": "{{ section.settings.video_source == 'external' }}"
+    },
+    {
+      "type": "text",
+      "id": "video_mp4",
+      "label": "MP4 link",
+      "placeholder": "https://",
+      "visible_if": "{{ section.settings.video_source == 'mp4' }}"
+    },
+    {
+      "type": "text",
+      "id": "video_mp4_mobile",
+      "label": "Mobile MP4 link",
+      "placeholder": "https://",
+      "info": "Optional. Uses the link above when empty.",
+      "visible_if": "{{ section.settings.video_source == 'mp4' }}"
+    },
+    {
+      "type": "text",
+      "id": "video_alt",
+      "label": "Video description",
+      "info": "For screen readers and search engines"
+    },
+    {
+      "type": "header",
+      "content": "Playback"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true,
+      "info": "Plays without sound when in view. If off, visitors start it with the play button."
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Mute video",
+      "default": true,
+      "visible_if": "{{ section.settings.autoplay == false }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Poster"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster image",
+      "info": "Shown until the video plays"
+    },
+    {
+      "type": "image_picker",
+      "id": "poster_mobile",
+      "label": "Mobile poster image",
+      "info": "Optional. Uses the image above when empty."
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "select",
+      "id": "ratio_desktop",
+      "label": "Ratio (desktop)",
+      "options": [
+        { "value": "16 / 9", "label": "Wide (16:9)" },
+        { "value": "21 / 9", "label": "Ultra wide (21:9)" }
+      ],
+      "default": "16 / 9"
+    },
+    {
+      "type": "select",
+      "id": "ratio_mobile",
+      "label": "Ratio (mobile)",
+      "options": [
+        { "value": "9 / 16", "label": "Vertical (9:16)" },
+        { "value": "4 / 5", "label": "Portrait (4:5)" }
+      ],
+      "default": "9 / 16"
+    },
+    {
+      "type": "header",
+      "content": "Focal point",
+      "info": "The part of the video to keep when it's cropped"
+    },
+    {
+      "type": "range",
+      "id": "focal_x_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "label": "Horizontal (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "focal_y_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "label": "Vertical (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "focal_x_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "label": "Horizontal (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "focal_y_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 50,
+      "label": "Vertical (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 55,
+      "label": "Overlay opacity"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Vertical position",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "label": "Horizontal position (desktop)",
+      "options": [
+        { "value": "justify-start", "label": "Left" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Right" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_alignment",
+      "label": "Horizontal position (mobile)",
+      "options": [
+        { "value": "justify-start", "label": "Left" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Right" }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 26,
+      "label": "Gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 60,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 60,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    { "type": "stack" },
+    { "type": "icons" },
+    { "type": "heading" },
+    { "type": "sub-heading" },
+    { "type": "paragraph" },
+    { "type": "button" },
+    { "type": "_video-play-button" }
+  ],
+  "presets": [
+    {
+      "name": "Video with text overlay",
+      "settings": {
+        "video_source": "external",
+        "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
+        "autoplay": true,
+        "muted": true,
+        "loop": true,
+        "ratio_desktop": "16 / 9",
+        "ratio_mobile": "9 / 16",
+        "focal_x_desktop": 50,
+        "focal_y_desktop": 50,
+        "focal_x_mobile": 50,
+        "focal_y_mobile": 50,
+        "overlay_color": "#000000",
+        "overlay_opacity": 55,
+        "content_position": "center",
+        "desktop_content_alignment": "justify-center",
+        "mobile_content_alignment": "justify-center",
+        "text_alignment": "center",
+        "gap": 26,
+        "gap_mobile": 16,
+        "padding_top_desktop": 60,
+        "padding_bottom_desktop": 60,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,        
+        "make_section_page_width": false
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Add a heading about your video",
+            "heading_size": "vt-heading-h1",
+            "heading_alignment": "text-inherit",
+            "heading_tag": "h2",
+            "enable_max_width": true,
+            "heading_max_width": 800,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine"
+          }
+        },        
+        {
+          "type": "sub-heading",
+          "settings": {
+            "sub_heading": "Add a short line of supporting text",
+            "subheading_tag": "h3",
+            "subheading_alignment": "text-center",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.6,
+            "animation_easing": "ease-out-sine"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

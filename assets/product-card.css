@@ -1,0 +1,725 @@
+/* ============================================================
+  PRODUCT CARD
+  Card layout and product information (snippets/product-card)
+  ============================================================ */
+
+.vt-products-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--vt-card-gap, 0.75rem);
+  height: 100%;
+  background: var(--vt-card-bg, var(--vt-background-color));
+  color: var(--vt-card-fg, var(--vt-foreground-color));
+  border-radius: var(--vt-card-radius, 0);
+  overflow: hidden;
+}
+
+.vt-products-card > .vt-product-media {
+  flex-shrink: 0;
+  margin-bottom: calc(var(--vt-card-gap, 0.75rem) * 1.5);
+}
+
+.vt-products-card > :not(.vt-product-media) {
+  padding-inline: var(--vt-card-padding, 0);
+}
+
+.vt-product-card {
+  color: var(--vt-foreground-color);
+}
+
+/* Sold out: the image fades behind a 50% layer of the background color */
+.vt-products-card--sold-out .vt-product-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--vt-background-color);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Text badges under the image: mobile only (under 750px) */
+.vt-product-card__flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.vt-product-card__flags:not(:has(.vt-product-badge)) {
+  display: none;
+}
+
+@media screen and (min-width: 750px) {
+  .vt-product-card__flags {
+    display: none;
+  }
+}
+
+/* Mobile: the Sold out badge leaves the image (shown under it instead) */
+@media screen and (max-width: 749px) {
+  .vt-products-card--sold-out .vt-product-badge-group {
+    display: none;
+  }
+}
+
+.vt-product-card__subtitle,
+.vt-product-card__vendor,
+.vt-product-card__price,
+.vt-product-card__meta {
+  margin: 0;
+}
+
+.vt-product-card__subtitle {
+  color: var(--vt-section-paragraph-color, var(--vt-color-primary, currentColor));
+}
+
+.vt-product-card__vendor {
+  opacity: 0.75;
+  text-transform: capitalize;
+}
+
+/* Long titles stop at 2 lines with an ellipsis; short ones keep their natural height */
+.vt-product-card__title {
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.vt-product-card__title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.vt-product-card__title-link:hover {
+  text-decoration: none;
+  text-underline-offset: 0.15em;
+  color: var(--vt-color-secondary);
+}
+
+/* The 2-line clamp clips anything outside the title box, so focus shows as an underline instead of an outline */
+.vt-product-card__title-link:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.15em;
+}
+
+.vt-product-card__price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.vt-product-card__price-compare {
+  opacity: 0.75;
+}
+
+.vt-product-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  /* Same gap as the badge groups on the image (Badge group gap setting) */
+  gap: var(--vt-badge-gap, 0.5rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vt-product-card__tag {
+  padding: .3125rem .625rem;
+  border: .0625rem solid currentColor;
+  border-radius: 999px;
+  line-height: 1.1;
+  white-space: nowrap;
+  background: var(--vt-color-accent);
+}
+
+.vt-product-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+
+/* Mobile and tablet: vendor, tags, Made in and Discount note are desktop only */
+@media screen and (max-width: 989px) {
+  .vt-product-card__vendor,
+  .vt-product-card__tags,
+  .vt-product-card__meta {
+    display: none;
+  }
+}
+
+.vt-product-card__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.vt-product-card__meta-icon {
+  display: flex;
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.vt-product-card__meta-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Visible to screen readers only */
+.vt-product-card__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+  CARD MEDIA
+  Image, second image on hover (Fade / Reveal) and hover shade (snippets/card-media)
+  ============================================================ */
+
+.vt-product-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--vt-media-radius, 0);
+  isolation: isolate;
+}
+
+.vt-product-media__link {
+  display: block;
+  text-decoration: none;
+}
+
+.vt-product-media__wrapper {
+  width: 100%;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--vt-foreground-color) 4%, transparent);
+}
+
+.vt-product-media__wrapper--adapt { aspect-ratio: auto; }
+.vt-product-media__wrapper--square { aspect-ratio: 1 / 1; }
+.vt-product-media__wrapper--portrait { aspect-ratio: 3 / 4; }
+.vt-product-media__wrapper--landscape { aspect-ratio: 4 / 3; }
+.vt-product-media__wrapper--classic_portrait { aspect-ratio: 2 / 3; }
+
+.vt-product-media__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: opacity 0.35s ease, transform 0.5s cubic-bezier(0.61, 1, 0.88, 1);
+}
+
+.vt-product-media__image--secondary {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/*
+  Reveal: closed clip-path and image offset per side. clip-path (not an
+  overflow mask) keeps the hidden image in layout, so lazy loading still
+  fetches it before the first hover.
+*/
+.vt-product-media__reveal {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  clip-path: var(--vt-reveal-clip);
+  transition: clip-path 0.9s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.vt-product-media__reveal--left {
+  --vt-reveal-clip: inset(0 100% 0 0);
+  --vt-reveal-x: -1;
+  --vt-reveal-y: 0;
+}
+
+.vt-product-media__reveal--right {
+  --vt-reveal-clip: inset(0 0 0 100%);
+  --vt-reveal-x: 1;
+  --vt-reveal-y: 0;
+}
+
+.vt-product-media__reveal--top {
+  --vt-reveal-clip: inset(0 0 100% 0);
+  --vt-reveal-x: 0;
+  --vt-reveal-y: -1;
+}
+
+.vt-product-media__reveal--bottom {
+  --vt-reveal-clip: inset(100% 0 0 0);
+  --vt-reveal-x: 0;
+  --vt-reveal-y: 1;
+}
+
+.vt-product-media__reveal-image {
+  transform:
+    translate(calc(var(--vt-reveal-x) * 20%), calc(var(--vt-reveal-y) * 20%))
+    scale(1.15);
+  transition: transform 0.9s cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+.vt-product-media__shade {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  mix-blend-mode: multiply;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-out;
+}
+
+/* Card hover, desktop (990px and up, by width only): shade on, badges off, second image */
+@media screen and (min-width: 990px) {
+  .vt-image-hover .vt-products-card:hover .vt-product-media__shade {
+    opacity: 0.2;
+  }
+
+  .vt-image-hover .vt-products-card:hover .vt-product-badge-group {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .vt-image-hover .vt-products-card:hover .vt-product-media__image--secondary {
+    opacity: 1;
+  }
+
+  .vt-image-hover .vt-products-card:hover .vt-product-media__image--primary:has(+ .vt-product-media__image--secondary) {
+    opacity: 0;
+  }
+
+  .vt-image-hover .vt-products-card:hover .vt-product-media__reveal {
+    clip-path: inset(0);
+  }
+
+  .vt-image-hover .vt-products-card:hover .vt-product-media__reveal-image {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-product-media__image,
+  .vt-product-media__shade,
+  .vt-product-media__reveal {
+    transition: none;
+  }
+}
+
+/* ============================================================
+  BADGE GROUP
+  Badge groups on the image: position, alignment, one badge on mobile/tablet (snippets/card-badge-group-attrs)
+  ============================================================ */
+
+.vt-product-badge-group {
+  position: absolute;
+  z-index: 2;
+  gap: var(--vt-badge-group-gap, 0.5rem);
+  max-width: calc(100% - var(--vt-badge-group-inset, 1rem) * 2);
+  pointer-events: none;
+  transition: opacity 0.25s ease-out, visibility 0.25s ease-out;
+}
+
+/* No qualifying badge for this product: take no space */
+.vt-product-badge-group:not(:has(.vt-product-badge)) {
+  display: none;
+}
+
+/* Vertical position on the image */
+.vt-product-badge-group--top {
+  top: var(--vt-badge-group-inset, 1rem);
+}
+
+.vt-product-badge-group--bottom {
+  bottom: var(--vt-badge-group-inset, 1rem);
+}
+
+/* Horizontal position on the image (logical, so it mirrors in RTL) */
+.vt-product-badge-group--left {
+  inset-inline-start: var(--vt-badge-group-inset, 1rem);
+}
+
+.vt-product-badge-group--right {
+  inset-inline-end: var(--vt-badge-group-inset, 1rem);
+}
+
+.vt-product-badge-group--center {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Desktop: badges wrap within the max width set for this group */
+@media screen and (min-width: 990px) {
+  .vt-product-badge-group {
+    max-width: min(var(--vt-badge-group-max, 15rem), calc(100% - var(--vt-badge-group-inset, 1rem) * 2));
+  }
+}
+
+@media screen and (max-width: 989px) {
+  .vt-product-badge-group--single > .vt-product-badge {
+    display: none;
+  }
+
+  .vt-product-badge-group--m-none {
+    display: none;
+  }
+
+  .vt-product-badge-group--m-first > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-sale > .vt-product-badge--sale,
+  .vt-product-badge-group--m-new > .vt-product-badge--new,
+  .vt-product-badge-group--m-best_seller > .vt-product-badge--best_seller,
+  .vt-product-badge-group--m-sold_out > .vt-product-badge--sold_out,
+  .vt-product-badge-group--m-metafield > .vt-product-badge--metafield,
+  .vt-product-badge-group--m-tag > .vt-product-badge--tag,
+  .vt-product-badge-group--m-custom > .vt-product-badge--custom {
+    display: inline-flex;
+  }
+
+  /* Several badges of the chosen type: keep the first */
+  .vt-product-badge-group--m-sale > .vt-product-badge--sale ~ .vt-product-badge--sale,
+  .vt-product-badge-group--m-new > .vt-product-badge--new ~ .vt-product-badge--new,
+  .vt-product-badge-group--m-best_seller > .vt-product-badge--best_seller ~ .vt-product-badge--best_seller,
+  .vt-product-badge-group--m-sold_out > .vt-product-badge--sold_out ~ .vt-product-badge--sold_out,
+  .vt-product-badge-group--m-metafield > .vt-product-badge--metafield ~ .vt-product-badge--metafield,
+  .vt-product-badge-group--m-tag > .vt-product-badge--tag ~ .vt-product-badge--tag,
+  .vt-product-badge-group--m-custom > .vt-product-badge--custom ~ .vt-product-badge--custom {
+    display: none;
+  }
+
+  /*
+    Chosen type missing on this product: show its first badge instead.
+    :where() keeps these as specific as the Best seller hide rule below, so
+    that rule still wins under 750px.
+  */
+  .vt-product-badge-group--m-sale:where(:not(:has(> .vt-product-badge--sale))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-new:where(:not(:has(> .vt-product-badge--new))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-best_seller:where(:not(:has(> .vt-product-badge--best_seller))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-sold_out:where(:not(:has(> .vt-product-badge--sold_out))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-metafield:where(:not(:has(> .vt-product-badge--metafield))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-tag:where(:not(:has(> .vt-product-badge--tag))) > .vt-product-badge:first-child,
+  .vt-product-badge-group--m-custom:where(:not(:has(> .vt-product-badge--custom))) > .vt-product-badge:first-child {
+    display: inline-flex;
+  }
+}
+
+/*
+  Mobile (under 750px): Best seller leaves the image (the product card shows it
+  under the image as text), so the "first badge" picks skip it, using
+  :nth-child(1 of ...).
+*/
+@media screen and (max-width: 749px) {
+  .vt-product-badge-group--single > .vt-product-badge.vt-product-badge--best_seller {
+    display: none;
+  }
+
+  .vt-product-badge-group--m-first > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-best_seller > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-sale:not(:has(> .vt-product-badge--sale)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-new:not(:has(> .vt-product-badge--new)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-sold_out:not(:has(> .vt-product-badge--sold_out)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-metafield:not(:has(> .vt-product-badge--metafield)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-tag:not(:has(> .vt-product-badge--tag)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)),
+  .vt-product-badge-group--m-custom:not(:has(> .vt-product-badge--custom)) > :nth-child(1 of .vt-product-badge:not(.vt-product-badge--best_seller)) {
+    display: inline-flex;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-product-badge-group {
+    transition: none;
+  }
+}
+
+/* ============================================================
+  BADGE
+  Single badge pill and inline variant (snippets/card-badge)
+  ============================================================ */
+
+.vt-product-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: .3125rem .625rem;
+  border-radius: 999px;
+  background: var(--vt-badge-bg, var(--vt-badge-type-bg, var(--vt-color-accent)));
+  color: var(--vt-badge-fg, var(--vt-badge-type-fg, var(--vt-foreground-color)));
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.vt-product-badge--sale {
+  --vt-badge-type-bg: var(--vt-color-secondary);
+}
+
+.vt-product-badge--new {
+  --vt-badge-type-bg: var(--vt-background-color);
+}
+
+.vt-product-badge--impact {
+  --vt-badge-type-bg: var(--vt-foreground-color);
+  --vt-badge-type-fg: var(--vt-background-color);
+}
+
+/* Sold out: styled like New, faded. 0.7 (not lower) keeps text contrast above 4.5:1 */
+.vt-product-badge--sold_out {
+  --vt-badge-type-bg: var(--vt-background-color);
+  opacity: 0.7;
+}
+
+/* Inline variant: text + icon, no pill */
+.vt-product-badge--inline {
+  gap: 0.35em;
+  padding: 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* Primary (dark green) rather than the light secondary green, for 4.5:1 text contrast */
+.vt-product-badge--inline.vt-product-badge--best_seller {
+  color: var(--vt-badge-fg, var(--vt-color-primary));
+}
+
+.vt-product-badge__icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.vt-product-badge__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Visible to screen readers only */
+.vt-product-badge__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (forced-colors: active) {
+  .vt-product-badge {
+    border: .0625rem solid CanvasText;
+  }
+}
+
+/* ============================================================
+  CARD ACTIONS
+  Buttons bar on the image, revealed on hover on desktop (snippets/card-actions-attrs)
+  ============================================================ */
+
+.vt-card-actions {
+  position: absolute;
+  z-index: 3;
+  inset-inline: var(--vt-card-actions-inset, 1rem);
+  bottom: var(--vt-card-actions-inset, 1rem);
+  display: flex;
+  gap: var(--vt-card-actions-gap, 1rem);
+  pointer-events: none;
+}
+
+.vt-card-actions > * {
+  pointer-events: auto;
+}
+
+.vt-card-actions--m-left { justify-content: flex-start; }
+.vt-card-actions--m-center { justify-content: center; }
+.vt-card-actions--m-right { justify-content: flex-end; }
+
+@media screen and (min-width: 990px) {
+  .vt-card-actions--d-left { justify-content: flex-start; }
+  .vt-card-actions--d-center { justify-content: center; }
+  .vt-card-actions--d-right { justify-content: flex-end; }
+}
+
+/*
+  Desktop (990px and up, by width only): reveal on card hover, or when a
+  button gets keyboard focus. Below 990px the buttons always show.
+*/
+@media screen and (min-width: 990px) {
+  .vt-card-actions {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.5rem);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0.25s ease-out;
+  }
+
+  .vt-products-card:hover .vt-card-actions,
+  .vt-card-actions:focus-within {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-card-actions {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+  CARD ACTION BUTTON
+  Round icon button with tooltip (snippets/card-action-button)
+  ============================================================ */
+
+.vt-card-action {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  /* Mobile and tablet: 44px, the recommended touch target */
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--vt-card-action-bg, var(--vt-background-color));
+  color: var(--vt-card-action-fg, var(--vt-foreground-color));
+  cursor: pointer;
+  transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+}
+
+.vt-card-action:focus-visible {
+  outline: 2px solid var(--vt-card-action-bg, var(--vt-background-color));
+  outline-offset: 3px;
+}
+
+.vt-card-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.vt-card-action[aria-busy='true'] {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.vt-card-action__icon {
+  grid-area: 1 / 1;
+  display: flex;
+  inline-size: 45%;
+  block-size: 45%;
+}
+
+.vt-card-action__icon svg {
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.vt-card-action__icon--done,
+.vt-card-action.is-done .vt-card-action__icon:not(.vt-card-action__icon--done) {
+  display: none;
+}
+
+.vt-card-action.is-done .vt-card-action__icon--done {
+  display: flex;
+}
+
+.vt-card-action--desktop-only {
+  display: none;
+}
+
+@media screen and (min-width: 990px) {
+  /* Desktop: 48px */
+  .vt-card-action {
+    inline-size: 3rem;
+    block-size: 3rem;
+  }
+
+  .vt-card-action--desktop-only {
+    display: inline-grid;
+  }
+}
+
+/* Tooltip above the button, with an arrow */
+.vt-card-action__tooltip {
+  position: absolute;
+  bottom: calc(100% + 0.75rem);
+  left: 50%;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  background: var(--vt-foreground-color);
+  color: var(--vt-color-accent);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, 0.25rem);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out, visibility 0.2s ease-out;
+}
+
+.vt-card-action__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border: 0.375rem solid transparent;
+  border-top-color: var(--vt-foreground-color);
+  transform: translateX(-50%);
+}
+
+/* Only on devices that really hover, so touch screens never show a stuck tooltip */
+@media (hover: hover) {
+  .vt-card-action:hover .vt-card-action__tooltip,
+  .vt-card-action:focus-visible .vt-card-action__tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-card-action,
+  .vt-card-action__tooltip {
+    transition: none;
+  }
+}
+
+/* ============================================================
+  ADD TO CART
+  Add to cart / Quick add form (snippets/card-add-to-cart)
+  ============================================================ */
+
+.vt-product-atc {
+  display: inline-flex;
+}
+.vt-product-atc__form {
+  display: contents;
+}
+
+/* ============================================================
+  QUICK VIEW
+  Quick view button, desktop only (snippets/card-quick-view)
+  ============================================================ */
+
+.vt-product-qv {
+  display: none;
+}
+
+@media screen and (min-width: 990px) {
+  .vt-product-qv {
+    display: inline-flex;
+  }
+}

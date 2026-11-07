@@ -1,0 +1,182 @@
+{%- doc -%}
+  One slide of the slideshow section. Its "Tab label" (setting id: title, so the theme editor shows it in the block list) names the matching tab
+  the section renders under the carousel, so tabs always follow the slides'
+  order and count. Slide content comes from its child blocks (stack, card…).
+
+  @example
+  {% content_for 'block', type: '_slideshow-slide', id: 'slide' %}
+{%- enddoc -%}
+
+<div
+  id="Slide-{{ block.id }}"
+  class="swiper-slide vt-slideshow__slide"
+  data-tab-label="{{ block.settings.title | escape }}"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Slide",
+  "tag": null,
+  "settings": [    
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Tab label",
+      "default": "Slide",
+      "info": "Shown in the tabs under the slideshow"
+    }
+  ],
+  "blocks": [
+    { "type": "stack" },
+    { "type": "card" },
+    { "type": "image" }
+  ],
+  "presets": [
+    {
+      "name": "Slide",
+      "settings": {
+        "title": "Add a tab label"
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--horizontal",
+            "layout_direction_tablet": "vt-stack--horizontal",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "stretch",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "height": "fill",
+            "gap_desktop": 0,
+            "gap_mobile": 0,            
+            "enable_padding": false
+          },
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "square",
+                "image_mobile_max_width": 800,
+                "image_desktop_max_width": 1000,
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "card",
+              "settings": {
+                "background_color": "#F8F9DC",
+                "heading_color": "#003225",
+                "text_color": "#224E09",
+                "position": "middle",
+                "alignment": "left",
+                "enable_decorative_icon": false,
+                "padding_vertical": 40,
+                "padding_horizontal": 40,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 20,
+                "width": "fill",
+                "height": "fill",
+                "gap": 20,
+                "enable_gap_mobile": true,
+                "gap_mobile": 14,
+                "border": "none",
+                "border_radius": 0,
+                "animation_type": "none"
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Add a slide heading",
+                    "heading_size": "vt-heading-h3",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h3",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "badge",
+                  "settings": {
+                    "text": "Add a badge label",
+                    "badge_size": "vt-paragraph-extra-small",
+                    "radius": "3.125rem",
+                    "width": "fit",
+                    "bg_color": "#003225",
+                    "text_color": "#EAE060",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "flex-start",
+                    "position": "center",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fit",
+                    "height": "fit",
+                    "gap_desktop": 8,
+                    "gap_mobile": 6,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "icons",
+                      "settings": {
+                        "icon_color": "#224E09",
+                        "icon": "organic-cotton",
+                        "icon_size_desktop": 20,
+                        "icon_size_mobile": 18,
+                        "show_box": false,
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Add a short detail</p>",
+                        "paragraph_size": "vt-paragraph-small",
+                        "paragraph_alignment": "text-inherit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Add a short description of this slide.</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "button",
+                  "settings": {
+                    "button_label": "Add a button label",
+                    "button_style": "link",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

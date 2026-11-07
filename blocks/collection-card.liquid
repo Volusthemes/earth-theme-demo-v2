@@ -1,0 +1,692 @@
+{% # theme-check-disable UndefinedObject %}
+{% # theme-check-disable UnusedAssign %}
+
+{% doc %}
+  @example
+  {% content_for 'block', type: 'collection-card', id: 'collection-card' %}
+{% enddoc %}
+
+{%- liquid
+  # ------------------------------------------------------------------
+  # 1. Collection resolution
+  # ------------------------------------------------------------------
+  assign vt_card_collection = closest.collection | default: block.settings.collection
+  assign vt_card_is_placeholder = false
+
+  if vt_card_collection == blank
+    assign vt_card_is_placeholder = true
+    assign vt_card_image = nil
+    assign vt_card_image_alt = 'Collection'
+  else
+    assign vt_card_image = vt_card_collection.featured_image
+    assign vt_card_image_alt = vt_card_image.alt | default: vt_card_collection.title
+  endif
+
+  # ------------------------------------------------------------------
+  # 2. Aspect ratio — per card, desktop + mobile
+  # ------------------------------------------------------------------
+  case block.settings.aspect_ratio_desktop
+    when 'square'
+      assign vt_ratio_desktop = '1 / 1'
+    when 'portrait'
+      assign vt_ratio_desktop = '3 / 4'
+    when 'landscape'
+      assign vt_ratio_desktop = '4 / 3'
+    when 'wide'
+      assign vt_ratio_desktop = '16 / 9'
+    when 'tall'
+      assign vt_ratio_desktop = '2 / 3'
+    else
+      assign vt_ratio_desktop = '1 / 1'
+  endcase
+
+  case block.settings.aspect_ratio_mobile
+    when 'square'
+      assign vt_ratio_mobile = '1 / 1'
+    when 'portrait'
+      assign vt_ratio_mobile = '3 / 4'
+    when 'landscape'
+      assign vt_ratio_mobile = '4 / 3'
+    when 'wide'
+      assign vt_ratio_mobile = '16 / 9'
+    when 'tall'
+      assign vt_ratio_mobile = '2 / 3'
+    else
+      assign vt_ratio_mobile = vt_ratio_desktop
+  endcase
+
+  # ------------------------------------------------------------------
+  # 3. Colors — block setting wins, palette is fallback
+  # ------------------------------------------------------------------
+  assign vt_text_color = block.settings.text_color | default: 'var(--vt-foreground-color)'
+
+  if block.settings.background_style == 'overlay'
+    assign vt_overlay_bg = block.settings.background_color | default: 'var(--vt-background-color)'
+    assign vt_overlay_opacity = block.settings.overlay_opacity | divided_by: 100.0
+  else
+    assign vt_overlay_bg = block.settings.background_gradient
+    assign vt_overlay_opacity = 1
+  endif
+
+  # ------------------------------------------------------------------
+  # 4. Content layout — Tailwind classes from settings
+  # ------------------------------------------------------------------
+  assign vt_content_classes = 'vt-collection-card__content ' | append: block.settings.position | append: ' ' | append: block.settings.alignment
+
+  # ------------------------------------------------------------------
+  # 5. Animation (skipped in theme editor visual preview)
+  # ------------------------------------------------------------------
+  assign vt_animation_type = block.settings.animation_type
+  assign vt_anim_classes = ''
+
+  unless vt_animation_type == 'none' or request.visual_preview_mode
+    assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type
+
+    if vt_animation_type == 'slide' or vt_animation_type == 'reveal'
+      assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing = 'linear'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+  endcase
+-%}
+
+<li class="vt-collection-card" {{ block.shopify_attributes }}>
+  <article
+    class="
+      vt-collection-card__item
+      {%- if vt_card_is_placeholder %} vt-collection-card--placeholder{% endif %}
+      {%- if block.settings.enable_hover and settings.enable_image_hover_effects %} vt-collection-card__item--hover{% endif %}
+      {{ vt_anim_classes }}
+    "
+    style="
+      --vt-card-ratio: {{ vt_ratio_desktop }};
+      --vt-card-ratio-mobile: {{ vt_ratio_mobile }};
+      --vt-card-text-color: {{ vt_text_color }};
+      --vt-card-overlay-bg: {{ vt_overlay_bg }};
+      --vt-card-overlay-opacity: {{ vt_overlay_opacity }};
+      {%- unless vt_animation_type == 'none' or request.visual_preview_mode -%}
+        --vt-duration: {{ block.settings.animation_duration }}s;
+        --vt-delay: {{ block.settings.animation_delay }}s;
+        {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' or vt_animation_type == 'blur' -%}
+          --vt-easing: {{ vt_easing }};
+        {%- endif -%}
+        {%- if vt_animation_type == 'blur' -%}
+          --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+        {%- endif -%}
+      {%- endunless -%}
+    "
+  >
+    <div class="vt-collection-card__media" aria-hidden="true">
+      {%- if vt_card_image != blank -%}
+        <img
+          src="{{ vt_card_image | image_url: width: 800 }}"
+          alt="{{ vt_card_image_alt | escape }}"
+          width="{{ vt_card_image.width }}"
+          height="{{ vt_card_image.height }}"
+          loading="lazy"
+          class="vt-collection-card__image"
+          sizes="(min-width: 768px) 50vw, 100vw"
+        >
+      {%- else -%}
+        {{ 'collection-1' | placeholder_svg_tag: 'vt-collection-card__image vt-collection-card__image--placeholder' }}
+      {%- endif -%}
+      <div class="vt-collection-card__overlay"></div>
+    </div>
+
+    <div
+      class="{{ vt_content_classes }}"
+      style="
+        --vt-card-gap-mobile: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_mobile, unit: 'rem' %};
+        --vt-card-gap-desktop: {% render 'fluid-clamp', min_px: block.settings.gap_desktop, max_px: block.settings.gap_desktop, unit: 'rem' %};
+        --vt-card-padding-block-start: {% render 'fluid-clamp', min_px: block.settings.padding_vertical, max_px: block.settings.padding_vertical, unit: 'rem' %};
+        --vt-card-padding-inline-start: {% render 'fluid-clamp', min_px: block.settings.padding_horizontal, max_px: block.settings.padding_horizontal, unit: 'rem' %};
+        {%- if block.settings.enable_padding_mobile -%}
+          --vt-card-padding-block-start-mobile: {% render 'fluid-clamp', min_px: block.settings.padding_vertical_mobile, max_px: block.settings.padding_vertical_mobile, unit: 'rem' %};
+          --vt-card-padding-inline-start-mobile: {% render 'fluid-clamp', min_px: block.settings.padding_horizontal_mobile, max_px: block.settings.padding_horizontal_mobile, unit: 'rem' %};
+        {%- else -%}
+          --vt-card-padding-block-start-mobile: var(--vt-card-padding-block-start);
+          --vt-card-padding-inline-start-mobile: var(--vt-card-padding-inline-start);
+        {%- endif -%}
+      "
+    >
+      {% content_for 'blocks', closest.collection: vt_card_collection %}
+    </div>
+  </article>
+</li>
+
+
+{% schema %}
+{
+  "name": "Collection card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        {
+          "value": "content-start",
+          "label": "Top"
+        },
+        {
+          "value": "content-center",
+          "label": "Middle"
+        },
+        {
+          "value": "content-end",
+          "label": "Bottom"
+        },
+        {
+          "value": "content-between",
+          "label": "Between"
+        }
+      ],
+      "default": "content-between"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "justify-items-start",
+          "label": "Left"
+        },
+        {
+          "value": "justify-items-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-items-end",
+          "label": "Right"
+        },
+        {
+          "value": "justify-items-stretch",
+          "label": "Stretch"
+        }
+      ],
+      "default": "justify-items-start"
+    },
+    {
+      "type": "header",
+      "content": "Aspect ratio"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_desktop",
+      "label": "Aspect ratio (desktop)",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "Aspect ratio (mobile)",
+      "info": "Falls back to desktop ratio when not set.",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (2:3)"
+        }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "placeholder": "Default",
+      "default": "{{ settings.color_palette.background }}"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "overlay",
+          "label": "Overlay"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "default": "{{ settings.color_palette.primary }}",
+      "label": "Overlay color",
+      "visible_if": "{{ block.settings.background_style == 'overlay' }}"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "label": "Overlay opacity",
+      "default": 40,
+      "visible_if": "{{ block.settings.background_style == 'overlay' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Gradient overlay",
+      "default": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
+      "visible_if": "{{ block.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:labels.gap_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:labels.gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical (desktop)",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Horizontal (desktop)",
+      "default": 25
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_padding_mobile",
+      "label": "Custom for mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_mobile",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Vertical (mobile)",
+      "default": 20,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "min": 10,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Horizontal (mobile)",
+      "default": 20,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.heading.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "header",
+      "content": "Hover"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_hover",
+      "label": "Enable hover effect",
+      "default": true
+    }
+  ],
+  "blocks": [
+    { "type": "collection-card-badges" },
+    { "type": "collection-card-content" }
+  ],
+  "presets": [
+    {
+      "name": "Collection card",
+      "category": "Collection",
+      "settings": {
+        "collection": "",
+        "position": "content-between",
+        "alignment": "justify-items-start",
+        "aspect_ratio_desktop": "square",
+        "aspect_ratio_mobile": "square",
+        "background_style": "gradient",
+        "overlay_opacity": 40,
+        "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
+        "gap_desktop": 32,
+        "gap_mobile": 16,
+        "padding_vertical": 25,
+        "padding_horizontal": 25,
+        "enable_padding_mobile": true,
+        "padding_vertical_mobile": 20,
+        "padding_horizontal_mobile": 20,
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 5,
+        "enable_hover": true
+      },
+      "blocks": [
+        { 
+          "type": "collection-card-badges",
+          "settings": {
+            "gap_desktop": 8,
+            "gap_mobile": 6,
+            "width": "fit"            
+          },
+          "blocks": [
+            { 
+              "type": "collection-badge",
+              "settings": {
+                "radius": "3.125rem",
+                "badge_size": "vt-paragraph-extra-small",
+                "width": "fit",
+                "gap": 6,
+                "text": "Metaobjects",                
+                "show_border": false,
+                "font_size": 16,
+                "width_custom": 100,
+                "border_size": 1,
+                "animation_type": "none",
+                "animation_direction": "from-bottom", 
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }    
+            }        
+          ]
+        },  
+        {
+          "type": "collection-card-content",
+          "settings": {
+            "gap_desktop": 8,
+            "gap_mobile": 6,
+            "width": "fit",
+            "width_custom": 50
+          },
+          "blocks": [
+            { 
+              "type": "collection-title", 
+              "settings": {
+                "heading": "Collection title",
+                "heading_size": "vt-heading-h3",
+                "heading_alignment": "text-inherit",
+                "heading_tag": "h2",
+                "heading_width": "fit",
+                "width_custom": 100,
+                "enable_max_width": false,
+                "heading_max_width": 600,
+                "show_index": false,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.1,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            { 
+              "type": "collection-paragraph",
+              "settings": {
+                "text": "<p>Collection description</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_max_width": 800,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",                
+                "animation_blur_intensity": 5
+              }
+            },
+            { 
+              "type": "collection-button",
+              "settings": {
+                "button_label": "Shop collection",
+                "button_link": "",
+                "open_in_new_tab": false,
+                "button_style": "link-light",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              } 
+            }
+          ]
+        }      
+      ]
+    }
+  ]
+}
+{% endschema %}
+
+{% # theme-check-enable UndefinedObject %}
+{% # theme-check-enable UnusedAssign %}

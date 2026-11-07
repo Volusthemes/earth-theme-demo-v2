@@ -1,0 +1,52 @@
+{%- doc -%}
+
+  @param {string} position - top | bottom
+  @param {string} alignment - left | center | right
+  @param {string} direction - row (wraps at max width) | column
+  @param {string} [mobile_badge] - first | none | badge type kept on mobile/tablet. Blank: every badge shows on mobile/tablet
+  @param {number} max_width - Desktop max width in px (row wrapping)
+  @param {number} [gap_desktop] - Gap in px (default 12)
+  @param {number} [gap_mobile] - Gap in px (default 8)
+  @param {number} [inset_desktop] - Distance from the image edge in px (default 24)
+  @param {number} [inset_mobile] - Distance from the image edge in px (default 12)
+
+  @example
+  <div {% render 'card-badge-group-attrs', position: 'top', alignment: 'left', direction: 'row', mobile_badge: 'first', max_width: 240 %}>...</div>
+{%- enddoc -%}
+
+{%- liquid
+  if direction == 'column'
+    assign vt_direction_class = 'flex-col'
+    case alignment
+      when 'center'
+        assign vt_align_class = 'items-center'
+      when 'right'
+        assign vt_align_class = 'items-end'        
+      else
+        assign vt_align_class = 'items-start'
+    endcase
+  else
+    assign vt_direction_class = 'flex-row'
+    case alignment
+      when 'center'
+        assign vt_align_class = 'justify-center'
+      when 'right'
+        assign vt_align_class = 'justify-end'
+      else
+        assign vt_align_class = 'justify-start'
+    endcase
+  endif
+
+  assign vt_classes = 'vt-product-badge-group flex flex-wrap ' | append: vt_direction_class | append: ' ' | append: vt_align_class
+  assign vt_classes = vt_classes | append: ' vt-product-badge-group--' | append: position
+  assign vt_classes = vt_classes | append: ' vt-product-badge-group--' | append: alignment
+  if mobile_badge != blank
+    assign vt_classes = vt_classes | append: ' vt-product-badge-group--single vt-product-badge-group--m-' | append: mobile_badge
+  endif
+
+  assign vt_gap_d = gap_desktop | default: 8
+  assign vt_gap_m = gap_mobile | default: 6
+  assign vt_inset_d = inset_desktop | default: 24
+  assign vt_inset_m = inset_mobile | default: 12
+-%}
+class="{{ vt_classes }}" style="--vt-badge-group-gap: {% render 'fluid-clamp', min_px: vt_gap_m, max_px: vt_gap_d %}; --vt-badge-group-inset: {% render 'fluid-clamp', min_px: vt_inset_m, max_px: vt_inset_d %}; --vt-badge-group-max: {% render 'fluid-clamp', min_px: max_width, max_px: max_width %};"

@@ -1,0 +1,308 @@
+{% comment %}
+  Rich text section with responsive gap, padding, colors, alignment.
+  Renders nested theme blocks (heading, paragraph, button).
+{% endcomment %}
+
+{%- liquid
+  assign make_section_page_width = section.settings.make_section_page_width
+
+  # Outer class list
+  assign section_classes = 'vt-section vt-rich-text'
+
+  # Inner class list: mobile alignment applies at every width, desktop (md:) overrides from 750px
+  assign inner_classes = 'vt-section__inner'
+  assign inner_classes = inner_classes | append: ' ' | append: section.settings.mobile_content_alignment
+  assign inner_classes = inner_classes | append: ' md:' | append: section.settings.desktop_content_alignment
+  if make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  class="{{ section_classes }}"
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.rich_text.name",
+  "tag": "section",
+  "class": "rich-text-section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "options": [
+        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
+        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
+        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+      ],
+      "default": "justify-center",
+      "label": "t:sections.rich_text.settings.desktop_content_alignment.label"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_alignment",
+      "options": [
+        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
+        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
+        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+      ],
+      "default": "justify-center",
+      "label": "t:sections.rich_text.settings.mobile_content_alignment.label"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 36,
+      "label": "t:sections.rich_text.settings.gap.label"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "t:sections.rich_text.settings.gap_mobile.label"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.header_colors.content"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "t:sections.rich_text.settings.text_color.label",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.rich_text.settings.header_section.content"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {      
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "t:sections.rich_text.settings.enable_custom_mobile_padding.label"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "label": "t:sections.rich_text.settings.padding_top_mobile.label",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "label": "t:sections.rich_text.settings.padding_bottom_mobile.label",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "t:sections.rich_text.settings.make_section_page_width.label"
+    }
+  ],
+  "blocks": [
+    { "type": "heading" },
+    { "type": "paragraph" },
+    { "type": "button" },
+    { "type": "stack" }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.rich_text.name",
+      "settings": {
+        "desktop_content_alignment": "justify-center",
+        "mobile_content_alignment": "justify-center",
+        "gap": 36,
+        "gap_mobile": 32,
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 32,
+        "padding_bottom_mobile": 32,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,               
+        "make_section_page_width": false
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Heading",
+            "heading_size": "vt-hero-heading",
+            "heading_alignment": "text-inherit",
+            "heading_tag": "h1",
+            "heading_width": "fit",
+            "width_custom": 100,
+            "enable_max_width": true,
+            "heading_max_width": 1100,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Share information about your brand with your customers. Describe a product, make announcements, or welcome customers to your store.</p>",
+            "paragraph_alignment": "text-inherit",
+            "paragraph_size": "vt-paragraph-medium",
+            "paragraph_width": "fit",
+            "width_custom": 50,
+            "enable_max_width": true,
+            "paragraph_max_width": 720,
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }
+        },
+        {
+          "type": "button",
+          "settings": {
+            "button_label": "Button label",
+            "button_link": "shopify://collections/all",
+            "open_in_new_tab": false,
+            "button_style": "primary",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.2,
+            "animation_easing": "ease-out-sine",
+            "animation_blur_intensity": 5
+          }   
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,137 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "t:general.header",
+  "sections": {
+    "announcement-bar": {
+      "type": "announcement-bar",
+      "settings": {
+        "autoplay": true,
+        "autoplay_speed": 3,
+        "transition_effect": "fade",
+        "rewind": true,
+        "show_close_button": true,
+        "close_persistence": "session",
+        "paragraph_size": "vt-paragraph-small",
+        "padding_block_desktop": 8,
+        "padding_block_mobile": 8,
+        "padding_inline_desktop": 20,        
+        "padding_inline_mobile": 20
+      },
+      "blocks": {
+        "announcement-one": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Free shipping over $100"
+          }
+        },
+        "announcement-two": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Save 15% code SUNNYDAY15"
+          }
+        },
+        "announcement-three": {
+          "type": "_announcement",
+          "settings": {
+            "text": "Easy returns within 30 days"
+          }
+        }
+      },
+      "block_order": [
+        "announcement-one",
+        "announcement-two",
+        "announcement-three"
+      ]
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "sticky_header": "scroll-up",
+        "make_section_page_width": false,
+        "padding_block_desktop": 14,
+        "padding_block_mobile": 4,
+        "padding_inline_desktop": 34,
+        "padding_inline_mobile": 20
+      },
+      "blocks": {
+        "left": {
+          "type": "_header-column",
+          "name": "Left",
+          "static": true,
+          "blocks": {
+            "menu": {
+              "type": "_header-menu",
+              "settings": {
+                "menu": "main-menu"
+              }
+            }
+          },
+          "block_order": [
+            "menu"
+          ]
+        },
+        "center": {
+          "type": "_header-column",
+          "name": "Center",
+          "static": true,
+          "blocks": {
+            "logo": {
+              "type": "_header-logo",
+              "settings": {
+                "width_desktop": 80,
+                "width_mobile": 70
+              }
+            }
+          },
+          "block_order": [
+            "logo"
+          ]
+        },        
+        "right": {
+          "type": "_header-column",
+          "name": "Right",
+          "static": true,
+          "blocks": {
+            "localization": {
+              "type": "_header-localization",
+              "settings": {
+                "show_country": true,
+                "show_language": true
+              }
+            },
+            "search": {
+              "type": "_header-search"
+            },
+            "account": {
+              "type": "_header-account"
+            },
+            "cart": {
+              "type": "_header-cart"
+            }
+          },
+          "block_order": [
+            "localization",
+            "search",
+            "account",
+            "cart"
+          ]
+        }
+      },
+      "block_order": [
+      ]
+    }
+  },
+  "order": [
+    "announcement-bar",
+    "header"
+  ]
+}

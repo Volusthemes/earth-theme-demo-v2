@@ -1,0 +1,27 @@
+{% doc %}
+  One of the three fixed columns of the header section. Holds the header's blocks,
+  which merchants can reorder or move to another column.
+
+  @example
+  {% content_for 'block', type: '_header-column', id: 'left' %}
+{% enddoc %}
+
+<div class="vt-header__column" {{ block.shopify_attributes }}>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "Column",
+  "tag": null,
+  "blocks": [
+    { "type": "_header-menu" },
+    { "type": "_header-logo" },
+    { "type": "_header-localization" },
+    { "type": "_header-search" },
+    { "type": "_header-account" },
+    { "type": "_header-cart" },
+    { "type": "@app" }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,50 @@
+{%- doc -%}
+  A badge group on the product image, built from a list of badge types.
+  Each type renders only when the product qualifies; an empty group takes no space.
+  Used by snippets/product-card with Theme settings > Product cards.
+
+  @param {object} product - The product
+  @param {string} types - Comma-separated badge types in display order, e.g. "best_seller,new,sale"
+  @param {string} position - top | bottom
+  @param {string} alignment - left | center | right
+  @param {string} direction - row | column
+  @param {string} [mobile_badge] - first | none | badge type kept on mobile/tablet. Blank: every badge shows on mobile/tablet
+  @param {number} max_width - Desktop max width in px
+  @param {number} [gap] - Gap between badges in px (default 12 desktop, 8 mobile)
+  @param {string} [tag_match] - Best seller tag
+  @param {number} [new_days] - New badge window in days
+  @param {string} [metafield_namespace] - Metaobject badge metafield namespace
+  @param {string} [metafield_key] - Metaobject badge metafield key
+  @param {string} [metaobject_field] - Metaobject field to show
+
+  @example
+  {% render 'card-badges', product: product, types: 'best_seller,new,sale', position: 'top', alignment: 'left', direction: 'row', mobile_badge: 'first', max_width: 240 %}
+{%- enddoc -%}
+
+{%- assign vt_types = types | split: ',' -%}
+
+{%- if vt_types.size > 0 -%}
+  <div
+    {% render 'card-badge-group-attrs',
+      position: position,
+      alignment: alignment,
+      direction: direction,
+      mobile_badge: mobile_badge,
+      max_width: max_width,
+      gap_desktop: gap,
+      gap_mobile: gap
+    %}
+  >
+    {%- for vt_type in vt_types -%}
+      {%- render 'card-badge',
+        product: product,
+        type: vt_type,
+        tag_match: tag_match,
+        new_days: new_days,
+        metafield_namespace: metafield_namespace,
+        metafield_key: metafield_key,
+        metaobject_field: metaobject_field
+      -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

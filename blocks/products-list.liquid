@@ -1,0 +1,225 @@
+{% doc %}
+  Products grid. Each product renders the static Product card block
+  (blocks/products-card), styled once in Theme settings > Product cards.
+
+  Use it as a static block and pass the products from the parent section
+  (e.g. the current page of a paginated collection). Without `products`, it
+  falls back to the block's own collection setting.
+
+  @param {object[]} [products] - Products to show (e.g. paginated collection.products)
+  @param {string} [aria_label] - Accessible name for the list, e.g. the collection title
+
+  @example
+  {%- paginate collection.products by 24 -%}
+    {% content_for 'block', type: 'products-list', id: 'products-list', products: collection.products, aria_label: collection.title %}
+  {%- endpaginate -%}
+{% enddoc %}
+
+{%- liquid
+  assign vt_s = block.settings
+
+  # Product source: section-provided products first, then the block's collection
+  assign vt_products = products
+  if vt_products == blank and vt_s.collection != blank
+    assign vt_products = vt_s.collection.products
+    assign vt_limit = vt_s.products_to_show
+  endif
+
+  
+  assign vt_show_placeholders = false
+  if collections.all.products_count == 0
+    assign vt_show_placeholders = true
+  endif
+
+  assign vt_list_label = aria_label
+  if vt_list_label == blank
+    assign vt_list_label = 'collections.products_label' | t
+  endif
+-%}
+
+<div
+  class="vt-products-list w-full"
+  style="
+    --vt-cols-desktop: {{ vt_s.columns_desktop }};    
+    --vt-cols-mobile: {{ vt_s.columns_mobile }};
+    --vt-products-list-gap-x: {% render 'fluid-clamp', min_px: vt_s.gap_mobile, max_px: vt_s.gap_desktop %};
+    --vt-products-list-gap-y: {% render 'fluid-clamp', min_px: vt_s.gap_vertical_mobile, max_px: vt_s.gap_vertical_desktop %};
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if vt_show_placeholders -%}
+    <ul class="vt-products-list__grid" role="list" aria-label="{{ vt_list_label | escape }}">
+      {%- for i in (1..vt_s.products_to_show) -%}
+        <li class="vt-products-list__item">
+          {% content_for 'block', type: 'products-card', id: 'products-card', placeholder_index: i %}
+        </li>
+      {%- endfor -%}
+    </ul>
+  {%- elsif vt_products.size > 0 -%}
+    {%- comment -%} role="list" keeps list semantics in Safari/VoiceOver when list-style is none {%- endcomment -%}
+    <ul class="vt-products-list__grid" role="list" aria-label="{{ vt_list_label | escape }}">
+      {%- for product in vt_products limit: vt_limit -%}
+        <li class="vt-products-list__item">
+          {%- comment -%} Same static card for every product; styled in Theme settings > Product cards {%- endcomment -%}
+          {% content_for 'block', type: 'products-card', id: 'products-card', product: product %}
+        </li>
+      {%- endfor -%}      
+    </ul>
+  {%- else -%}
+    {%- comment -%} Theme Store requirement: tell customers when a collection is empty {%- endcomment -%}
+    <p class="vt-products-list__empty">{{ 'collections.no_products' | t }}</p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .vt-products-list__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--vt-cols-mobile, 2), minmax(0, 1fr));    
+    column-gap: var(--vt-products-list-gap-x, 1rem);
+    row-gap: var(--vt-products-list-gap-y, 1.5rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Breakpoints only change the column count */
+  @media screen and (min-width: 990px) {
+    .vt-products-list__grid {
+      grid-template-columns: repeat(var(--vt-cols-desktop, 4), minmax(0, 1fr));
+    }
+  }
+
+  .vt-products-list__item {
+    min-width: 0;
+  }
+
+  .vt-products-list__empty {
+    margin: 0;
+    padding-block: 2rem;
+    text-align: center;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:blocks.products_list.name",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:blocks.products_card.settings.edit_in_theme_settings.content"
+    },
+    {
+      "type": "paragraph",
+      "content": "t:blocks.products_list.settings.source_info.content"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "t:blocks.products_list.settings.collection.label",
+      "info": "t:blocks.products_list.settings.collection.info"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "t:blocks.products_list.settings.products_to_show.label",
+      "info": "t:blocks.products_list.settings.products_to_show.info",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.products_list.settings.header_columns.content"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "t:blocks.products_list.settings.columns_desktop.label",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }        
+      ],
+      "default": "4"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:blocks.products_list.settings.columns_mobile.label",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }        
+      ],
+      "default": "2"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.products_list.settings.header_gap.content"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "t:blocks.products_list.settings.gap_desktop.label",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:blocks.products_list.settings.gap_mobile.label",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_vertical_desktop",
+      "label": "t:blocks.products_list.settings.gap_vertical_desktop.label",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "gap_vertical_mobile",
+      "label": "t:blocks.products_list.settings.gap_vertical_mobile.label",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:blocks.products_list.name",
+      "category": "t:blocks.products_list.categories.product"      
+    }
+  ]
+}
+{% endschema %}
+

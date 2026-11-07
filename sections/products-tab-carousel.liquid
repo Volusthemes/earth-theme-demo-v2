@@ -1,0 +1,958 @@
+{% comment %}
+  Products Tab Carousel section.
+  - Static intro stack (heading, paragraph...) above the tabs
+  - Tab blocks (products-tab-title): each renders its tab and its panel
+    (snippets/products-tab-panel) with a Swiper.js carousel of product cards
+{% endcomment %}
+
+{%- liquid
+  assign section_id = section.id
+  assign slides_per_view_desktop = section.settings.slides_per_view_desktop | default: 4
+  # Tablet: Large = 2, Compact = 3; mobile: Large = 1, Compact = 2
+  assign slides_per_view_tablet = 3
+  if section.settings.tablet_card_size == 'large'
+    assign slides_per_view_tablet = 2
+  endif
+  assign slides_per_view_mobile = 1
+  if section.settings.mobile_card_size == 'compact'
+    assign slides_per_view_mobile = 2
+  endif
+  assign make_section_page_width = section.settings.make_section_page_width
+
+  # Outer class list
+  assign section_classes = 'vt-section vt-products-tab-carousel'
+
+  # Inner class list
+  assign inner_classes = 'vt-section__inner'
+  if make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  # Tabs alignment on desktop: Tailwind justify-start | justify-center | justify-end
+  assign tabs_alignment = section.settings.alignment | default: 'justify-center'
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  id="vt-products-tab-carousel-{{ section_id }}"
+  class="{{ section_classes }}"
+  data-section-id="{{ section_id }}"
+  data-animate-tab-switch="{{ section.settings.animate_tab_switch }}"
+  style="
+    --vt-products-gap: {% render 'fluid-clamp', min_px: section.settings.space_between_mobile, max_px: section.settings.space_between_desktop %};
+    --vt-tabs-gap: {% render 'fluid-clamp', min_px: section.settings.tab_gap_mobile, max_px: section.settings.tab_gap_desktop %};
+    --vt-slides-desktop: {{ slides_per_view_desktop }};
+    --vt-slides-tablet: {{ slides_per_view_tablet }};
+    --vt-slides-mobile: {{ slides_per_view_mobile }};
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">    
+    <div class="vt-products-tab-carousel__header">
+
+      {% content_for 'block', type: 'stack', id: 'products-tab-intro' %}
+
+      {%- liquid
+        assign vt_tab_count = section.blocks.size
+
+        # Divider line follows the first tab's text color (same fallback as the tab)
+        assign vt_first_tab = section.blocks | where: 'type', 'products-tab-title' | first
+        assign vt_tabs_line_color = vt_first_tab.settings.text_color | default: 'var(--vt-foreground-color)'
+      -%}
+
+      {%- comment -%} Mobile and tablet: horizontal swipe area for the tabs {%- endcomment -%}
+      <div class="vt-products-tab-carousel__tabs-scroller vt-tabs-scroller vt-tabs-scroller--mobile {{ tabs_alignment }}" data-tabs-scroller>
+        <div
+          class="vt-products-tab-carousel__tabs {{ tabs_alignment }}"
+          style="--vt-tabs-line-color: {{ vt_tabs_line_color }};"
+          {% if vt_tab_count > 0 %}
+            role="tablist"
+            aria-label="{{ 'products.tabs.label' | t }}"
+          {% endif %}
+        >
+          {% content_for 'blocks' %}
+        </div>
+      </div>
+    </div>
+
+    <div class="vt-products-tab-carousel__panels">
+      {%- if vt_tab_count == 0 -%}        
+        {%- assign vt_fallback_id = section.id | append: '-all' -%}
+        {% render 'products-tab-panel',
+          section: section,
+          panel_id: vt_fallback_id,
+          tab_type: 'all',
+          is_active: true,
+          is_tabpanel: false
+        %}
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  
+  .vt-products-tab-carousel {    
+    --vt-products-fg: var(--vt-section-color, var(--vt-foreground-color, currentColor));
+  }
+  
+  .vt-products-tab-carousel__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    text-align: center;
+  }
+
+  .vt-products-tab-carousel__tabs-scroller {
+    display: flex;
+    width: 100%;
+  }
+
+  .vt-products-tab-carousel__tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem var(--vt-tabs-gap, 1.5rem);
+    position: relative;    
+    isolation: isolate;
+  }
+  
+  .vt-products-tab-carousel__panels {
+    position: relative;
+  }
+  
+  .vt-products-tab-carousel__tabs > .vt-products-tab-carousel__panel {
+    order: 1;
+    flex-basis: 100%;
+    text-align: start;
+  }
+
+  .vt-products-tab-carousel__panel {
+    display: none;
+  }
+
+  .vt-products-tab-carousel__panel.is-active {
+    display: block;
+  }
+
+  .vt-products-tab-carousel__panel[hidden] {
+    display: none !important;
+  }
+
+  .vt-products-tab-carousel__empty {
+    margin: 0;
+    padding-block: 2rem;
+    text-align: center;
+  }
+
+  /* Swiper */
+  .vt-products-swiper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    /* No layout effect on a block box; JS reads it as the resolved px gap */
+    column-gap: var(--vt-products-gap);
+  }
+
+  .vt-products-swiper .swiper-wrapper {
+    display: flex;
+  }
+
+  .vt-products-swiper__slide {
+    height: auto;
+    box-sizing: border-box;
+  }
+
+  @keyframes vt-tab-switch-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--vt-offset));
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .vt-products-tab-carousel__panel.is-tab-switching .vt-products-swiper__slide > * {
+    --vt-duration: 0.45s;
+    --vt-delay: calc(var(--vt-stagger, 0) * 70ms);
+    --vt-offset: 1.25rem;
+    animation: vt-tab-switch-in var(--vt-duration) cubic-bezier(0.61, 1, 0.88, 1) var(--vt-delay) backwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-products-tab-carousel__panel.is-tab-switching .vt-products-swiper__slide > * {
+      animation: none;
+    }
+  }
+  
+  .vt-products-swiper:not(.swiper-initialized) .swiper-wrapper {
+    gap: var(--vt-products-gap);
+  }
+
+  .vt-products-swiper:not(.swiper-initialized) .vt-products-swiper__slide {
+    --vt-slides: calc(var(--vt-slides-mobile, 2) + var(--vt-slides-peek));
+    flex-shrink: 0;
+    width: calc((100% - var(--vt-products-gap) * (var(--vt-slides) - 1)) / var(--vt-slides));
+  }
+
+  @media screen and (max-width: 989px) {
+    .vt-products-tab-carousel {
+      /* Side gutters to bleed through: section padding, or the page width padding */
+      --vt-products-bleed-start: var(--vt-section-padding-inline-start, 0px);
+      --vt-products-bleed-end: var(--vt-section-padding-inline-end, 0px);
+      --vt-slides-peek: 0.3;
+    }
+
+    .vt-products-tab-carousel .vt-page-width {
+      --vt-products-bleed-start: var(--vt-page-padding, 0px);
+      --vt-products-bleed-end: var(--vt-page-padding, 0px);
+    }
+
+    .vt-products-swiper {
+      width: auto;
+      margin-inline: calc(var(--vt-products-bleed-start) * -1) calc(var(--vt-products-bleed-end) * -1);
+    }
+
+    /* Before Swiper starts: first product already on the left margin */
+    .vt-products-swiper:not(.swiper-initialized) .swiper-wrapper {
+      box-sizing: content-box;
+      padding-inline-start: var(--vt-products-bleed-start);
+    }
+
+    /* Swipe only: no arrows on touch-sized screens */
+    .vt-products-swiper .vt-swiper-btn {
+      display: none;
+    }
+  }
+
+  @media screen and (max-width: 750px) {
+    /* Swipe and edge fade: .vt-tabs-scroller (theme.css, TABS SCROLLER) */
+    .vt-products-tab-carousel__tabs-scroller {
+      display: block;
+      width: auto;
+      align-self: stretch;
+      margin-inline: calc(var(--vt-products-bleed-start) * -1) calc(var(--vt-products-bleed-end) * -1);
+      padding-inline: var(--vt-products-bleed-start) var(--vt-products-bleed-end);
+    }
+
+    /* One row as wide as the tabs, so the line under them spans first to last tab */
+    .vt-products-tab-carousel__tabs {
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      width: max-content;
+      min-width: 100%;
+    }
+
+    .vt-products-tab-carousel__tabs > [role="tab"] {
+      flex-shrink: 0;
+    }
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .vt-products-tab-carousel {
+      --vt-slides-peek: 0.5;
+    }
+
+    .vt-products-swiper:not(.swiper-initialized) .vt-products-swiper__slide {
+      --vt-slides: calc(var(--vt-slides-tablet, 3) + var(--vt-slides-peek));
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-products-swiper:not(.swiper-initialized) .vt-products-swiper__slide {
+      --vt-slides: var(--vt-slides-desktop, 4);
+      flex-shrink: 0;
+    }
+  }
+
+  /* Navigation arrows: position and hover-only behaviour are shared (theme.css, SLIDER ARROWS) */
+
+  /* Offset: the arrow on the side with no more products is hidden, not faded */
+  .vt-products-swiper--offset .vt-swiper-btn:is(:disabled, [aria-disabled="true"]),
+  .vt-products-swiper--offset:is(:hover, :focus-within) .vt-swiper-btn--hover-only:is(:disabled, [aria-disabled="true"]) {
+    opacity: 0;
+    visibility: hidden;
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    if (window.vtProductsTabCarouselInit) return;
+    window.vtProductsTabCarouselInit = true;
+    
+    const initSwiper = (container) => window.vtSlider?.init(container);
+    const destroySwiper = (container) => window.vtSlider?.destroy(container);
+
+    const initTabs = (sectionEl) => {
+      const tablist = sectionEl.querySelector('[role="tablist"]');
+      // No tabs: a single visible panel, so just start its carousel
+      if (!tablist) {
+        sectionEl.querySelectorAll('[data-swiper]').forEach(initSwiper);
+        return;
+      }
+
+      // Tab blocks render their panel right after their tab; move panels out
+      // of the tablist so it only contains tabs (valid ARIA structure)
+      const panelsWrap = sectionEl.querySelector('.vt-products-tab-carousel__panels');
+      if (panelsWrap) {
+        tablist.querySelectorAll('.vt-products-tab-carousel__panel').forEach((panel) => {
+          panelsWrap.appendChild(panel);
+        });
+      }
+
+      const tabs = tablist.querySelectorAll('[role="tab"]');
+      const panels = sectionEl.querySelectorAll('[role="tabpanel"]');
+
+      // Replay the products' rise-in on the panel the shopper switched to
+      const animateTabSwitch = sectionEl.dataset.animateTabSwitch === 'true';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const playTabSwitch = (panel, swiperEl) => {
+        if (!animateTabSwitch || reduceMotion.matches) return;
+        const swiper = swiperEl._swiperInstance;
+        const slides = swiper ? Array.from(swiper.slides) : Array.from(swiperEl.querySelectorAll('.swiper-slide'));
+        const first = swiper ? swiper.activeIndex : 0;
+        // Stagger from the first visible product; capped so later ones don't wait long
+        slides.forEach((slide, index) => {
+          slide.style.setProperty('--vt-stagger', Math.min(Math.max(index - first, 0), 8));
+        });
+        panel.classList.remove('is-tab-switching');
+        void panel.offsetWidth;
+        panel.classList.add('is-tab-switching');
+      };
+
+      // animate: true only for a shopper's click or arrow key (not page load or the theme editor)
+      const activateTab = (tab, animate = false) => {
+        tabs.forEach((t) => {
+          const selected = t === tab;
+          t.setAttribute('aria-selected', selected ? 'true' : 'false');
+          t.classList.toggle('is-active', selected);          
+          // Roving tabindex: only the selected tab is reachable with Tab
+          t.tabIndex = selected ? 0 : -1;
+        });
+
+        panels.forEach((panel) => {
+          const match = panel.dataset.tabId === tab.dataset.tabId;
+          panel.classList.toggle('is-active', match);
+          if (match) {
+            panel.removeAttribute('hidden');
+            // Init swiper when panel becomes visible
+            const swiperEl = panel.querySelector('[data-swiper]');
+            if (swiperEl) {
+              // Destroy previous instance if any to avoid duplicate
+              destroySwiper(swiperEl);
+              // Small delay so display:block has applied
+              requestAnimationFrame(() => {
+                initSwiper(swiperEl);
+                if (animate) playTabSwitch(panel, swiperEl);
+              });
+            }
+          } else {
+            panel.setAttribute('hidden', '');
+            // Otherwise the animation would replay whenever the panel is shown again
+            panel.classList.remove('is-tab-switching');
+          }
+        });
+      };
+
+      // Mobile tab swipe: edge fade and keeping the chosen tab in view (assets/theme-tabs-scroller.js)
+      const tabsScroller = window.vtTabsScroller?.init(sectionEl.querySelector('[data-tabs-scroller]'), tablist);
+      const scrollTabIntoView = (tab) => tabsScroller?.scrollIntoView(tab);
+
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          activateTab(tab, true);
+          scrollTabIntoView(tab);
+        });
+        tab.addEventListener('keydown', (e) => {
+          const idx = Array.from(tabs).indexOf(tab);
+          let nextIdx = null;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            nextIdx = (idx + 1) % tabs.length;
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            nextIdx = (idx - 1 + tabs.length) % tabs.length;
+          } else if (e.key === 'Home') {
+            nextIdx = 0;
+          } else if (e.key === 'End') {
+            nextIdx = tabs.length - 1;
+          }
+          if (nextIdx !== null) {
+            e.preventDefault();
+            tabs[nextIdx].focus({ preventScroll: true });
+            activateTab(tabs[nextIdx], true);
+            scrollTabIntoView(tabs[nextIdx]);
+          }
+        });
+      });
+
+      // Activate default: the tab marked "Active by default", else the first one
+      const defaultTab = tablist.querySelector('[aria-selected="true"]') || tabs[0];
+      if (defaultTab) activateTab(defaultTab);
+
+      // Theme editor: show a tab's panel when its block is selected
+      sectionEl._vtActivateTab = activateTab;
+    };
+
+    const initSection = (sectionEl) => {
+      if (!sectionEl) return;
+      initTabs(sectionEl);
+    };
+
+    const boot = () => {
+      document.querySelectorAll('.vt-products-tab-carousel').forEach(initSection);
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', boot);
+    } else {
+      boot();
+    }
+
+    document.addEventListener('shopify:block:select', (e) => {
+      const tab = e.target.closest?.('[role="tab"]');
+      const sectionEl = tab?.closest('.vt-products-tab-carousel');
+      if (sectionEl?._vtActivateTab) sectionEl._vtActivateTab(tab);
+    });
+
+    document.addEventListener('shopify:section:load', (e) => {
+      const sectionEl = e.target.querySelector?.('.vt-products-tab-carousel') || e.target.closest?.('.vt-products-tab-carousel');
+      if (sectionEl) initSection(sectionEl);
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Products tab carousel",
+  "tag": "section",
+  "class": "products-tab-carousel-section",  
+  "settings": [    
+    {
+      "type": "collection_list",
+      "id": "collection_list",
+      "label": "Collections",
+      "limit": 8,
+      "info": "Used as product source when tab type relies on collections"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show per tab",
+      "min": 3,
+      "max": 8,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Tab item gap"
+    },
+    {
+      "type": "range",
+      "id": "tab_gap_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "tab_gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Product item gap"
+    },
+    {
+      "type": "range",
+      "id": "space_between_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "space_between_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },    
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "range",
+      "id": "slides_per_view_desktop",
+      "label": "Slides per view (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "tablet_card_size",
+      "label": "Product item (tablet)",
+      "options": [
+        { "value": "large", "label": "2" },
+        { "value": "compact", "label": "3" }
+      ],      
+      "default": "large"      
+    },
+    {     
+      "type": "select",
+      "id": "mobile_card_size",
+      "label": "Product item (mobile)",
+      "options": [
+        { "value": "large", "label": "1" },
+        { "value": "compact", "label": "2" }
+      ],
+      "default": "large"            
+    },
+    {
+      "type": "select",
+      "id": "slide_style",
+      "label": "Slide style",
+      "options": [
+        { "value": "standard", "label": "Standard" },
+        { "value": "offset", "label": "Offset" }
+      ],
+      "default": "offset",
+      "info": "Offset keeps the current product a set distance from the left edge, with part of the previous product showing"
+    },
+    {
+      "type": "range",
+      "id": "slide_offset",
+      "label": "Offset from edge",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "default": 15,
+      "info": "Percentage of the carousel width, on desktop. On mobile and tablet the carousel swipes, with the first product on the page margin.",
+      "visible_if": "{{ section.settings.slide_style == 'offset' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true      
+    },
+    {
+      "type": "select",
+      "id": "arrows_style",      
+      "options": [        
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "primary",
+      "label": "Arrows style",
+      "visible_if": "{{ section.settings.show_arrows == true }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows_on_hover",
+      "label": "Show arrows only on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop slides",
+      "default": false,
+      "info": "Only active when there are more slides than visible"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable autoplay",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "label": "Autoplay delay",
+      "min": 2000,
+      "max": 8000,
+      "step": 500,
+      "unit": "ms",
+      "default": 4000
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_tab_switch",
+      "label": "Animate products when switching tabs",
+      "default": true
+    },  
+    {
+      "type": "header",
+      "content": "Tabs"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Tabs alignment",
+      "info": "Only on desktop, on mobile the tabs swipe from the left",
+      "options": [
+        {
+          "value": "justify-start",
+          "label": "Left"
+        },
+        {
+          "value": "justify-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-end",
+          "label": "Right"
+        }
+      ],
+      "default": "justify-center"
+    },
+    {
+      "type": "header",
+      "content": "Section gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 64,
+      "label": "Gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",      
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",      
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",      
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,      
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "Apply max width"
+    }     
+  ],
+  "blocks": [
+    {
+      "type": "products-tab-title"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Products tab carousel",
+      "blocks": [
+        {
+          "type": "stack",
+          "id": "products-tab-intro",
+          "static": true,
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "center",
+            "position": "flex-start",
+            "width": "fill",
+            "height": "fit",
+            "gap_desktop": 22,
+            "gap_mobile": 16,
+            "padding_bottom_desktop": 30,
+            "padding_bottom_mobile": 16,
+            "padding_left_desktop": 34,
+            "padding_right_desktop": 34            
+          },
+          "blocks": [
+            {
+              "type": "heading-group",
+              "settings": {
+                "direction": "horizontal",
+                "alignment": "inherit",
+                "vertical_alignment": "center",
+                "gap_desktop": 16,
+                "gap_mobile": 12,
+                "width": "fit",                                
+                "max_width": 420,
+                "hide_icon_mobile": true
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_color": "#71CC3B",
+                    "icon_size_desktop": 32,
+                    "icon_size_mobile": 24,
+                    "show_box": false,
+                    "box_size_desktop": 56,
+                    "box_size_mobile": 40,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5     
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Elevate Your Everyday",                                        
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_color": "#71CC3B",
+                    "icon_size_desktop": 32,
+                    "icon_size_mobile": 24,
+                    "show_box": false,
+                    "box_size_desktop": 56,                    
+                    "box_size_mobile": 40,
+                    "box_radius": "50%",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5     
+                  }
+                }
+              ]
+            },
+            {
+              "type": "paragraph",   
+              "settings": {
+                "text": "<p>Shop the official store and get up to 40% off selected items this week only.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-inherit", 
+                "paragraph_width": "fit",       
+                "enable_max_width": true,                  
+                "paragraph_max_width": 600,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            }
+          ]
+        },
+        {
+          "type": "products-tab-title",
+          "settings": {
+            "tab_type": "all",
+            "title": "All",
+            "is_default": true
+          }
+        },
+        {
+          "type": "products-tab-title",
+          "settings": {
+            "tab_type": "collection",
+            "title": "Men's"
+          }
+        },
+        {
+          "type": "products-tab-title",
+          "settings": {
+            "tab_type": "collection",
+            "title": "Women's"
+          }
+        },
+        {
+          "type": "products-tab-title",
+          "settings": {
+            "tab_type": "new_arrivals",
+            "title": "New Arrivals"
+          }
+        },
+        {
+          "type": "products-tab-title",
+          "settings": {
+            "tab_type": "sale",
+            "title": "Sale"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
