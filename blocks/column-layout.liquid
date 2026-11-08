@@ -42,7 +42,7 @@
     assign mobile_track_list = mobile_track_list | append: parts[1] | append: 'fr '
     assign mobile_shares = mobile_shares | append: parts[1] | append: ' '
   endfor
-
+  
   assign mobile_shares = mobile_shares | strip
   assign tablet_shares = tablet_shares | strip
   assign mobile_first_share = mobile_shares | split: ' ' | first | default: 100

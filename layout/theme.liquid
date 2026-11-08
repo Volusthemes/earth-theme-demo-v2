@@ -20,7 +20,7 @@
       {% comment %} Preload the base font variant for initial page render {% endcomment %}
       {{ settings.type_body_font | font_url | preload_tag: as: 'font', crossorigin: 'anonymous' }}
     {% endunless %}
-
+    
     {% # Load and preload the critical CSS %}
     {{ 'theme.css' | asset_url | stylesheet_tag: preload: true }}
 
