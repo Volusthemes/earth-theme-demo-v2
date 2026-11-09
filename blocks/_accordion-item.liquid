@@ -1,0 +1,149 @@
+{% doc %}
+  One row of an accordion: a <details> whose <summary> is the header (optional
+  icon, title, description, state indicator) and whose panel holds child blocks.
+
+  Only used inside blocks/accordion.liquid. The parent replaces the
+  data-vt-accordion-item-pending marker with the shared attributes (name for
+  "Open one answer at a time", open on the first row), because a child block
+  can't read its parent's settings. Header layout, borders, colors and the
+  indicator shape all come from the parent's classes and custom properties.
+
+  Without JavaScript the row still opens and closes natively.
+
+  @example
+  {% content_for 'block', type: '_accordion-item', id: 'accordion-item' %}
+{% enddoc %}
+
+{%- liquid
+  assign heading_tag = block.settings.heading_tag | default: 'h3'
+  assign heading_class = 'vt-accordion__title ' | append: block.settings.heading_size
+-%}
+
+<details class="vt-accordion__item" data-vt-accordion-item-pending {{ block.shopify_attributes }}>
+  <summary class="vt-accordion__summary">
+    {%- if block.settings.show_icon -%}
+      <span class="vt-accordion__icon">
+        {%- content_for 'block', type: 'icons', id: 'accordion-item-icon' -%}
+      </span>
+    {%- endif -%}
+    <{{ heading_tag }} class="{{ heading_class }}">
+      {{- block.settings.heading | escape -}}
+    </{{ heading_tag }}>
+    <span class="vt-accordion__indicator" aria-hidden="true"></span>
+    {%- if block.settings.description != blank -%}
+      <span class="vt-accordion__description {{ block.settings.description_size }}{% if block.settings.description_visibility == 'open' %} vt-accordion__description--open{% endif %}">
+        {{- block.settings.description | escape -}}
+      </span>
+    {%- endif -%}
+  </summary>
+  <div class="vt-accordion__panel">
+    {% content_for 'blocks' %}
+  </div>
+</details>
+
+{% schema %}
+{
+  "name": "Accordion item",
+  "tag": null,
+  "blocks": [
+    { "type": "heading" },
+    { "type": "sub-heading" },
+    { "type": "paragraph" },
+    { "type": "icons" },
+    { "type": "image" },
+    { "type": "button" },
+    { "type": "divider" },
+    { "type": "stack" },
+    { "type": "card" },
+    { "type": "column-layout" }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Accordion heading"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description",
+      "info": "Short line under the heading."
+    },
+    {
+      "type": "select",
+      "id": "description_visibility",
+      "label": "Show description",
+      "options": [
+        { "value": "always", "label": "Always" },
+        { "value": "open", "label": "Only when open" }
+      ],
+      "default": "always",
+      "visible_if": "{{ block.settings.description != blank }}"
+    },
+    {
+      "type": "select",
+      "id": "description_size",
+      "label": "Description size",
+      "options": [
+        { "value": "vt-paragraph-extra-small", "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label" },
+        { "value": "vt-paragraph-small", "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label" },
+        { "value": "vt-paragraph-medium", "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label" },
+        { "value": "vt-paragraph-large", "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label" }
+      ],
+      "default": "vt-paragraph-medium",
+      "visible_if": "{{ block.settings.description != blank }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Heading style"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "vt-heading-h1", "label": "t:blocks.heading.settings.heading_size.options__2.label" },
+        { "value": "vt-heading-h2", "label": "t:blocks.heading.settings.heading_size.options__3.label" },
+        { "value": "vt-heading-h3", "label": "t:blocks.heading.settings.heading_size.options__4.label" },
+        { "value": "vt-heading-h4", "label": "t:blocks.heading.settings.heading_size.options__5.label" },
+        { "value": "vt-heading-h5", "label": "t:blocks.heading.settings.heading_size.options__6.label" },
+        { "value": "vt-heading-h6", "label": "t:blocks.heading.settings.heading_size.options__7.label" }
+      ],
+      "default": "vt-heading-h4",
+      "label": "t:blocks.heading.settings.heading_size.label"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "div", "label": "Div" }
+      ],
+      "default": "h3",
+      "label": "HTML tag",
+      "info": "Changes how search engines and screen readers read the page, not how it looks."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accordion item",
+      "blocks": [
+        {
+          "type": "paragraph"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1259,6 +1259,42 @@
 					},
 					"options__20": {
 						"label": "Cotton plant"
+					},
+					"options__21": {
+						"label": "Heart"
+					},
+					"options__22": {
+						"label": "Calculator"
+					},
+					"options__23": {
+						"label": "Check in circle"
+					},
+					"options__24": {
+						"label": "Cross in circle"
+					},
+					"options__25": {
+						"label": "Info"
+					},
+					"options__26": {
+						"label": "Washing"
+					},
+					"options__27": {
+						"label": "Get dressed"
+					},
+					"options__28": {
+						"label": "Hands with sparkles"
+					},
+					"options__29": {
+						"label": "Materials"
+					},
+					"options__30": {
+						"label": "Partners"
+					},
+					"options__31": {
+						"label": "Recycle"
+					},
+					"options__32": {
+						"label": "Honest progress"
 					}
 				},
 				"icon_size_desktop": {

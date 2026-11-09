@@ -1297,7 +1297,8 @@
 					"primary": "#224E09",
 					"secondary": "#71CC3B",
 					"accent": "#EAE060",
-					"cactus_green": "#34601B"					
+					"cactus_green": "#34601B",
+					"red": "#F01316"
 				}
 			}
 		]

@@ -112,8 +112,8 @@
   # -----------------------------------------------------------------------
   assign vt_class_list = 'vt-card vt-card--width-' | append: block.settings.width | append: ' vt-card--height-' | append: block.settings.height
 
-  if block.settings.border == 'solid'
-    assign vt_class_list = vt_class_list | append: ' vt-card--border-solid'
+  if block.settings.border != 'none'
+    assign vt_class_list = vt_class_list | append: ' vt-card--border-' | append: block.settings.border
   endif
 
   if vt_animate_classes != blank
@@ -213,10 +213,30 @@
     color: var(--vt-text-color);
   }
 
+  /* All sides, or one side only (e.g. the accent bar of a callout) */
+  :is(.vt-card--border-solid, .vt-card--border-left, .vt-card--border-right, .vt-card--border-top, .vt-card--border-bottom) {
+    --vt-card-border: calc(var(--vt-border-width, 0) / 16 * 1rem) solid
+      color-mix(in srgb, var(--vt-border-color, currentColor) var(--vt-border-opacity, 100%), transparent);
+  }
+
   .vt-card--border-solid {
-    border-style: solid;
-    border-width: calc(var(--vt-border-width, 0) / 16 * 1rem);
-    border-color: color-mix(in srgb, var(--vt-border-color, currentColor) var(--vt-border-opacity, 100%), transparent);
+    border: var(--vt-card-border);
+  }
+
+  .vt-card--border-left {
+    border-inline-start: var(--vt-card-border);
+  }
+
+  .vt-card--border-right {
+    border-inline-end: var(--vt-card-border);
+  }
+
+  .vt-card--border-top {
+    border-block-start: var(--vt-card-border);
+  }
+
+  .vt-card--border-bottom {
+    border-block-end: var(--vt-card-border);
   }
 
   .vt-card--width-fit {
@@ -611,7 +631,7 @@
       "type": "header",
       "content": "Gap"
     },
-    {
+    {      
       "type": "range",
       "id": "gap",
       "min": 4,
@@ -653,8 +673,24 @@
         },
         {
           "value": "solid",
-          "label": "Solid"
-        }   
+          "label": "All solid"
+        },
+        {
+          "value": "left",
+          "label": "Left only"
+        },
+        {
+          "value": "right",
+          "label": "Right only"
+        },
+        {
+          "value": "top",
+          "label": "Top only"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom only"
+        }
       ],
       "default": "none"
     },
@@ -663,7 +699,7 @@
       "id": "border_color",
       "label": "Border color",
       "info": "Leave blank to inherit from color palette",
-      "visible_if": "{{ block.settings.border == 'solid' }}"
+      "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
       "type": "range",
@@ -674,7 +710,7 @@
       "unit": "px",
       "label": "Border width",
       "default": 1,
-      "visible_if": "{{ block.settings.border == 'solid' }}"
+      "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
       "type": "range",
@@ -685,7 +721,7 @@
       "unit": "%",
       "label": "Border opacity",
       "default": 100,          
-      "visible_if": "{{ block.settings.border == 'solid' }}"
+      "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
       "type": "range",

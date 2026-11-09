@@ -1,0 +1,842 @@
+{% doc %}
+  Accordion: a list of collapsible items (blocks/_accordion-item.liquid).
+
+  Each item is a native <details>/<summary>, so it opens and closes without
+  JavaScript, is announced as an expandable button, and opens on find-in-page.
+  assets/theme-accordion.js only adds the smooth expand effect and closes the
+  other items when "Open one answer at a time" is on.
+
+  Child blocks can't read this block's settings, so the shared item attributes
+  are written into the rendered items here (one capture), and the item styling
+  comes from the classes and custom properties on the root.
+
+  @example
+  {% content_for 'block', type: 'accordion', id: 'accordion' %}
+{% enddoc %}
+
+{%- liquid
+  assign border_style = block.settings.border_style
+  assign interaction = block.settings.interaction_state
+
+  # Items: shared attributes. Exclusive items share a name, so even without
+  # JavaScript the browser closes the open item when another one opens.
+  assign item_attrs = 'data-vt-accordion-item'
+  if block.settings.open_one_at_a_time
+    assign item_attrs = item_attrs | append: ' name="vt-accordion-' | append: block.id | append: '"'
+  endif
+
+  # Border color: the text color unless a custom one is picked, then the opacity
+  assign border_color = 'currentColor'
+  if block.settings.border_color_source == 'custom' and block.settings.border_color != blank
+    assign border_color = block.settings.border_color
+  endif
+  if block.settings.border_opacity < 100
+    assign border_color = 'color-mix(in srgb, ' | append: border_color | append: ' ' | append: block.settings.border_opacity | append: '%, transparent)'
+  endif
+
+  assign root_class = 'vt-accordion flex flex-col'
+  assign root_class = root_class | append: ' vt-accordion--border-' | append: border_style
+  assign root_class = root_class | append: ' vt-accordion--indicator-' | append: block.settings.indicator
+  assign root_class = root_class | append: ' vt-accordion--indicator-' | append: block.settings.indicator_position
+  assign root_class = root_class | append: ' ' | append: block.settings.alignment
+  if block.settings.gap == 0
+    assign root_class = root_class | append: ' vt-accordion--joined'
+  endif
+  if block.settings.header_divider
+    assign root_class = root_class | append: ' vt-accordion--header-divider'
+  endif
+  if interaction contains 'background'
+    assign root_class = root_class | append: ' vt-accordion--state-bg'
+  endif
+  if interaction contains 'text'
+    assign root_class = root_class | append: ' vt-accordion--state-text'
+  endif
+
+  # Scroll-in animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
+  assign animation_type = block.settings.animation_type
+  assign is_animated = false
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign is_animated = true
+    assign root_class = root_class | append: ' vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign root_class = root_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing = 'linear'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  endcase
+-%}
+
+{%- comment -%}
+  Rendered items with this accordion's attributes in place of the marker. Nested
+  accordions have already replaced their own markers, so only these items match.
+{%- endcomment -%}
+{%- capture items -%}
+  {%- content_for 'blocks' -%}
+{%- endcapture -%}
+{%- liquid
+  if block.settings.keep_first_open
+    assign first_attrs = item_attrs | append: ' open'
+    assign items = items | replace_first: 'data-vt-accordion-item-pending', first_attrs
+  endif
+  assign items = items | replace: 'data-vt-accordion-item-pending', item_attrs
+-%}
+
+<vt-accordion
+  class="{{ root_class }}"
+  data-effect="{{ block.settings.expand_effect }}"
+  {% if block.settings.open_one_at_a_time %}
+    data-exclusive
+  {% endif %}
+  style="
+    --vt-accordion-gap: {{ block.settings.gap }}px;
+    --vt-accordion-border-width: {{ block.settings.border_thickness }}px;
+    --vt-accordion-border-color: {{ border_color }};
+    --vt-accordion-radius: {{ block.settings.border_radius }}px;
+    --vt-accordion-pad-x: {% render 'fluid-clamp', min_px: block.settings.padding_x_mobile, max_px: block.settings.padding_x_desktop %};
+    --vt-accordion-pad-y: {% render 'fluid-clamp', min_px: block.settings.padding_y_mobile, max_px: block.settings.padding_y_desktop %};
+    --vt-accordion-content-gap: {% render 'fluid-clamp', min_px: block.settings.content_gap_mobile, max_px: block.settings.content_gap_desktop %};
+    --vt-accordion-indicator-size: {% render 'fluid-clamp', min_px: block.settings.indicator_size_mobile, max_px: block.settings.indicator_size_desktop %};
+    {%- if block.settings.item_background != blank %}
+    --vt-accordion-item-bg: {{ block.settings.item_background }};
+    {%- endif %}
+    {%- if block.settings.state_background != blank %}
+    --vt-accordion-state-bg: {{ block.settings.state_background }};
+    {%- endif %}
+    {%- if block.settings.state_text != blank %}
+    --vt-accordion-state-color: {{ block.settings.state_text }};
+    {%- endif %}
+    {%- if is_animated %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    --vt-easing: {{ vt_easing }};
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {{ items }}
+</vt-accordion>
+<script src="{{ 'theme-accordion.js' | asset_url }}" type="module"></script>
+
+{% stylesheet %}
+  .vt-accordion {
+    --vt-accordion-border: var(--vt-accordion-border-width) solid var(--vt-accordion-border-color);
+    --vt-accordion-speed: 0.3s;
+    gap: var(--vt-accordion-gap);
+    width: 100%;
+  }
+
+  /* Child combinators keep a nested accordion's settings its own */
+  .vt-accordion > .vt-accordion__item {
+    background-color: var(--vt-accordion-item-bg, transparent);
+    transition: background-color var(--vt-accordion-speed) ease;
+  }
+
+  /* ---- Borders ------------------------------------------------------------ */
+
+  /* None: a tinted box separates the items (or the picked background) */
+  .vt-accordion--border-none > .vt-accordion__item {
+    background-color: var(--vt-accordion-item-bg, color-mix(in srgb, currentColor 6%, transparent));
+    border-radius: var(--vt-accordion-radius);
+  }
+
+  .vt-accordion--border-all > .vt-accordion__item {
+    border: var(--vt-accordion-border);
+    border-radius: var(--vt-accordion-radius);
+  }
+
+  .vt-accordion--border-top_bottom > .vt-accordion__item {
+    border-block: var(--vt-accordion-border);
+  }
+
+  .vt-accordion--border-bottom > .vt-accordion__item {
+    border-block-end: var(--vt-accordion-border);
+  }
+
+  /* No gap: items touch, so drop the top border after the first item instead of
+     drawing two lines on top of each other, and round only the outer corners */
+  .vt-accordion--joined:is(.vt-accordion--border-all, .vt-accordion--border-top_bottom)
+    > .vt-accordion__item
+    + .vt-accordion__item {
+    border-block-start-width: 0;
+  }
+
+  .vt-accordion--joined > .vt-accordion__item:not(:first-child) {
+    border-start-start-radius: 0;
+    border-start-end-radius: 0;    
+  }
+
+  .vt-accordion--joined > .vt-accordion__item:not(:last-child) {
+    border-end-start-radius: 0;
+    border-end-end-radius: 0;
+  }
+
+  /* ---- Header ------------------------------------------------------------- */
+
+  .vt-accordion > .vt-accordion__item > .vt-accordion__summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'icon title indicator'
+      'description description description';
+    align-items: center;
+    padding: var(--vt-accordion-pad-y) var(--vt-accordion-pad-x);
+    list-style: none;
+    cursor: pointer;
+    transition: color var(--vt-accordion-speed) ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .vt-accordion--indicator-left > .vt-accordion__item > .vt-accordion__summary {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      'indicator icon title'
+      'description description description';
+  }
+
+  .vt-accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .vt-accordion__summary:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -4px;
+  }
+
+  .vt-accordion__icon {
+    grid-area: icon;
+    display: flex;
+    margin-inline-end: clamp(1rem, 2vw, 2.25rem);
+  }
+
+  .vt-accordion__title {
+    grid-area: title;
+    margin: 0;
+  }
+
+  .vt-accordion__description {
+    grid-area: description;
+    display: block;
+    margin-block-start: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  /* "Only when open": hidden while closed or closing, fades in as the item opens */
+  .vt-accordion > .vt-accordion__item:is(:not([open]), .is-closing) > .vt-accordion__summary > .vt-accordion__description--open {
+    display: none;
+  }
+
+  .vt-accordion__description--open {
+    animation: vt-accordion-fade-in var(--vt-accordion-speed) ease both;
+  }
+
+  @keyframes vt-accordion-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  /* ---- Indicator ---------------------------------------------------------- */
+
+  .vt-accordion__indicator {
+    grid-area: indicator;
+    position: relative;
+    /* Line weight grows with the size, like the stroke of the SVG icons */
+    --vt-accordion-indicator-stroke: max(1.5px, calc(var(--vt-accordion-indicator-size, 1.25rem) * 0.075));
+    width: var(--vt-accordion-indicator-size, 1.25rem);
+    height: var(--vt-accordion-indicator-size, 1.25rem);
+    flex-shrink: 0;
+    margin-inline-start: 1rem;
+    transition: rotate var(--vt-accordion-speed) ease;
+  }
+
+  .vt-accordion--indicator-left > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator {
+    margin-inline: 0 1rem;
+  }
+
+  .vt-accordion--indicator-none > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator {
+    display: none;
+  }
+
+  /* Chevron and arrow: an SVG mask painted in the text color */
+  .vt-accordion--indicator-chevron > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator,
+  .vt-accordion--indicator-caret > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator,
+  .vt-accordion--indicator-arrow > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator {
+    background-color: currentColor;
+    mask: var(--vt-accordion-indicator-mask) center / contain no-repeat;
+  }
+
+  .vt-accordion--indicator-chevron {
+    --vt-accordion-indicator-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 9 7 7 7-7'/%3E%3C/svg%3E");
+  }
+
+  /* Caret: a small solid triangle */
+  .vt-accordion--indicator-caret {
+    --vt-accordion-indicator-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 9.5h11L12 15.5z' fill='%23000' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  /* Arrow points down-right when closed and turns up-right when open */
+  .vt-accordion--indicator-arrow {
+    --vt-accordion-indicator-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 5l14 14M19 7v12H7'/%3E%3C/svg%3E");
+  }
+
+  /* Plus icons: two bars drawn in CSS. Plus and minus: the vertical bar turns flat.
+     Plus and close / Circle plus: the whole plus turns 45deg into a cross */
+  .vt-accordion:is(.vt-accordion--indicator-plus_minus, .vt-accordion--indicator-plus_close, .vt-accordion--indicator-plus_circle)
+    > .vt-accordion__item
+    > .vt-accordion__summary
+    > .vt-accordion__indicator::before,
+  .vt-accordion:is(.vt-accordion--indicator-plus_minus, .vt-accordion--indicator-plus_close, .vt-accordion--indicator-plus_circle)
+    > .vt-accordion__item
+    > .vt-accordion__summary
+    > .vt-accordion__indicator::after {
+    content: '';
+    position: absolute;
+    inset-inline: 10%;
+    top: calc(50% - var(--vt-accordion-indicator-stroke) / 2);
+    height: var(--vt-accordion-indicator-stroke);
+    border-radius: var(--vt-accordion-indicator-stroke);
+    background-color: currentColor;
+    transition: rotate var(--vt-accordion-speed) ease;
+  }
+
+  .vt-accordion:is(.vt-accordion--indicator-plus_minus, .vt-accordion--indicator-plus_close, .vt-accordion--indicator-plus_circle)
+    > .vt-accordion__item
+    > .vt-accordion__summary
+    > .vt-accordion__indicator::after {
+    rotate: 90deg;
+  }
+
+  .vt-accordion--indicator-plus_circle > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator {
+    border: var(--vt-accordion-indicator-stroke) solid currentColor;
+    border-radius: 50%;
+  }
+
+  .vt-accordion--indicator-plus_circle > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator::before,
+  .vt-accordion--indicator-plus_circle > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator::after {
+    inset-inline: 22%;
+  }
+
+  /* Open state. .is-closing: the item stays open while it slides shut, but already
+     looks closed */
+  .vt-accordion--indicator-chevron > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__summary > .vt-accordion__indicator {
+    rotate: 180deg;
+  }
+
+  .vt-accordion--indicator-arrow > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__summary > .vt-accordion__indicator {
+    rotate: -90deg;
+  }
+
+  .vt-accordion--indicator-caret > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__summary > .vt-accordion__indicator {
+    rotate: 180deg;
+  }
+
+  .vt-accordion:is(.vt-accordion--indicator-plus_close, .vt-accordion--indicator-plus_circle)
+    > .vt-accordion__item[open]:not(.is-closing)
+    > .vt-accordion__summary
+    > .vt-accordion__indicator {
+    rotate: 45deg;
+  }
+
+  .vt-accordion--indicator-plus_minus > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__summary > .vt-accordion__indicator::after {
+    rotate: 0deg;
+  }
+
+  /* ---- Hover, focus and open ---------------------------------------------- */
+
+  .vt-accordion--state-bg > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible)) {
+    background-color: var(--vt-accordion-state-bg, color-mix(in srgb, currentColor 8%, transparent));
+  }
+
+  /* Text color changes the header only, so the borders keep the text color */
+  .vt-accordion--state-text > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible)) > .vt-accordion__summary {
+    color: var(--vt-accordion-state-color, inherit);
+  }
+
+  @media (hover: hover) {
+    .vt-accordion--state-bg > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
+      background-color: var(--vt-accordion-state-bg, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+    .vt-accordion--state-text > .vt-accordion__item > .vt-accordion__summary:hover {
+      color: var(--vt-accordion-state-color, inherit);
+    }
+  }
+
+  /* ---- Panel -------------------------------------------------------------- */
+
+  .vt-accordion > .vt-accordion__item > .vt-accordion__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-accordion-content-gap);
+    padding: 0 var(--vt-accordion-pad-x) var(--vt-accordion-pad-y);
+  }
+
+  /* A line between the header and the open content, padded like the header */
+  .vt-accordion--header-divider > .vt-accordion__item > .vt-accordion__panel {
+    border-block-start: var(--vt-accordion-border);
+    padding-block-start: var(--vt-accordion-pad-y);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-accordion > .vt-accordion__item,
+    .vt-accordion__summary,
+    .vt-accordion__indicator,
+    .vt-accordion__indicator::before,
+    .vt-accordion__indicator::after {
+      transition: none;
+    }
+
+    .vt-accordion__description--open {
+      animation: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Accordion",
+  "tag": null,
+  "blocks": [{ "type": "_accordion-item" }],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Expand behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_one_at_a_time",
+      "label": "Open one answer at a time",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "keep_first_open",
+      "label": "Keep the first answer open",
+      "info": "Opens the first item when the page loads.",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "expand_effect",
+      "label": "Expand effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "slide", "label": "Slide down" },
+        { "value": "slide_fade", "label": "Slide and fade" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "header",
+      "content": "Indicator"
+    },
+    {
+      "type": "select",
+      "id": "indicator",
+      "label": "Icon",
+      "options": [
+        { "value": "chevron", "label": "Chevron" },
+        { "value": "caret", "label": "Caret" },
+        { "value": "plus_minus", "label": "Plus and minus" },
+        { "value": "plus_close", "label": "Plus and close" },
+        { "value": "plus_circle", "label": "Circle plus and close" },
+        { "value": "arrow", "label": "Arrow" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "chevron"
+    },
+    {
+      "type": "select",
+      "id": "indicator_position",
+      "label": "Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right",
+      "visible_if": "{{ block.settings.indicator != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "indicator_size_desktop",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Size (desktop)",
+      "default": 20,
+      "visible_if": "{{ block.settings.indicator != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "indicator_size_mobile",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "label": "Size (mobile)",
+      "default": 18,
+      "visible_if": "{{ block.settings.indicator != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "text-left", "label": "Left" },
+        { "value": "text-center", "label": "Center" },
+        { "value": "text-right", "label": "Right" }
+      ],
+      "default": "text-left"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Spacing between items",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_x_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal padding (desktop)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_x_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal padding (mobile)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_y_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical padding (desktop)",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_y_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical padding (mobile)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_gap_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Content spacing (desktop)",
+      "default": 24,
+      "info": "Space between the blocks inside an open item."
+    },
+    {
+      "type": "range",
+      "id": "content_gap_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Content spacing (mobile)",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "select",
+      "id": "border_style",
+      "label": "Style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "top_bottom", "label": "Top and bottom" },
+        { "value": "bottom", "label": "Bottom only" },
+        { "value": "all", "label": "All sides" }
+      ],
+      "default": "top_bottom",
+      "info": "None places each item on a background color."
+    },
+    {
+      "type": "checkbox",
+      "id": "header_divider",
+      "label": "Line under open heading",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Thickness",
+      "default": 1,
+      "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
+    },
+    {
+      "type": "range",
+      "id": "border_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacity",
+      "default": 100,
+      "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
+    },
+    {
+      "type": "select",
+      "id": "border_color_source",
+      "label": "Color",
+      "options": [
+        { "value": "inherit", "label": "Inherit" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "inherit",
+      "info": "Inherit matches the text color.",
+      "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Custom color",
+      "default": "{{ settings.color_palette.accent }}",
+      "visible_if": "{{ block.settings.border_color_source == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0,
+      "visible_if": "{{ block.settings.border_style == 'all' or block.settings.border_style == 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "item_background",
+      "label": "Item background",
+      "info": "Leave empty for a light tint of the text color when Style is None."
+    },
+    {
+      "type": "header",
+      "content": "Hover, focus and open"
+    },
+    {
+      "type": "select",
+      "id": "interaction_state",
+      "label": "Highlight",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "background", "label": "Background color" },
+        { "value": "text", "label": "Text color" },
+        { "value": "background_text", "label": "Background and text color" }
+      ],
+      "default": "none",
+      "info": "Applies on hover, keyboard focus and while an item is open."
+    },
+    {
+      "type": "color",
+      "id": "state_background",
+      "label": "Background color",
+      "info": "Leave empty for a light tint of the text color.",
+      "visible_if": "{{ block.settings.interaction_state contains 'background' }}"
+    },
+    {
+      "type": "color",
+      "id": "state_text",
+      "label": "Text color",
+      "default": "{{ settings.color_palette.accent }}",
+      "visible_if": "{{ block.settings.interaction_state contains 'text' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.icon.settings.icon_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
+        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
+        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.icon.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.icon.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.icon.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.icon.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.icon.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.icon.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Accordion",
+      "category": "t:general.categories.basic",
+      "blocks": [
+        {
+          "type": "_accordion-item",
+          "settings": { "heading": "What are your clothes made of?" },
+          "blocks": [{ "type": "paragraph" }]
+        },
+        {
+          "type": "_accordion-item",
+          "settings": { "heading": "How long does shipping take?" },
+          "blocks": [{ "type": "paragraph" }]
+        },
+        {
+          "type": "_accordion-item",
+          "settings": { "heading": "Can I return an item?" },
+          "blocks": [{ "type": "paragraph" }]
+        }
+      ]
+    },
+    {
+      "name": "Accordion boxed",
+      "category": "t:general.categories.basic",
+      "settings": {
+        "open_one_at_a_time": false,
+        "keep_first_open": true,
+        "expand_effect": "slide_fade",
+        "indicator": "arrow",
+        "gap": 24,
+        "padding_x_desktop": 58,
+        "padding_x_mobile": 24,
+        "padding_y_desktop": 58,
+        "padding_y_mobile": 24,
+        "content_gap_desktop": 56,
+        "content_gap_mobile": 24,
+        "border_style": "all",
+        "header_divider": true,
+        "border_color_source": "custom",
+        "interaction_state": "background"
+      },
+      "blocks": [
+        {
+          "type": "_accordion-item",
+          "settings": {
+            "heading": "Why sustainable fashion?",
+            "description": "Understanding the real cost of fast fashion",
+            "heading_size": "vt-heading-h2",
+            "show_icon": true
+          },
+          "blocks": [{ "type": "paragraph" }]
+        },
+        {
+          "type": "_accordion-item",
+          "settings": {
+            "heading": "Material guide",
+            "description": "Choose fabrics by their environmental impact",
+            "heading_size": "vt-heading-h2",
+            "show_icon": true
+          },
+          "blocks": [{ "type": "paragraph" }]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
+

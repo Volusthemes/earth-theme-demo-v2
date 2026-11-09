@@ -1,3 +1,12 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
     "sections": {
         "image_slideshow_section": {
@@ -71,11 +80,11 @@
                 "padding_bottom_mobile": 0,
                 "padding_left_mobile": 0,
                 "padding_right_mobile": 0,
-                "make_section_page_width": false                
+                "make_section_page_width": false
             }
         },
         "rich_text_one_section": {
-            "type": "rich-text",            
+            "type": "rich-text",
             "settings": {
                 "desktop_content_alignment": "justify-center",
                 "mobile_content_alignment": "justify-center",
@@ -148,6 +157,48 @@
                 "paragraph_block",
                 "button_block"
             ]
+        },
+        "divider_section": {
+            "type": "custom-section",
+            "blocks": {
+                "divider_block": {
+                    "type": "divider",
+                    "settings": {
+                        "variant": "horizontal",
+                        "style": "solid",
+                        "thickness": 1,
+                        "color_source": "inherit",
+                        "margin_top_desktop": 0,
+                        "margin_bottom_desktop": 0,
+                        "margin_top_mobile": 0,
+                        "margin_bottom_mobile": 0,
+                        "animation_type": "reveal",
+                        "animation_direction": "from-left",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.2,
+                        "animation_easing": "ease-out-sine",
+                        "animation_blur_intensity": 5
+                    }
+                }
+            },
+            "block_order": [
+                "divider_block"
+            ],
+            "settings": {
+                "gap": 0,
+                "gap_mobile": 0,
+                "background_style": "solid",
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 0,
+                "padding_left_desktop": 0,
+                "padding_right_desktop": 0,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 0,
+                "padding_left_mobile": 0,
+                "padding_right_mobile": 0,
+                "make_section_page_width": false
+            }
         },
         "impact_metrics_section": {
             "type": "impact-metrics",
@@ -2040,7 +2091,7 @@
                 "slide_offset": 15,
                 "show_arrows": true,
                 "arrows_style": "primary",
-                "arrows_on_hover": true,                
+                "arrows_on_hover": true,
                 "loop": false,
                 "autoplay": false,
                 "autoplay_delay": 4000,
@@ -2782,7 +2833,7 @@
                                             },
                                             "blocks": {
                                                 "icons_block": {
-                                                    "type": "icons",                                                    
+                                                    "type": "icons",
                                                     "settings": {
                                                         "icon": "handshake",
                                                         "icon_color": "#224E09",
@@ -2799,11 +2850,11 @@
                                                         "paragraph_size": "vt-paragraph-small",
                                                         "paragraph_alignment": "text-inherit",
                                                         "animation_type": "none"
-                                                    }                                                    
+                                                    }
                                                 }
-                                            },                                            
+                                            },
                                             "block_order": [
-                                                "icons_block",                                                
+                                                "icons_block",
                                                 "paragraph_block"
                                             ]
                                         },
@@ -2843,7 +2894,7 @@
                     },
                     "block_order": [
                         "stack_block"
-                    ]                    
+                    ]
                 },
                 "slide_four": {
                     "type": "_slideshow-slide",
@@ -3175,16 +3226,960 @@
                 "slide_four",
                 "slide_five"
             ]
+        },
+        "video_with_text_overlay_section": {
+            "type": "video-with-text-overlay",
+            "settings": {
+                "video_source": "shopify",
+                "autoplay": true,
+                "loop": true,
+                "ratio_desktop": "16 / 9",
+                "ratio_mobile": "9 / 16",
+                "overlay_color": "#000000",
+                "overlay_opacity": 20,
+                "content_position": "center",
+                "desktop_content_alignment": "justify-center",
+                "mobile_content_alignment": "justify-center",
+                "text_alignment": "center",
+                "gap": 26,
+                "gap_mobile": 16,
+                "heading_color": "#F8F9DC",
+                "paragraph_color": "#F8F9DC"
+            },
+            "blocks": {
+                "heading_block": {
+                    "type": "heading",
+                    "settings": {
+                        "heading": "From organic farms to your wardrobe",
+                        "heading_size": "vt-heading-h1",
+                        "heading_alignment": "text-inherit",
+                        "heading_tag": "h2",
+                        "enable_max_width": true,
+                        "heading_max_width": 800,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_delay": 0.2,
+                        "animation_easing": "ease-out-sine"
+                    }
+                },
+                "sub_heading_block": {
+                    "type": "sub-heading",
+                    "settings": {
+                        "sub_heading": "The journey behind every piece",
+                        "subheading_tag": "h3",
+                        "subheading_alignment": "text-center",
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_delay": 0.6,
+                        "animation_easing": "ease-out-sine"
+                    }
+                }                
+            },
+            "block_order": [
+                "heading_block",
+                "sub_heading_block"
+            ]
+        },
+        "knowledge_accordion_section": {
+            "type": "custom-section",
+            "settings": {
+                "gap": 56,
+                "gap_mobile": 32,
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.primary }}",
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true
+            },
+            "blocks": {
+                "column_layout_block": {
+                    "type": "column-layout",
+                    "settings": {
+                        "mobile_column_count": 1,
+                        "tablet_column_count": 1,
+                        "desktop_column_count": 2,
+                        "desktop_column_1_width": "lg:w-7/12|58.3333",
+                        "desktop_column_2_width": "lg:w-5/12|41.6667",
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_y": "gap-y-5",
+                        "padding_block": 0,
+                        "padding_inline": 0,
+                        "swipe_columns_mobile": false,
+                        "vertical_alignment": "flex-start"
+                    },
+                    "blocks": {
+                        "title_stack_block": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "position_type": "default",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12
+                            },
+                            "blocks": {
+                                "label_stack_block": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "flex-start",
+                                        "position": "center",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "position_type": "default",
+                                        "gap_desktop": 6,
+                                        "gap_mobile": 6
+                                    },
+                                    "blocks": {
+                                        "icon_block": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "sparkle",
+                                                "icon_color": "{{ settings.color_palette.accent }}",
+                                                "icon_size_desktop": 16,
+                                                "icon_size_mobile": 14,
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "sub_heading_block": {
+                                            "type": "sub-heading",
+                                            "settings": {
+                                                "sub_heading": "Education &amp; Ethos",
+                                                "subheading_tag": "p",
+                                                "subheading_alignment": "text-left",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "icon_block",
+                                        "sub_heading_block"
+                                    ]
+                                },
+                                "heading_group_block": {
+                                    "type": "heading-group",
+                                    "settings": {
+                                        "direction": "horizontal",
+                                        "alignment": "left",
+                                        "vertical_alignment": "center",
+                                        "gap_desktop": 20,
+                                        "gap_mobile": 12,
+                                        "width": "fill",
+                                        "hide_icon_mobile": true
+                                    },
+                                    "blocks": {
+                                        "icon_block": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "leaf",
+                                                "icon_color": "{{ settings.color_palette.accent }}",
+                                                "icon_size_desktop": 40,
+                                                "icon_size_mobile": 32,
+                                                "animation_type": "slide"
+                                            }
+                                        },
+                                        "heading_block": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "Knowledge First Thread",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "h2",
+                                                "heading_alignment": "text-inherit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.2,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "icon_block",
+                                        "heading_block"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "label_stack_block",
+                                "heading_group_block"
+                            ]
+                        },
+                        "text_stack_block": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "position_type": "default",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Everything to know about making conscious fashion choices expand topics deeper into sustainable style.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "title_stack_block",
+                        "text_stack_block"
+                    ]
+                },
+                "accordion_block": {
+                    "type": "accordion",
+                    "settings": {
+                        "open_one_at_a_time": false,
+                        "keep_first_open": true,
+                        "expand_effect": "slide_fade",
+                        "indicator": "arrow",
+                        "indicator_position": "right",
+                        "indicator_size_desktop": 20,
+                        "indicator_size_mobile": 16,
+                        "alignment": "text-left",
+                        "gap": 28,
+                        "padding_x_desktop": 30,
+                        "padding_x_mobile": 20,
+                        "padding_y_desktop": 30,
+                        "padding_y_mobile": 20,
+                        "content_gap_desktop": 28,
+                        "content_gap_mobile": 20,
+                        "border_style": "all",
+                        "header_divider": true,
+                        "border_thickness": 1,
+                        "border_opacity": 100,
+                        "border_color_source": "custom",
+                        "border_color": "{{ settings.color_palette.accent }}",
+                        "border_radius": 0,
+                        "interaction_state": "background",
+                        "state_background": "{{ settings.color_palette.cactus_green }}",
+                        "animation_type": "none"
+                    },
+                    "blocks": {
+                        "item_why_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Why Sustainable Fashion?",
+                                "description": "Understanding the real cost of fast fashion",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "column_layout_block": {
+                                    "type": "column-layout",
+                                    "settings": {
+                                        "mobile_column_count": 1,
+                                        "tablet_column_count": 2,
+                                        "desktop_column_count": 2,
+                                        "desktop_column_1_width": "lg:w-1/2|50",
+                                        "desktop_column_2_width": "lg:w-1/2|50",
+                                        "tablet_column_1_width": "md:w-1/2|50",
+                                        "tablet_column_2_width": "md:w-1/2|50",
+                                        "desktop_gap_x": "lg:gap-x-8",
+                                        "tablet_gap_x": "md:gap-x-6",
+                                        "tablet_gap_y": "md:gap-y-6",
+                                        "mobile_gap_y": "gap-y-5",
+                                        "padding_block": 0,
+                                        "padding_inline": 0,
+                                        "mobile_padding_block": 0,
+                                        "mobile_padding_inline": 0,
+                                        "swipe_columns_mobile": false,
+                                        "vertical_alignment": "stretch"
+                                    },
+                                    "blocks": {
+                                        "card_fast_block": {
+                                            "type": "card",
+                                            "settings": {
+                                                "background_color": "{{ settings.color_palette.accent }}",
+                                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
+                                                "position": "top",
+                                                "alignment": "left",
+                                                "padding_vertical": 40,
+                                                "padding_horizontal": 32,
+                                                "enable_padding_mobile": true,
+                                                "padding_vertical_mobile": 32,
+                                                "padding_horizontal_mobile": 16,
+                                                "width": "fill",
+                                                "height": "fill",
+                                                "gap": 16,
+                                                "enable_gap_mobile": true,
+                                                "gap_mobile": 8,
+                                                "border": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "heading_block": {
+                                                    "type": "heading",
+                                                    "settings": {
+                                                        "heading": "FAST FASHION",
+                                                        "heading_size": "vt-heading-h6",
+                                                        "heading_tag": "h4",
+                                                        "heading_alignment": "text-inherit",
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "row_block_1": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "close-circle",
+                                                                "icon_color": "{{ settings.color_palette.red }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Average 1-7 wears before disposal</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_2": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "close-circle",
+                                                                "icon_color": "{{ settings.color_palette.red }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>92 million tons → landfill yearly</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_3": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "close-circle",
+                                                                "icon_color": "{{ settings.color_palette.red }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>High water pollution from synthetic dyes</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_4": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "close-circle",
+                                                                "icon_color": "{{ settings.color_palette.red }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Exploitative labor practices</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "heading_block",
+                                                "row_block_1",
+                                                "row_block_2",
+                                                "row_block_3",
+                                                "row_block_4"
+                                            ]
+                                        },
+                                        "card_sustainable_block": {
+                                            "type": "card",
+                                            "settings": {
+                                                "background_color": "{{ settings.color_palette.foreground }}",
+                                                "heading_color": "{{ settings.color_palette.background }}",
+                                                "text_color": "{{ settings.color_palette.background }}",
+                                                "position": "top",
+                                                "alignment": "left",
+                                                "padding_vertical": 40,
+                                                "padding_horizontal": 32,
+                                                "enable_padding_mobile": true,
+                                                "padding_vertical_mobile": 32,
+                                                "padding_horizontal_mobile": 16,
+                                                "width": "fill",
+                                                "height": "fill",
+                                                "gap": 16,
+                                                "enable_gap_mobile": true,
+                                                "gap_mobile": 8,
+                                                "border": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "heading_block": {
+                                                    "type": "heading",
+                                                    "settings": {
+                                                        "heading": "SUSTAINABLE FASHION",
+                                                        "heading_size": "vt-heading-h6",
+                                                        "heading_tag": "h4",
+                                                        "heading_alignment": "text-inherit",
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "row_block_1": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "check-circle",
+                                                                "icon_color": "{{ settings.color_palette.secondary }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Average 20+ wears, recyclable design</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_2": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "check-circle",
+                                                                "icon_color": "{{ settings.color_palette.secondary }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Circular economy reduces 80% waste</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_3": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "check-circle",
+                                                                "icon_color": "{{ settings.color_palette.secondary }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Natural/recycled materials, low-impact dyes</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                },
+                                                "row_block_4": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                                        "alignment": "flex-start",
+                                                        "position": "center",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 12,
+                                                        "gap_mobile": 12
+                                                    },
+                                                    "blocks": {
+                                                        "icon_block": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "check-circle",
+                                                                "icon_color": "{{ settings.color_palette.secondary }}",
+                                                                "icon_size_desktop": 24,
+                                                                "icon_size_mobile": 22,
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Fair wages, safe working conditions</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "icon_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "heading_block",
+                                                "row_block_1",
+                                                "row_block_2",
+                                                "row_block_3",
+                                                "row_block_4"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "card_fast_block",
+                                        "card_sustainable_block"
+                                    ]
+                                },
+                                "card_did_you_know_block": {
+                                    "type": "card",
+                                    "settings": {
+                                        "background_color": "{{ settings.color_palette.primary }}",
+                                        "heading_color": "{{ settings.color_palette.background }}",
+                                        "text_color": "{{ settings.color_palette.background }}",
+                                        "position": "top",
+                                        "alignment": "left",
+                                        "padding_vertical": 32,
+                                        "padding_horizontal": 28,
+                                        "enable_padding_mobile": true,
+                                        "padding_vertical_mobile": 28,
+                                        "padding_horizontal_mobile": 16,
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap": 16,
+                                        "enable_gap_mobile": true,
+                                        "gap_mobile": 12,
+                                        "border": "left",
+                                        "border_color": "{{ settings.color_palette.secondary }}",
+                                        "border_width": 4,
+                                        "border_opacity": 100,
+                                        "border_radius": 0,
+                                        "animation_type": "none"
+                                    },
+                                    "blocks": {
+                                        "stack_block": {
+                                            "type": "stack",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "flex-start",
+                                                "wrap_content": "nowrap",
+                                                "width": "fill",
+                                                "height": "fit",
+                                                "position_type": "default",
+                                                "gap_desktop": 24,
+                                                "gap_mobile": 16
+                                            },
+                                            "blocks": {
+                                                "icon_block": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "info-circle",
+                                                        "icon_color": "{{ settings.color_palette.background }}",
+                                                        "icon_size_desktop": 24,
+                                                        "icon_size_mobile": 20,
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "content_stack_block": {
+                                                    "type": "stack",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--vertical",
+                                                        "layout_direction_tablet": "vt-stack--vertical",
+                                                        "layout_direction_mobile": "vt-stack--vertical",
+                                                        "alignment": "flex-start",
+                                                        "position": "flex-start",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "position_type": "default",
+                                                        "gap_desktop": 16,
+                                                        "gap_mobile": 16
+                                                    },
+                                                    "blocks": {
+                                                        "heading_block": {
+                                                            "type": "heading",
+                                                            "settings": {
+                                                                "heading": "Did You Know?",
+                                                                "heading_size": "vt-heading-h5",
+                                                                "heading_tag": "h4",
+                                                                "heading_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "paragraph_block": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>The fashion industry produces 10% of global CO₂ emissions—more than international flights and maritime shipping combined. By choosing sustainable fashion, you can reduce your personal fashion footprint by up to 73%.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-inherit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "heading_block",
+                                                        "paragraph_block"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "icon_block",
+                                                "content_stack_block"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "stack_block"
+                                    ]
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "heart",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "column_layout_block",
+                                "card_did_you_know_block"
+                            ]
+                        },
+                        "item_material_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Material Guide",
+                                "description": "Choose fabrics by their environmental impact",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Organic cotton, recycled polyester, TENCEL™ and linen use less water and energy than conventional fabrics. Look for GOTS, GRS and OEKO-TEX® labels when you shop.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "eco",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
+                        },
+                        "item_calculator_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Impact Calculator Teaser",
+                                "description": "See the real impact of your choices",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Every piece you choose saves water, carbon and waste. Add items to your cart to see the impact of your order.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "calculator",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "item_why_block",
+                        "item_material_block",
+                        "item_calculator_block"
+                    ]
+                }
+            },
+            "block_order": [
+                "column_layout_block",
+                "accordion_block"
+            ]
         }
     },
     "order": [
-        "image_slideshow_section",        
+        "image_slideshow_section",
         "rich_text_one_section",
+        "divider_section",
         "impact_metrics_section",
         "rich_text_two_section",
         "impact_stats_section",
         "featured_collections_section",
         "products_tab_carousel_section",
-        "slideshow_section"
+        "slideshow_section",
+        "video_with_text_overlay_section",
+        "knowledge_accordion_section"
     ]
 }
