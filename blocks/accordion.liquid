@@ -48,7 +48,15 @@
   if interaction contains 'background'
     assign root_class = root_class | append: ' vt-accordion--state-bg'
   endif
-  if interaction contains 'text'
+  assign has_state_border = false
+  if block.settings.state_border != blank and block.settings.border_style != 'none'
+    assign has_state_border = true
+    assign root_class = root_class | append: ' vt-accordion--state-border'
+  endif
+  if interaction contains 'gradient'
+    assign root_class = root_class | append: ' vt-accordion--state-gradient'
+  endif
+  if interaction contains 'text' and block.settings.state_text != blank
     assign root_class = root_class | append: ' vt-accordion--state-text'
   endif
 
@@ -110,6 +118,7 @@
     --vt-accordion-pad-x: {% render 'fluid-clamp', min_px: block.settings.padding_x_mobile, max_px: block.settings.padding_x_desktop %};
     --vt-accordion-pad-y: {% render 'fluid-clamp', min_px: block.settings.padding_y_mobile, max_px: block.settings.padding_y_desktop %};
     --vt-accordion-content-gap: {% render 'fluid-clamp', min_px: block.settings.content_gap_mobile, max_px: block.settings.content_gap_desktop %};
+    --vt-accordion-icon-gap: {% render 'fluid-clamp', min_px: block.settings.icon_gap_mobile, max_px: block.settings.icon_gap_desktop %};
     --vt-accordion-indicator-size: {% render 'fluid-clamp', min_px: block.settings.indicator_size_mobile, max_px: block.settings.indicator_size_desktop %};
     {%- if block.settings.item_background != blank %}
     --vt-accordion-item-bg: {{ block.settings.item_background }};
@@ -117,8 +126,14 @@
     {%- if block.settings.state_background != blank %}
     --vt-accordion-state-bg: {{ block.settings.state_background }};
     {%- endif %}
+    {%- if block.settings.state_gradient != blank %}
+    --vt-accordion-state-gradient: {{ block.settings.state_gradient }};
+    {%- endif %}
     {%- if block.settings.state_text != blank %}
     --vt-accordion-state-color: {{ block.settings.state_text }};
+    {%- endif %}
+    {%- if has_state_border %}
+    --vt-accordion-state-border-color: {{ block.settings.state_border }};
     {%- endif %}
     {%- if is_animated %}
     --vt-duration: {{ block.settings.animation_duration }}s;
@@ -144,7 +159,9 @@
   /* Child combinators keep a nested accordion's settings its own */
   .vt-accordion > .vt-accordion__item {
     background-color: var(--vt-accordion-item-bg, transparent);
-    transition: background-color var(--vt-accordion-speed) ease;
+    transition:
+      background-color var(--vt-accordion-speed) ease,
+      border-color var(--vt-accordion-speed) ease;
   }
 
   /* ---- Borders ------------------------------------------------------------ */
@@ -221,9 +238,9 @@
   .vt-accordion__icon {
     grid-area: icon;
     display: flex;
-    margin-inline-end: clamp(1rem, 2vw, 2.25rem);
+    margin-inline-end: var(--vt-accordion-icon-gap, 1.5rem);
   }
-
+  
   .vt-accordion__title {
     grid-area: title;
     margin: 0;
@@ -233,21 +250,6 @@
     grid-area: description;
     display: block;
     margin-block-start: clamp(1rem, 2vw, 1.75rem);
-  }
-
-  /* "Only when open": hidden while closed or closing, fades in as the item opens */
-  .vt-accordion > .vt-accordion__item:is(:not([open]), .is-closing) > .vt-accordion__summary > .vt-accordion__description--open {
-    display: none;
-  }
-
-  .vt-accordion__description--open {
-    animation: vt-accordion-fade-in var(--vt-accordion-speed) ease both;
-  }
-
-  @keyframes vt-accordion-fade-in {
-    from {
-      opacity: 0;
-    }
   }
 
   /* ---- Indicator ---------------------------------------------------------- */
@@ -367,9 +369,45 @@
     color: var(--vt-accordion-state-color, inherit);
   }
 
+  /* An open item's content follows too, so it stays readable on a dark highlight.
+     Paragraphs take their color from the section, so that variable is set here as well */
+  .vt-accordion--state-text > .vt-accordion__item[open] > .vt-accordion__panel {
+    color: var(--vt-accordion-state-color);
+    --vt-section-paragraph-color: var(--vt-accordion-state-color);
+  }
+
+  /* A gradient can't transition, so it sits on a layer behind the content that fades in */
+  .vt-accordion--state-gradient > .vt-accordion__item {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .vt-accordion--state-gradient > .vt-accordion__item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: var(
+      --vt-accordion-state-gradient,
+      linear-gradient(90deg, color-mix(in srgb, currentColor 14%, transparent), transparent)
+    );
+    opacity: 0;
+    transition: opacity var(--vt-accordion-speed) ease;
+    pointer-events: none;
+  }
+
+  .vt-accordion--state-gradient > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible))::before {
+    opacity: 1;
+  }
+
   @media (hover: hover) {
     .vt-accordion--state-bg > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
       background-color: var(--vt-accordion-state-bg, color-mix(in srgb, currentColor 8%, transparent));
+    }
+
+    .vt-accordion--state-gradient > .vt-accordion__item:has(> .vt-accordion__summary:hover)::before {
+      opacity: 1;
     }
 
     .vt-accordion--state-text > .vt-accordion__item > .vt-accordion__summary:hover {
@@ -390,19 +428,53 @@
   .vt-accordion--header-divider > .vt-accordion__item > .vt-accordion__panel {
     border-block-start: var(--vt-accordion-border);
     padding-block-start: var(--vt-accordion-pad-y);
+    transition: border-color var(--vt-accordion-speed) ease;
+  }
+
+  /* ---- Highlight border ----------------------------------------------------
+     Only the sides that have a width change color. When items touch, the line
+     above an item belongs to the item before it, so that line follows as well.
+     Each state is its own rule: :has() can't nest, and one unsupported selector
+     would drop the whole rule */
+
+  .vt-accordion--state-border > .vt-accordion__item[open]:not(.is-closing),
+  .vt-accordion--state-border > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__panel {
+    border-color: var(--vt-accordion-state-border-color);
+  }
+
+  .vt-accordion--state-border > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) {
+    border-color: var(--vt-accordion-state-border-color);
+  }
+
+  .vt-accordion--state-border.vt-accordion--joined > .vt-accordion__item:has(+ .vt-accordion__item[open]:not(.is-closing)) {
+    border-block-end-color: var(--vt-accordion-state-border-color);
+  }
+
+  .vt-accordion--state-border.vt-accordion--joined
+    > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:focus-visible) {
+    border-block-end-color: var(--vt-accordion-state-border-color);
+  }
+
+  @media (hover: hover) {
+    .vt-accordion--state-border > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
+      border-color: var(--vt-accordion-state-border-color);
+    }
+
+    .vt-accordion--state-border.vt-accordion--joined
+      > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:hover) {
+      border-block-end-color: var(--vt-accordion-state-border-color);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .vt-accordion > .vt-accordion__item,
+    .vt-accordion > .vt-accordion__item::before,
+    .vt-accordion > .vt-accordion__item > .vt-accordion__panel,
     .vt-accordion__summary,
     .vt-accordion__indicator,
     .vt-accordion__indicator::before,
     .vt-accordion__indicator::after {
       transition: none;
-    }
-
-    .vt-accordion__description--open {
-      animation: none;
     }
   }
 {% endstylesheet %}
@@ -580,6 +652,27 @@
       "default": 16
     },
     {
+      "type": "range",
+      "id": "icon_gap_desktop",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon spacing (desktop)",
+      "default": 24,
+      "info": "Space between an item's icon and its heading."
+    },
+    {
+      "type": "range",
+      "id": "icon_gap_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Icon spacing (mobile)",
+      "default": 16
+    },
+    {
       "type": "header",
       "content": "Border"
     },
@@ -672,7 +765,9 @@
         { "value": "none", "label": "None" },
         { "value": "background", "label": "Background color" },
         { "value": "text", "label": "Text color" },
-        { "value": "background_text", "label": "Background and text color" }
+        { "value": "background_text", "label": "Background and text color" },
+        { "value": "gradient", "label": "Background gradient" },
+        { "value": "gradient_text", "label": "Background gradient and text color" }
       ],
       "default": "none",
       "info": "Applies on hover, keyboard focus and while an item is open."
@@ -685,11 +780,25 @@
       "visible_if": "{{ block.settings.interaction_state contains 'background' }}"
     },
     {
+      "type": "color_background",
+      "id": "state_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty for a soft fade of the text color.",
+      "visible_if": "{{ block.settings.interaction_state contains 'gradient' }}"
+    },
+    {
       "type": "color",
       "id": "state_text",
       "label": "Text color",
       "default": "{{ settings.color_palette.accent }}",
       "visible_if": "{{ block.settings.interaction_state contains 'text' }}"
+    },
+    {
+      "type": "color",
+      "id": "state_border",
+      "label": "Border color",
+      "info": "Leave empty to keep the border color.",
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
     },
     {
       "type": "header",

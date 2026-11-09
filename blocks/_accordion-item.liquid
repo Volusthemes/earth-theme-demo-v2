@@ -30,8 +30,8 @@
       {{- block.settings.heading | escape -}}
     </{{ heading_tag }}>
     <span class="vt-accordion__indicator" aria-hidden="true"></span>
-    {%- if block.settings.description != blank -%}
-      <span class="vt-accordion__description {{ block.settings.description_size }}{% if block.settings.description_visibility == 'open' %} vt-accordion__description--open{% endif %}">
+    {%- if block.settings.description != blank and block.settings.description_visibility != 'off' -%}
+      <span class="vt-accordion__description {{ block.settings.description_size }}">
         {{- block.settings.description | escape -}}
       </span>
     {%- endif -%}
@@ -76,7 +76,7 @@
       "label": "Show description",
       "options": [
         { "value": "always", "label": "Always" },
-        { "value": "open", "label": "Only when open" }
+        { "value": "off", "label": "Off" }
       ],
       "default": "always",
       "visible_if": "{{ block.settings.description != blank }}"
@@ -92,7 +92,7 @@
         { "value": "vt-paragraph-large", "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label" }
       ],
       "default": "vt-paragraph-medium",
-      "visible_if": "{{ block.settings.description != blank }}"
+      "visible_if": "{{ block.settings.description != blank and block.settings.description_visibility != 'off' }}"
     },
     {
       "type": "checkbox",
