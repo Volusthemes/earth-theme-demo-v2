@@ -1,0 +1,541 @@
+{% doc %}
+  Email signup form: an email field with a submit button and an optional note
+  underneath. Subscribes the customer to marketing emails through Shopify's
+  customer form (tagged "newsletter").
+
+  Used by the Email signup section and the newsletter popup, and can be added to
+  any section that accepts theme blocks. Each instance gets its own form and field
+  ids from block.id, so several forms can share a page.
+
+  After a submit the page reloads at this form (#EmailSignup-...), where the
+  success or error message is announced.
+
+  @example
+  {% content_for 'block', type: 'email-signup', id: 'email-signup' %}
+{% enddoc %}
+
+{%- liquid
+  assign form_id = 'EmailSignup-' | append: block.id
+  assign input_id = 'EmailSignup-email-' | append: block.id
+  assign message_id = 'EmailSignup-message-' | append: block.id
+  assign note_id = 'EmailSignup-note-' | append: block.id
+  assign icon_button = false
+  if block.settings.button_style == 'icon'
+    assign icon_button = true
+  endif
+
+  assign root_class = 'vt-email-signup flex w-full flex-col'
+  if block.settings.alignment == 'center'
+    assign root_class = root_class | append: ' items-center text-center'
+  endif
+  
+  # Scroll-in animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
+  assign animation_type = block.settings.animation_type
+  assign is_animated = false
+  unless animation_type == 'none' or request.visual_preview_mode
+    assign is_animated = true
+    assign root_class = root_class | append: ' vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign root_class = root_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endunless
+
+  case block.settings.animation_easing
+    when 'linear'
+      assign vt_easing = 'linear'
+    when 'ease-in-sine'
+      assign vt_easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign vt_easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign vt_easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  endcase
+-%}
+
+<div
+  class="{{ root_class }}"
+  style="
+    --vt-email-max-width: {{ block.settings.max_width | divided_by: 16.0 }}rem;
+    --vt-email-radius: {{ block.settings.corner_radius | divided_by: 16.0 }}rem;
+    {%- if block.settings.field_background != blank %}
+    --vt-email-field-bg: {{ block.settings.field_background }};
+    {%- endif %}
+    {%- if block.settings.field_text != blank %}
+    --vt-email-field-color: {{ block.settings.field_text }};
+    {%- endif %}
+    {%- if block.settings.button_background != blank %}
+    --vt-email-button-bg: {{ block.settings.button_background }};
+    {%- endif %}
+    {%- if block.settings.button_text != blank %}
+    --vt-email-button-color: {{ block.settings.button_text }};
+    {%- endif %}
+    {%- if block.settings.note_icon_color != blank %}
+    --vt-email-note-icon-color: {{ block.settings.note_icon_color }};
+    {%- endif %}
+    {%- if is_animated %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    --vt-easing: {{ vt_easing }};
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- form 'customer', id: form_id, class: 'vt-email-signup__form w-full' -%}
+    <input type="hidden" name="contact[tags]" value="newsletter">
+
+    <div class="vt-email-signup__field flex items-center">
+      <label for="{{ input_id }}" class="vt-visually-hidden">{{ 'newsletter.label' | t }}</label>
+      <input
+        id="{{ input_id }}"
+        class="vt-email-signup__input"
+        type="email"
+        name="contact[email]"
+        value="{{ form.email }}"
+        placeholder="{{ 'newsletter.placeholder' | t }}"
+        autocomplete="email"
+        autocapitalize="off"
+        autocorrect="off"
+        spellcheck="false"
+        required
+        {% if form.errors %}
+          aria-invalid="true"
+        {% endif %}
+        {% if form.errors or form.posted_successfully? %}
+          aria-describedby="{{ message_id }}"
+        {% elsif block.settings.note != blank %}
+          aria-describedby="{{ note_id }}"
+        {% endif %}
+      >
+      <button
+        type="submit"
+        class="vt-email-signup__button{% if icon_button %} vt-email-signup__button--icon{% endif %}"
+        {% if icon_button %}
+          aria-label="{{ 'newsletter.subscribe' | t }}"
+        {% endif %}
+      >
+        {%- if icon_button -%}
+          {%- render 'icons', icon: 'arrow-right' -%}
+        {%- else -%}
+          {{ 'newsletter.subscribe' | t }}
+        {%- endif -%}
+      </button>
+    </div>
+
+    {%- if form.errors -%}
+      <p id="{{ message_id }}" class="vt-email-signup__message vt-email-signup__message--error" role="alert">
+        {{- form.errors.translated_fields.email | capitalize }}
+        {{ form.errors.messages.email -}}
+      </p>
+    {%- elsif form.posted_successfully? -%}
+      <p id="{{ message_id }}" class="vt-email-signup__message" role="status">
+        {{- 'newsletter.success' | t -}}
+      </p>
+    {%- endif -%}
+  {%- endform -%}
+
+  {%- if block.settings.note != blank -%}
+    <p id="{{ note_id }}" class="vt-email-signup__note vt-paragraph-small flex items-start">
+      {%- if block.settings.note_icon != 'none' -%}
+        <span class="vt-email-signup__note-icon">
+          {%- render 'icons', icon: block.settings.note_icon -%}
+        </span>
+      {%- endif -%}
+      <span>{{ block.settings.note }}</span>
+    </p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .vt-email-signup {
+    gap: 1rem;
+    max-width: var(--vt-email-max-width, 32rem);
+  }
+
+  .vt-email-signup__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  /* The field and the button share one box: the button sits inside the field's padding */
+  .vt-email-signup__field {
+    gap: 0.5rem;
+    padding: 0.375rem;
+    background-color: var(--vt-email-field-bg, var(--vt-background-color));
+    color: var(--vt-email-field-color, var(--vt-foreground-color));
+    border-radius: var(--vt-email-radius, 0);
+  }
+
+  .vt-email-signup__field:focus-within {
+    outline: 2px solid var(--vt-email-field-bg, var(--vt-background-color));
+    outline-offset: 3px;
+  }
+
+  .vt-email-signup__input {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 3rem;
+    padding: 0 0.875rem;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: max(1rem, var(--vt-font-body-size, 1rem));
+  }
+
+  /* The visible focus ring is on the whole field (:focus-within) */
+  .vt-email-signup__input:focus {
+    outline: none;
+  }
+
+  .vt-email-signup__input::placeholder {
+    color: inherit;
+    opacity: 0.75;
+  }
+
+  .vt-email-signup__button {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 3rem;
+    min-height: 3rem;
+    padding: 0 1.25rem;
+    border: 0;
+    border-radius: max(0px, calc(var(--vt-email-radius, 0px) - 0.375rem));
+    background-color: var(--vt-email-button-bg, var(--vt-color-secondary));
+    color: var(--vt-email-button-color, var(--vt-foreground-color));
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s ease;
+  }
+
+  .vt-email-signup__button--icon {
+    padding: 0;
+  }
+
+  .vt-email-signup__button svg {
+    width: 1.375rem;
+    height: auto;
+    transition: translate 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .vt-email-signup__button:hover {
+      filter: brightness(0.92);
+    }
+
+    .vt-email-signup__button:hover svg {
+      translate: 0.1875rem 0;
+    }
+  }
+
+  .vt-email-signup__button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -5px;
+  }
+
+  .vt-email-signup__message {
+    margin: 0;
+    font-weight: 600;
+  }
+
+  .vt-email-signup__note {
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--vt-section-paragraph-color, inherit);
+  }
+
+  .vt-email-signup__note-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-block-start: 0.15em;
+    color: var(--vt-email-note-icon-color, var(--vt-color-accent));
+  }
+
+  .vt-email-signup__note-icon svg {
+    width: 1em;
+    height: 1em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-email-signup__button,
+    .vt-email-signup__button svg {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Email signup",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 280,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "label": "Maximum width",
+      "default": 520
+    },
+    {
+      "type": "header",
+      "content": "Field and button"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Arrow icon"
+        },
+        {
+          "value": "text",
+          "label": "Subscribe text"
+        }
+      ],
+      "default": "icon"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "field_background",
+      "label": "Field background",
+      "info": "Leave empty to use the background color from the color palette."
+    },
+    {
+      "type": "color",
+      "id": "field_text",
+      "label": "Field text"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button background",
+      "info": "Leave empty to use the secondary color from the color palette."
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button text"
+    },
+    {
+      "type": "header",
+      "content": "Note"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "note",
+      "label": "Text",
+      "default": "Add a short note, like a welcome offer",
+      "info": "Shows under the field."
+    },
+    {
+      "type": "select",
+      "id": "note_icon",
+      "label": "Icon",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "sparkle",
+          "label": "t:blocks.icon.settings.icon.options__12.label"
+        },
+        {
+          "value": "leaf",
+          "label": "t:blocks.icon.settings.icon.options__1.label"
+        },
+        {
+          "value": "check-circle",
+          "label": "t:blocks.icon.settings.icon.options__23.label"
+        },
+        {
+          "value": "info-circle",
+          "label": "t:blocks.icon.settings.icon.options__25.label"
+        }
+      ],
+      "default": "sparkle",
+      "visible_if": "{{ block.settings.note != blank }}"
+    },
+    {
+      "type": "color",
+      "id": "note_icon_color",
+      "label": "Icon color",
+      "default": "{{ settings.color_palette.accent }}",
+      "visible_if": "{{ block.settings.note != blank and block.settings.note_icon != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.icon.settings.icon_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:blocks.icon.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.icon.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.icon.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.icon.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.icon.settings.animation_type.options__5.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:blocks.icon.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        {
+          "value": "from-left",
+          "label": "t:blocks.icon.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.icon.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.icon.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.icon.settings.animation_direction.options__4.label"
+        }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.icon.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.icon.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.icon.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        {
+          "value": "linear",
+          "label": "t:blocks.icon.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__7.label"
+        }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.icon.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.icon.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Email signup"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,946 @@
+{% comment %}
+  Email signup: a band that invites customers to subscribe, built from theme blocks
+  (by default a heading and the Email signup block). Lives in the footer group above
+  the footer, and can also be added to any template.
+
+  Columns use the same grid as the Column layout block (snippets/grid-tracks.liquid,
+  .vt-grid-tracks and Tailwind gap classes), so equal widths and gaps line up with
+  any Column layout above or below. Side by side applies from 1024px, and from 768px
+  when Columns (tablet) is 2, like the Column layout breakpoints; mobile stacks. Each block takes one
+  column: group several blocks in a Stack to keep them in one column.
+{% endcomment %}
+
+{%- liquid
+  assign s = section.settings
+
+  assign inner_class = 'vt-newsletter__inner vt-grid-tracks ' | append: s.mobile_gap_y | append: ' ' | append: s.tablet_gap_y | append: ' ' | append: s.desktop_gap_y
+  assign tablet_columns = false
+  if s.layout == 'side_by_side'
+    assign inner_class = inner_class | append: ' ' | append: s.desktop_gap_x
+    if s.tablet_column_count == '2'
+      assign tablet_columns = true
+      assign inner_class = inner_class | append: ' ' | append: s.tablet_gap_x
+    endif
+  endif
+  if s.make_section_page_width
+    assign inner_class = inner_class | append: ' vt-page-width'
+  endif
+
+  assign section_class = 'vt-section vt-newsletter vt-newsletter--' | append: s.layout
+  if s.layout == 'stacked' and s.content_alignment == 'center'
+    assign section_class = section_class | append: ' vt-newsletter--center text-center'
+  endif
+-%}
+
+{%- comment -%} Without blocks the storefront shows nothing, so no empty space. The theme editor keeps it visible to add blocks. {%- endcomment -%}
+{%- if section.blocks.size > 0 or request.design_mode -%}
+  {% render 'section-styles', section: section %}
+
+  <div
+    class="{{ section_class }}"
+    {% if s.layout == 'side_by_side' %}
+      style="--vt-grid-desktop: {% render 'grid-tracks', settings: s, device: 'desktop', count: 2 %};{% if tablet_columns %} --vt-grid-tablet: {% render 'grid-tracks', settings: s, device: 'tablet', count: 2 %};{% endif %} --vt-newsletter-align: {{ s.vertical_alignment }};"
+    {% endif %}
+    {{ section.shopify_attributes }}
+  >
+    <div class="{{ inner_class }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-newsletter--center .vt-newsletter__inner {
+    justify-items: center;
+  }
+
+  /* Only matters once blocks share a row (tablet when set to 2 columns, desktop) */
+  .vt-newsletter--side_by_side .vt-newsletter__inner {
+    align-items: var(--vt-newsletter-align, start);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Email signup",
+  "tag": "section",
+  "class": "newsletter-section",
+  "enabled_on": {
+    "templates": [
+      "*"
+    ],
+    "groups": [
+      "footer"
+    ]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "side_by_side",
+          "label": "Side by side"
+        },
+        {
+          "value": "stacked",
+          "label": "Stacked"
+        }
+      ],
+      "default": "side_by_side",
+      "info": "Side by side applies from 1024px wide, like Column layout. Mobile always stacks."
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "start",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left",
+      "visible_if": "{{ section.settings.layout == 'stacked' }}"
+    },
+    {
+      "type": "header",
+      "content": "Column width (desktop)",
+      "info": "Each block takes one column. Use the same widths and gaps as a Column layout to line them up.",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_1_width",
+      "label": "Column 1",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/2|50",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_column_2_width",
+      "label": "Column 2",
+      "options": [
+        {
+          "value": "lg:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "lg:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "lg:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "lg:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "lg:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "lg:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "lg:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "lg:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "lg:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "lg:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "lg:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "lg:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "lg:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "lg:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "lg:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "lg:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "lg:w-1/2|50",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "header",
+      "content": "Column width (tablet)",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_count",
+      "label": "Columns (tablet)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1",
+      "info": "Set to 2 to keep blocks side by side from 768px.",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_1_width",
+      "label": "Column 1",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' and section.settings.tablet_column_count == '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_column_2_width",
+      "label": "Column 2",
+      "options": [
+        {
+          "value": "md:w-1/12|8.3333",
+          "label": "1/12 (8.3333%)"
+        },
+        {
+          "value": "md:w-1/6|16.6667",
+          "label": "1/6 (16.6667%)"
+        },
+        {
+          "value": "md:w-1/5|20",
+          "label": "1/5 (20%)"
+        },
+        {
+          "value": "md:w-1/4|25",
+          "label": "1/4 (25%)"
+        },
+        {
+          "value": "md:w-1/3|33.3333",
+          "label": "1/3 (33.3333%)"
+        },
+        {
+          "value": "md:w-5/12|41.6667",
+          "label": "5/12 (41.6667%)"
+        },
+        {
+          "value": "md:w-2/5|40",
+          "label": "2/5 (40%)"
+        },
+        {
+          "value": "md:w-1/2|50",
+          "label": "1/2 (50%)"
+        },
+        {
+          "value": "md:w-7/12|58.3333",
+          "label": "7/12 (58.3333%)"
+        },
+        {
+          "value": "md:w-3/5|60",
+          "label": "3/5 (60%)"
+        },
+        {
+          "value": "md:w-2/3|66.6667",
+          "label": "2/3 (66.6667%)"
+        },
+        {
+          "value": "md:w-3/4|75",
+          "label": "3/4 (75%)"
+        },
+        {
+          "value": "md:w-4/5|80",
+          "label": "4/5 (80%)"
+        },
+        {
+          "value": "md:w-5/6|83.3333",
+          "label": "5/6 (83.3333%)"
+        },
+        {
+          "value": "md:w-11/12|91.6667",
+          "label": "11/12 (91.6667%)"
+        },
+        {
+          "value": "md:w-full|100",
+          "label": "Full (100%)"
+        }
+      ],
+      "default": "md:w-1/2|50",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' and section.settings.tablet_column_count == '2' }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "select",
+      "id": "desktop_gap_x",
+      "label": "Horizontal gap (desktop)",
+      "options": [
+        {
+          "value": "lg:gap-x-0",
+          "label": "0px"
+        },
+        {
+          "value": "lg:gap-x-1",
+          "label": "4px"
+        },
+        {
+          "value": "lg:gap-x-2",
+          "label": "8px"
+        },
+        {
+          "value": "lg:gap-x-3",
+          "label": "12px"
+        },
+        {
+          "value": "lg:gap-x-4",
+          "label": "16px"
+        },
+        {
+          "value": "lg:gap-x-5",
+          "label": "20px"
+        },
+        {
+          "value": "lg:gap-x-6",
+          "label": "24px"
+        },
+        {
+          "value": "lg:gap-x-8",
+          "label": "32px"
+        },
+        {
+          "value": "lg:gap-x-10",
+          "label": "40px"
+        },
+        {
+          "value": "lg:gap-x-12",
+          "label": "48px"
+        },
+        {
+          "value": "lg:gap-x-16",
+          "label": "64px"
+        },
+        {
+          "value": "lg:gap-x-20",
+          "label": "80px"
+        },
+        {
+          "value": "lg:gap-x-24",
+          "label": "96px"
+        }
+      ],
+      "default": "lg:gap-x-20",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' }}"
+    },
+    {
+      "type": "select",
+      "id": "desktop_gap_y",
+      "label": "Vertical gap (desktop)",
+      "options": [
+        {
+          "value": "lg:gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "lg:gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "lg:gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "lg:gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "lg:gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "lg:gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "lg:gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "lg:gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "lg:gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "lg:gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "lg:gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "lg:gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "lg:gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "lg:gap-y-8"
+    },
+    {
+      "type": "select",
+      "id": "tablet_gap_x",
+      "label": "Horizontal gap (tablet)",
+      "options": [
+        {
+          "value": "md:gap-x-0",
+          "label": "0px"
+        },
+        {
+          "value": "md:gap-x-1",
+          "label": "4px"
+        },
+        {
+          "value": "md:gap-x-2",
+          "label": "8px"
+        },
+        {
+          "value": "md:gap-x-3",
+          "label": "12px"
+        },
+        {
+          "value": "md:gap-x-4",
+          "label": "16px"
+        },
+        {
+          "value": "md:gap-x-5",
+          "label": "20px"
+        },
+        {
+          "value": "md:gap-x-6",
+          "label": "24px"
+        },
+        {
+          "value": "md:gap-x-8",
+          "label": "32px"
+        },
+        {
+          "value": "md:gap-x-10",
+          "label": "40px"
+        },
+        {
+          "value": "md:gap-x-12",
+          "label": "48px"
+        },
+        {
+          "value": "md:gap-x-16",
+          "label": "64px"
+        },
+        {
+          "value": "md:gap-x-20",
+          "label": "80px"
+        },
+        {
+          "value": "md:gap-x-24",
+          "label": "96px"
+        }
+      ],
+      "default": "md:gap-x-4",
+      "visible_if": "{{ section.settings.layout == 'side_by_side' and section.settings.tablet_column_count == '2' }}"
+    },
+    {
+      "type": "select",
+      "id": "tablet_gap_y",
+      "label": "Vertical gap (tablet)",
+      "options": [
+        {
+          "value": "md:gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "md:gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "md:gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "md:gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "md:gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "md:gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "md:gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "md:gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "md:gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "md:gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "md:gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "md:gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "md:gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "md:gap-y-8"
+    },
+    {
+      "type": "select",
+      "id": "mobile_gap_y",
+      "label": "Vertical gap (mobile)",
+      "options": [
+        {
+          "value": "gap-y-0",
+          "label": "0px"
+        },
+        {
+          "value": "gap-y-1",
+          "label": "4px"
+        },
+        {
+          "value": "gap-y-2",
+          "label": "8px"
+        },
+        {
+          "value": "gap-y-3",
+          "label": "12px"
+        },
+        {
+          "value": "gap-y-4",
+          "label": "16px"
+        },
+        {
+          "value": "gap-y-5",
+          "label": "20px"
+        },
+        {
+          "value": "gap-y-6",
+          "label": "24px"
+        },
+        {
+          "value": "gap-y-8",
+          "label": "32px"
+        },
+        {
+          "value": "gap-y-10",
+          "label": "40px"
+        },
+        {
+          "value": "gap-y-12",
+          "label": "48px"
+        },
+        {
+          "value": "gap-y-16",
+          "label": "64px"
+        },
+        {
+          "value": "gap-y-20",
+          "label": "80px"
+        },
+        {
+          "value": "gap-y-24",
+          "label": "96px"
+        }
+      ],
+      "default": "gap-y-8"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave blank to inherit from color palette",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave blank to use colors from the color palette",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave blank to inherit from color palette"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 90,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 90,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Email signup",
+      "settings": {
+        "layout": "side_by_side",
+        "vertical_alignment": "start",
+        "background_style": "solid",
+        "padding_top_desktop": 90,
+        "padding_bottom_desktop": 90,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Invite customers to join your email list",
+            "heading_tag": "h2",
+            "heading_size": "vt-heading-h2",
+            "heading_alignment": "text-inherit"
+          }
+        },
+        {
+          "type": "email-signup"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

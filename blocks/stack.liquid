@@ -136,14 +136,16 @@
   .vt-stack--mobile-horizontal.vt-stack--position-flex-end { align-items: flex-end; }
   .vt-stack--mobile-horizontal.vt-stack--position-stretch { align-items: stretch; }
 
-  /* Vertical (column): alignment → align-items | position → justify-content */
+  /* Vertical (column): alignment → align-items | position → justify-content.
+     Space between/around/evenly spread the items down the column instead (there is
+     no "space" for align-items); the extra class lets them win over Position */
   .vt-stack--mobile-vertical.vt-stack--align-flex-start { align-items: flex-start; }
   .vt-stack--mobile-vertical.vt-stack--align-center { align-items: center; }
   .vt-stack--mobile-vertical.vt-stack--align-flex-end { align-items: flex-end; }
-  .vt-stack--mobile-vertical.vt-stack--align-space-between { align-items: space-between; }
+  .vt-stack.vt-stack--mobile-vertical.vt-stack--align-space-between { justify-content: space-between; }
   .vt-stack--mobile-vertical.vt-stack--align-stretch { align-items: stretch; }
-  .vt-stack--mobile-vertical.vt-stack--align-space-around { align-items: space-around; }
-  .vt-stack--mobile-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+  .vt-stack.vt-stack--mobile-vertical.vt-stack--align-space-around { justify-content: space-around; }
+  .vt-stack.vt-stack--mobile-vertical.vt-stack--align-space-evenly { justify-content: space-evenly; }
 
   .vt-stack--mobile-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
   .vt-stack--mobile-vertical.vt-stack--position-center { justify-content: center; }
@@ -168,10 +170,10 @@
     .vt-stack--tablet-vertical.vt-stack--align-flex-start { align-items: flex-start; }
     .vt-stack--tablet-vertical.vt-stack--align-center { align-items: center; }
     .vt-stack--tablet-vertical.vt-stack--align-flex-end { align-items: flex-end; }
-    .vt-stack--tablet-vertical.vt-stack--align-space-between { align-items: space-between; }
+    .vt-stack.vt-stack--tablet-vertical.vt-stack--align-space-between { justify-content: space-between; }
     .vt-stack--tablet-vertical.vt-stack--align-stretch { align-items: stretch; }
-    .vt-stack--tablet-vertical.vt-stack--align-space-around { align-items: space-around; }
-    .vt-stack--tablet-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+    .vt-stack.vt-stack--tablet-vertical.vt-stack--align-space-around { justify-content: space-around; }
+    .vt-stack.vt-stack--tablet-vertical.vt-stack--align-space-evenly { justify-content: space-evenly; }
 
     .vt-stack--tablet-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
     .vt-stack--tablet-vertical.vt-stack--position-center { justify-content: center; }
@@ -197,10 +199,10 @@
     .vt-stack--desktop-vertical.vt-stack--align-flex-start { align-items: flex-start; }
     .vt-stack--desktop-vertical.vt-stack--align-center { align-items: center; }
     .vt-stack--desktop-vertical.vt-stack--align-flex-end { align-items: flex-end; }
-    .vt-stack--desktop-vertical.vt-stack--align-space-between { align-items: space-between; }
+    .vt-stack.vt-stack--desktop-vertical.vt-stack--align-space-between { justify-content: space-between; }
     .vt-stack--desktop-vertical.vt-stack--align-stretch { align-items: stretch; }
-    .vt-stack--desktop-vertical.vt-stack--align-space-around { align-items: space-around; }
-    .vt-stack--desktop-vertical.vt-stack--align-space-evenly { align-items: space-evenly; }
+    .vt-stack.vt-stack--desktop-vertical.vt-stack--align-space-around { justify-content: space-around; }
+    .vt-stack.vt-stack--desktop-vertical.vt-stack--align-space-evenly { justify-content: space-evenly; }
 
     .vt-stack--desktop-vertical.vt-stack--position-flex-start { justify-content: flex-start; }
     .vt-stack--desktop-vertical.vt-stack--position-center { justify-content: center; }
@@ -242,6 +244,40 @@
 
   .vt-stack--height-custom {
     min-height: var(--vt-min-height);
+  }
+
+  /* Position "Stretch" in a row: child stacks follow the tallest item. Their Height
+     (fit-content / 100%) would otherwise block the stretch, so it is released here */
+  .vt-stack--mobile-horizontal.vt-stack--position-stretch > .vt-stack {
+    height: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-stack--tablet-horizontal.vt-stack--position-stretch > .vt-stack {
+      height: auto;
+    }
+
+    .vt-stack--tablet-vertical.vt-stack--position-stretch > .vt-stack--height-fit {
+      height: fit-content;
+    }
+
+    .vt-stack--tablet-vertical.vt-stack--position-stretch > .vt-stack--height-fill {
+      height: 100%;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-stack--desktop-horizontal.vt-stack--position-stretch > .vt-stack {
+      height: auto;
+    }
+
+    .vt-stack--desktop-vertical.vt-stack--position-stretch > .vt-stack--height-fit {
+      height: fit-content;
+    }
+
+    .vt-stack--desktop-vertical.vt-stack--position-stretch > .vt-stack--height-fill {
+      height: 100%;
+    }
   }
 
   /* Position type */

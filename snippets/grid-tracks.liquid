@@ -1,0 +1,31 @@
+{% doc %}
+  Prints the grid track list for one device from column width settings, so
+  every multi-column layout in the theme shares the same column math.
+
+  Width settings are named "{device}_column_{n}_width" and hold values like
+  "lg:w-1/2|50": the number after "|" is the column's share of the row. Pair the
+  output with the "vt-grid-tracks" class (assets/theme.css), which reads
+  --vt-grid-mobile, --vt-grid-tablet and --vt-grid-desktop.
+
+  @param {object} settings - The block or section settings that hold the width selects
+  @param {string} device - "desktop", "tablet" or "mobile"
+  @param {number} count - Number of columns to read
+  @param {boolean} [shares] - Print bare shares ("40 60") instead of tracks ("40fr 60fr")
+
+  @example
+  style="--vt-grid-desktop: {% render 'grid-tracks', settings: block.settings, device: 'desktop', count: 2 %};"
+{% enddoc %}
+
+{%- liquid
+  for n in (1..count)
+    assign key = device | append: '_column_' | append: n | append: '_width'
+    assign share = settings[key] | split: '|' | last
+    unless forloop.first
+      echo ' '
+    endunless
+    echo share
+    unless shares
+      echo 'fr'
+    endunless
+  endfor
+-%}

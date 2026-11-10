@@ -11,6 +11,62 @@
   "type": "footer",
   "name": "t:general.footer",
   "sections": {
+    "newsletter": {
+      "type": "newsletter",
+      "settings": {
+        "layout": "side_by_side",
+        "vertical_alignment": "start",
+        "desktop_column_1_width": "lg:w-1/2|50",
+        "desktop_column_2_width": "lg:w-1/2|50",
+        "desktop_gap_x": "lg:gap-x-20",
+        "desktop_gap_y": "lg:gap-y-8",
+        "tablet_gap_y": "md:gap-y-8",
+        "mobile_gap_y": "gap-y-8",
+        "background_style": "gradient",
+        "background_gradient": "linear-gradient(250deg, rgba(57, 114, 26, 1) 0%, rgba(34, 78, 9, 1) 42%, rgba(34, 78, 9, 1) 100%)",
+        "heading_color": "{{ settings.color_palette.background }}",
+        "paragraph_color": "{{ settings.color_palette.background }}",
+        "padding_top_desktop": 90,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 64,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": {
+        "heading_block": {
+          "type": "heading",
+          "settings": {
+            "heading": "Join 50,000+ Eco-Conscious Fashion Lovers",
+            "heading_tag": "h2",
+            "heading_size": "vt-heading-h2",
+            "heading_alignment": "text-inherit",
+            "animation_type": "none"
+          }
+        },
+        "email_signup_block": {
+          "type": "email-signup",
+          "settings": {
+            "alignment": "left",
+            "max_width": 520,
+            "button_style": "icon",
+            "corner_radius": 0,
+            "note": "Be first to wear change – exclusive drops + 10% off",
+            "note_icon": "sparkle",
+            "note_icon_color": "{{ settings.color_palette.accent }}",
+            "animation_type": "none"
+          }
+        }
+      },
+      "block_order": [
+        "heading_block",
+        "email_signup_block"
+      ]
+    },
     "footer": {
       "type": "footer",
       "settings": {
@@ -20,6 +76,7 @@
     }
   },
   "order": [
+    "newsletter",
     "footer"
   ]
 }

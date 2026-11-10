@@ -39,9 +39,9 @@
       "carousel_role_description": "carousel",
       "slide_role_description": "slide",
       "slide_label": "{{ index }} of {{ total }}"
-    },
+    },    
     "card_badges": {
-      "aria_label": "Product badges"
+      "aria_label": "Product badges"      
     },
     "breadcrumbs": {
       "home": "Home", 
@@ -90,6 +90,12 @@
     "expired": "This gift card has expired",
     "expires_on": "Expires on {{ expires_on }}",
     "use_at_checkout": "Use this gift card at checkout"
+  },
+  "newsletter": {
+    "label": "Email",
+    "placeholder": "Enter your email address",
+    "subscribe": "Subscribe",
+    "success": "Thanks for subscribing. Check your inbox soon."
   },
   "password": {
     "title": "This shop is private",

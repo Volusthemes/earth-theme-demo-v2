@@ -177,6 +177,9 @@
   .visible {
     visibility: visible;
   }
+  .absolute {
+    position: absolute;
+  }
   .fixed {
     position: fixed;
   }
@@ -464,6 +467,9 @@
   }
   .text-right {
     text-align: right;
+  }
+  .text-wrap {
+    text-wrap: wrap;
   }
   .text-inherit {
     color: inherit;

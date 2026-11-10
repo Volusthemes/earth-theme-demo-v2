@@ -16,37 +16,11 @@
 {% enddoc %}
 
 {%- liquid
-  assign desktop_track_list = ''
-  for n in (1..block.settings.desktop_column_count)
-    assign key = 'desktop_column_' | append: n | append: '_width'
-    assign parts = block.settings[key] | split: '|'
-    assign desktop_track_list = desktop_track_list | append: parts[1] | append: 'fr '
-  endfor
-
-  # The plain share numbers (e.g. "40 60") are also kept for mobile and
-  # tablet: the swipe mode uses them as slide widths (share % of the row).
-  assign tablet_track_list = ''
-  assign tablet_shares = ''
-  for n in (1..block.settings.tablet_column_count)
-    assign key = 'tablet_column_' | append: n | append: '_width'
-    assign parts = block.settings[key] | split: '|'
-    assign tablet_track_list = tablet_track_list | append: parts[1] | append: 'fr '
-    assign tablet_shares = tablet_shares | append: parts[1] | append: ' '
-  endfor
-
-  assign mobile_track_list = ''
-  assign mobile_shares = ''
-  for n in (1..block.settings.mobile_column_count)
-    assign key = 'mobile_column_' | append: n | append: '_width'
-    assign parts = block.settings[key] | split: '|'
-    assign mobile_track_list = mobile_track_list | append: parts[1] | append: 'fr '
-    assign mobile_shares = mobile_shares | append: parts[1] | append: ' '
-  endfor
-  
-  assign mobile_shares = mobile_shares | strip
-  assign tablet_shares = tablet_shares | strip
-  assign mobile_first_share = mobile_shares | split: ' ' | first | default: 100
-  assign tablet_first_share = tablet_shares | split: ' ' | first | default: 100
+  # Column tracks come from snippets/grid-tracks.liquid (shared with every
+  # multi-column section). Swipe mode also needs the first share on mobile and
+  # tablet as a number: it sets the slide width (share % of the row).
+  assign mobile_first_share = block.settings.mobile_column_1_width | split: '|' | last | default: 100
+  assign tablet_first_share = block.settings.tablet_column_1_width | split: '|' | last | default: 100
 
   assign gap_classes = block.settings.mobile_gap_x | append: ' ' | append: block.settings.mobile_gap_y | append: ' ' | append: block.settings.tablet_gap_x | append: ' ' | append: block.settings.tablet_gap_y | append: ' ' | append: block.settings.desktop_gap_x | append: ' ' | append: block.settings.desktop_gap_y
 
@@ -75,15 +49,15 @@
   data-autoplay="{% if block.settings.autoplay != 'off' %}true{% else %}false{% endif %}"
   data-autoplay-delay="{% if block.settings.autoplay != 'off' %}{{ block.settings.autoplay | times: 1000 }}{% endif %}"
   data-editor="{{ is_editor }}"
-  data-mobile-shares="{{ mobile_shares }}"
-  data-tablet-shares="{{ tablet_shares }}"
+  data-mobile-shares="{% render 'grid-tracks', settings: block.settings, device: 'mobile', count: block.settings.mobile_column_count, shares: true %}"
+  data-tablet-shares="{% render 'grid-tracks', settings: block.settings, device: 'tablet', count: block.settings.tablet_column_count, shares: true %}"
   data-mobile-gap="{{ mobile_gap_px }}"
   data-tablet-gap="{{ tablet_gap_px }}"
   data-label-carousel="{{ 'accessibility.column_layout.carousel_role_description' | t | escape }}"
   data-label-slide-role="{{ 'accessibility.column_layout.slide_role_description' | t | escape }}"
   data-label-slide="{{ 'accessibility.column_layout.slide_label' | t: index: '__index__', total: '__total__' | escape }}"
   data-label-container="{{ 'accessibility.column_layout.aria_label' | t | escape }}"
-  style="--vt-padding-block: {% render 'fluid-clamp', min_px: padding_mobile_block_px, max_px: padding_desktop_block_px %}; --vt-padding-inline: {% render 'fluid-clamp', min_px: padding_mobile_inline_px, max_px: padding_desktop_inline_px %}; --vt-grid-mobile: {{ mobile_track_list }}; --vt-grid-tablet: {{ tablet_track_list }}; --vt-grid-desktop: {{ desktop_track_list }}; --vt-gap-mobile: {{ mobile_gap_px }}px; --vt-gap-tablet: {{ tablet_gap_px }}px; --vt-swipe-share-mobile: {{ mobile_first_share }}; --vt-swipe-share-tablet: {{ tablet_first_share }};"
+  style="--vt-padding-block: {% render 'fluid-clamp', min_px: padding_mobile_block_px, max_px: padding_desktop_block_px %}; --vt-padding-inline: {% render 'fluid-clamp', min_px: padding_mobile_inline_px, max_px: padding_desktop_inline_px %}; --vt-grid-mobile: {% render 'grid-tracks', settings: block.settings, device: 'mobile', count: block.settings.mobile_column_count %}; --vt-grid-tablet: {% render 'grid-tracks', settings: block.settings, device: 'tablet', count: block.settings.tablet_column_count %}; --vt-grid-desktop: {% render 'grid-tracks', settings: block.settings, device: 'desktop', count: block.settings.desktop_column_count %}; --vt-gap-mobile: {{ mobile_gap_px }}px; --vt-gap-tablet: {{ tablet_gap_px }}px; --vt-swipe-share-mobile: {{ mobile_first_share }}; --vt-swipe-share-tablet: {{ tablet_first_share }};"
   role="group"
   aria-label="{{ 'accessibility.column_layout.aria_label' | t }}"
   {{ block.shopify_attributes }}  
@@ -95,7 +69,7 @@
     overrides it.
   {%- endcomment -%}
   <div class="vt-column-layout__viewport">
-    <div class="vt-column-layout__list grid {{ gap_classes }}" style="--vt-columns-position: {{ block.settings.vertical_alignment }};">
+    <div class="vt-column-layout__list vt-grid-tracks {{ gap_classes }}" style="--vt-columns-position: {{ block.settings.vertical_alignment }};">
       {%- if block.blocks.size > 0 -%}
         {% content_for "blocks" %}
       {%- elsif is_editor -%}
@@ -129,13 +103,12 @@
     --vt-gap: var(--vt-gap-mobile, 0px);
   }
 
-  .vt-column-layout__list {    
-    grid-template-columns: var(--vt-grid-mobile, 1fr);
+  /* Columns: shared .vt-grid-tracks (assets/theme.css) */
+  .vt-column-layout__list {
     align-items: var(--vt-columns-position);
   }
 
   .vt-column-layout__list > * {
-    min-width: 0;
     box-sizing: border-box;
     --vt-slide-share: var(--vt-slide-share-mobile, var(--vt-swipe-share-mobile, 100));
   }
@@ -146,19 +119,8 @@
       --vt-gap: var(--vt-gap-tablet, 0px);
     }
 
-    .vt-column-layout__list {
-      grid-template-columns: var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr));
-    }
-
     .vt-column-layout__list > * {
       --vt-slide-share: var(--vt-slide-share-tablet, var(--vt-swipe-share-tablet, 100));
-    }
-  }
-
-  /* Desktop breakpoint mirrors Tailwind's lg: (>= 1024px). */
-  @media (min-width: 1024px) {
-    .vt-column-layout__list {
-      grid-template-columns: var(--vt-grid-desktop, var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr)));
     }
   }
 

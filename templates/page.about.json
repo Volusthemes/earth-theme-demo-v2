@@ -30,8 +30,8 @@
                 "mobile_content_alignment": "justify-center",
                 "gap": 30,
                 "gap_mobile": 20,
-                "heading_color": "#F8F9DC",
-                "paragraph_color": "#F8F9DC"
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}"
             },
             "blocks": {
                 "stack_block": {
@@ -55,7 +55,7 @@
                             "type": "icons",
                             "settings": {
                                 "icon": "sparkle",
-                                "icon_color": "#EAE060",
+                                "icon_color": "{{ settings.color_palette.accent }}",
                                 "icon_size_desktop": 16,
                                 "icon_size_mobile": 16,
                                 "show_box": false,
@@ -135,8 +135,8 @@
                 "padding_bottom_mobile": 80,
                 "padding_left_mobile": 20,
                 "padding_right_mobile": 20,
-                "heading_color": "#003225",
-                "paragraph_color": "#224E09",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
                 "make_section_page_width": true
             },
             "blocks": {
@@ -197,7 +197,7 @@
                                             "type": "icons",
                                             "settings": {
                                                 "icon": "sparkle",
-                                                "icon_color": "#EAE060",
+                                                "icon_color": "{{ settings.color_palette.accent }}",
                                                 "icon_size_desktop": 16,
                                                 "icon_size_mobile": 16,
                                                 "animation_type": "slide",
@@ -298,16 +298,16 @@
                         "material_card": {
                             "type": "card",
                             "settings": {
-                                "background_color": "#EAE060",
-                                "heading_color": "#003225",
-                                "text_color": "#224E09",
+                                "background_color": "{{ settings.color_palette.accent }}",
+                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                "text_color": "{{ settings.color_palette.primary }}",
                                 "position": "between",
                                 "alignment": "left",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "leaf",
                                 "decorative_icon_position": "right",
                                 "decorative_icon_alignment": "bottom",
-                                "decorative_icon_color": "#EAE060",
+                                "decorative_icon_color": "{{ settings.color_palette.accent }}",
                                 "decorative_icon_size_desktop": 132,
                                 "decorative_icon_size_mobile": 120,
                                 "decorative_icon_opacity": 25,
@@ -365,7 +365,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "eco",
-                                                        "icon_color": "#003225",
+                                                        "icon_color": "{{ settings.color_palette.foreground }}",
                                                         "icon_size_desktop": 24,
                                                         "icon_size_mobile": 20,
                                                         "animation_type": "none"
@@ -445,8 +445,8 @@
                                                                 "badge_size": "vt-paragraph-extra-small",
                                                                 "width": "fit",
                                                                 "gap": 4,
-                                                                "bg_color": "#003225",
-                                                                "text_color": "#EAE060",
+                                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                                "text_color": "{{ settings.color_palette.accent }}",
                                                                 "animation_type": "none"
                                                             },
                                                             "blocks": {
@@ -454,7 +454,7 @@
                                                                     "type": "icons",
                                                                     "settings": {
                                                                         "icon": "certificate-regulation",
-                                                                        "icon_color": "#EAE060",
+                                                                        "icon_color": "{{ settings.color_palette.accent }}",
                                                                         "icon_size_desktop": 16,
                                                                         "icon_size_mobile": 16,
                                                                         "animation_type": "none"
@@ -473,8 +473,8 @@
                                                                 "badge_size": "vt-paragraph-extra-small",
                                                                 "width": "fit",
                                                                 "gap": 4,
-                                                                "bg_color": "#003225",
-                                                                "text_color": "#EAE060",
+                                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                                "text_color": "{{ settings.color_palette.accent }}",
                                                                 "animation_type": "none"
                                                             },
                                                             "blocks": {
@@ -482,7 +482,7 @@
                                                                     "type": "icons",
                                                                     "settings": {
                                                                         "icon": "shake-hand-cooperate",
-                                                                        "icon_color": "#EAE060",
+                                                                        "icon_color": "{{ settings.color_palette.accent }}",
                                                                         "icon_size_desktop": 16,
                                                                         "icon_size_mobile": 16,
                                                                         "animation_type": "none"
@@ -541,7 +541,8 @@
         "video_with_text_overlay_section": {
             "type": "video-with-text-overlay",
             "settings": {
-                "video_source": "shopify",
+                "video_source": "external",
+                "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
                 "autoplay": true,
                 "loop": true,
                 "ratio_desktop": "16 / 9",
@@ -554,8 +555,8 @@
                 "text_alignment": "center",
                 "gap": 26,
                 "gap_mobile": 16,
-                "heading_color": "#F8F9DC",
-                "paragraph_color": "#F8F9DC"
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}"
             },
             "blocks": {
                 "heading_block": {
@@ -801,7 +802,7 @@
                                         "alignment": "text-left",
                                         "gap": 0,
                                         "padding_x_desktop": 24,
-                                        "padding_x_mobile": 16,
+                                        "padding_x_mobile": 20,
                                         "padding_y_desktop": 24,
                                         "padding_y_mobile": 20,
                                         "content_gap_desktop": 24,
@@ -814,7 +815,7 @@
                                         "border_color": "{{ settings.color_palette.foreground }}",
                                         "border_radius": 0,
                                         "interaction_state": "gradient_text",
-                                        "state_gradient": "linear-gradient(225deg, rgba(34, 78, 9, 1) 35%, rgba(66, 128, 32, 1) 100%)",
+                                        "state_gradient": "linear-gradient(225deg, rgba(34, 78, 9, 1) 35%, rgba(56, 110, 26, 1) 100%)",
                                         "state_text": "{{ settings.color_palette.background }}",
                                         "state_border": "{{ settings.color_palette.cactus_green }}",
                                         "animation_type": "slide",
@@ -843,7 +844,7 @@
                                                         "layout_direction_tablet": "vt-stack--horizontal",
                                                         "layout_direction_mobile": "vt-stack--vertical",
                                                         "alignment": "space-between",
-                                                        "position": "flex-start",
+                                                        "position": "stretch",
                                                         "wrap_content": "nowrap",
                                                         "width": "fill",
                                                         "height": "fit",
@@ -859,7 +860,7 @@
                                                                 "layout_direction_desktop": "vt-stack--vertical",
                                                                 "layout_direction_tablet": "vt-stack--vertical",
                                                                 "layout_direction_mobile": "vt-stack--vertical",
-                                                                "alignment": "flex-start",
+                                                                "alignment": "space-between",
                                                                 "position": "flex-start",
                                                                 "wrap_content": "nowrap",
                                                                 "width": "fill",
@@ -954,7 +955,7 @@
                                                         "layout_direction_tablet": "vt-stack--horizontal",
                                                         "layout_direction_mobile": "vt-stack--vertical",
                                                         "alignment": "space-between",
-                                                        "position": "flex-start",
+                                                        "position": "stretch",
                                                         "wrap_content": "nowrap",
                                                         "width": "fill",
                                                         "height": "fit",
@@ -970,7 +971,7 @@
                                                                 "layout_direction_desktop": "vt-stack--vertical",
                                                                 "layout_direction_tablet": "vt-stack--vertical",
                                                                 "layout_direction_mobile": "vt-stack--vertical",
-                                                                "alignment": "flex-start",
+                                                                "alignment": "space-between",
                                                                 "position": "flex-start",
                                                                 "wrap_content": "nowrap",
                                                                 "width": "fill",
@@ -1065,7 +1066,7 @@
                                                         "layout_direction_tablet": "vt-stack--horizontal",
                                                         "layout_direction_mobile": "vt-stack--vertical",
                                                         "alignment": "space-between",
-                                                        "position": "flex-start",
+                                                        "position": "stretch",
                                                         "wrap_content": "nowrap",
                                                         "width": "fill",
                                                         "height": "fit",
@@ -1081,7 +1082,7 @@
                                                                 "layout_direction_desktop": "vt-stack--vertical",
                                                                 "layout_direction_tablet": "vt-stack--vertical",
                                                                 "layout_direction_mobile": "vt-stack--vertical",
-                                                                "alignment": "flex-start",
+                                                                "alignment": "space-between",
                                                                 "position": "flex-start",
                                                                 "wrap_content": "nowrap",
                                                                 "width": "fill",
@@ -1176,7 +1177,7 @@
                                                         "layout_direction_tablet": "vt-stack--horizontal",
                                                         "layout_direction_mobile": "vt-stack--vertical",
                                                         "alignment": "space-between",
-                                                        "position": "flex-start",
+                                                        "position": "stretch",
                                                         "wrap_content": "nowrap",
                                                         "width": "fill",
                                                         "height": "fit",
@@ -1192,7 +1193,7 @@
                                                                 "layout_direction_desktop": "vt-stack--vertical",
                                                                 "layout_direction_tablet": "vt-stack--vertical",
                                                                 "layout_direction_mobile": "vt-stack--vertical",
-                                                                "alignment": "flex-start",
+                                                                "alignment": "space-between",
                                                                 "position": "flex-start",
                                                                 "wrap_content": "nowrap",
                                                                 "width": "fill",

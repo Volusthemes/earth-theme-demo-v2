@@ -200,8 +200,8 @@
                 "make_section_page_width": false
             }
         },
-        "impact_metrics_section": {
-            "type": "impact-metrics",
+        "multicolumn_metrics_section": {
+            "type": "multicolumn",
             "settings": {
                 "gap": 64,
                 "gap_mobile": 32,
@@ -1010,8 +1010,8 @@
                 "button_block"
             ]
         },
-        "impact_stats_section": {
-            "type": "impact-stats",
+        "multicolumn_stats_section": {
+            "type": "multicolumn",
             "settings": {
                 "gap": 0,
                 "gap_mobile": 0,
@@ -3230,7 +3230,8 @@
         "video_with_text_overlay_section": {
             "type": "video-with-text-overlay",
             "settings": {
-                "video_source": "shopify",
+                "video_source": "external",
+                "video_url": "https://www.youtube.com/watch?v=_9VUPq3SxOc",
                 "autoplay": true,
                 "loop": true,
                 "ratio_desktop": "16 / 9",
@@ -3275,7 +3276,7 @@
                         "animation_delay": 0.6,
                         "animation_easing": "ease-out-sine"
                     }
-                }                
+                }
             },
             "block_order": [
                 "heading_block",
@@ -4173,9 +4174,9 @@
         "image_slideshow_section",
         "rich_text_one_section",
         "divider_section",
-        "impact_metrics_section",
+        "multicolumn_metrics_section",
         "rich_text_two_section",
-        "impact_stats_section",
+        "multicolumn_stats_section",
         "featured_collections_section",
         "products_tab_carousel_section",
         "slideshow_section",

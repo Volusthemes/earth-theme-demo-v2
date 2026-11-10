@@ -1137,6 +1137,32 @@ body {
   gap: var(--vt-section-gap, 0);
 }
 
+/* ---- Shared column grid ----
+   Tracks come from snippets/grid-tracks.liquid; gaps come from Tailwind gap
+   classes. Breakpoints mirror Tailwind's md: (768px) and lg: (1024px), so any
+   two layouts with the same widths and gaps line up. */
+.vt-grid-tracks {
+  display: grid;
+  grid-template-columns: var(--vt-grid-mobile, 1fr);
+}
+
+/* Long words or wide media must not stretch a column past its share */
+.vt-grid-tracks > * {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .vt-grid-tracks {
+    grid-template-columns: var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vt-grid-tracks {
+    grid-template-columns: var(--vt-grid-desktop, var(--vt-grid-tablet, var(--vt-grid-mobile, 1fr)));
+  }
+}
+
 /* ---- Paragraph color override (inherited from section) ---- */
 .vt-section .vt-paragraph {
   color: var(--vt-section-paragraph-color, var(--vt-color-primary, inherit));
