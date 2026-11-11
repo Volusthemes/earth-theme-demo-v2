@@ -210,6 +210,9 @@
       max-width: 96rem;
     }
   }
+  .m-0 {
+    margin: 0px;
+  }
   .line-clamp-1 {
     overflow: hidden;
     display: -webkit-box;
@@ -269,6 +272,9 @@
   }
   .inline {
     display: inline;
+  }
+  .inline-flex {
+    display: inline-flex;
   }
   .w-full {
     width: 100%;
@@ -354,6 +360,9 @@
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
+  .gap-\[0\.5em\] {
+    gap: 0.5em;
+  }
   .gap-x-0 {
     column-gap: 0px;
   }
@@ -365,6 +374,9 @@
   }
   .gap-x-3 {
     column-gap: calc(var(--spacing) * 3);
+  }
+  .gap-x-3\.75 {
+    column-gap: calc(var(--spacing) * 3.75);
   }
   .gap-x-4 {
     column-gap: calc(var(--spacing) * 4);
@@ -392,6 +404,9 @@
   }
   .gap-x-24 {
     column-gap: calc(var(--spacing) * 24);
+  }
+  .gap-x-\[0\.9375rem\] {
+    column-gap: 0.9375rem;
   }
   .gap-y-0 {
     row-gap: 0px;
@@ -483,11 +498,17 @@
   .uppercase {
     text-transform: uppercase;
   }
+  .uppercase\! {
+    text-transform: uppercase !important;
+  }
   .italic {
     font-style: italic;
   }
   .underline {
     text-decoration-line: underline;
+  }
+  .opacity-70 {
+    opacity: 70%;
   }
   .ring {
     --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
@@ -512,6 +533,20 @@
   .backface-hidden {
     backface-visibility: hidden;
   }
+  @media (width < 48rem) {
+    .max-md\:items-center {
+      align-items: center;
+    }
+    .max-md\:items-start {
+      align-items: flex-start;
+    }
+    .max-md\:text-center {
+      text-align: center;
+    }
+    .max-md\:text-start {
+      text-align: start;
+    }
+  }
   @media (width >= 48rem) {
     .md\:max-w-\[var\(--vt-breadcrumbs-max-desktop\)\] {
       max-width: var(--vt-breadcrumbs-max-desktop);
@@ -524,6 +559,18 @@
     }
     .md\:grid-cols-3 {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .md\:flex-row {
+      flex-direction: row;
+    }
+    .md\:flex-wrap {
+      flex-wrap: wrap;
+    }
+    .md\:items-center {
+      align-items: center;
+    }
+    .md\:justify-between {
+      justify-content: space-between;
     }
     .md\:gap-4 {
       gap: calc(var(--spacing) * 4);

@@ -121,7 +121,7 @@
         {% endif %}
       >
         {%- if icon_button -%}
-          {%- render 'icons', icon: 'arrow-right' -%}
+          {%- render 'icons', icon: 'arrow-next-2' -%}
         {%- else -%}
           {{ 'newsletter.subscribe' | t }}
         {%- endif -%}
@@ -223,7 +223,7 @@
   }
 
   .vt-email-signup__button svg {
-    width: 1.375rem;
+    width: 1rem;
     height: auto;
     transition: translate 0.2s ease;
   }
@@ -303,7 +303,7 @@
       "step": 10,
       "unit": "px",
       "label": "Maximum width",
-      "default": 520
+      "default": 800
     },
     {
       "type": "header",

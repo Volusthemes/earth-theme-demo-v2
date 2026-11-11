@@ -1,0 +1,106 @@
+{% doc %}
+  Full-color icons of the payment methods enabled in the store
+  (shop.enabled_payment_types), as inline SVGs: no extra requests.
+
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'payment-icons', id: 'payment-icons' %}
+{% enddoc %}
+
+{%- if shop.enabled_payment_types.size > 0 -%}
+  <ul
+    class="vt-payment-icons flex flex-wrap items-center {{ block.settings.alignment }}"
+    role="list"
+    aria-label="{{ 'accessibility.payment_methods' | t | escape }}"
+    style="--vt-payment-icon-width: {{ block.settings.icon_width | divided_by: 16.0 }}rem; --vt-payment-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop %};"
+    {{ block.shopify_attributes }}
+  >
+    {%- for type in shop.enabled_payment_types -%}
+      <li class="flex">
+        {{- type | payment_type_svg_tag: class: 'vt-payment-icons__icon' -}}
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- elsif request.design_mode -%}
+  <p class="vt-paragraph-small opacity-70" {{ block.shopify_attributes }}>
+    {{- 'general.payment.editor_notice' | t -}}
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-payment-icons {
+    gap: var(--vt-payment-gap, 0.625rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-payment-icons__icon {
+    inline-size: var(--vt-payment-icon-width, 2.125rem);
+    block-size: auto;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Payment icons",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Payment icons will appear once you [set up payment methods](/admin/settings/payments)."
+    },
+    {
+      "type": "range",
+      "id": "icon_width",
+      "label": "Icon width",
+      "min": 24,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 34
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "justify-start", "label": "Left" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Right" }
+      ],
+      "default": "justify-start"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Desktop",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    }
+  ],
+  "presets": [
+    {
+      "name": "Payment icons"
+    }
+  ]
+}
+{% endschema %}

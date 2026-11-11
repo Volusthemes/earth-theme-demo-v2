@@ -14,8 +14,8 @@
     "next_announcement": "Next announcement",
     "pause_announcements": "Pause announcements",
     "play_announcements": "Play announcements",
-    "close_announcement": "Close announcement",    
-    "skip_to_text": "Skip to content",        
+    "close_announcement": "Close announcement",
+    "skip_to_text": "Skip to content",
     "collection_aria_label": "Collection gallery",
     "view_collection": "View collection",
     "items_with_count": "{{ count }} items",
@@ -33,22 +33,26 @@
     "cart": "Cart",
     "country_selector": "Country/region",
     "language_selector": "Language",
-    "column_layout":{
+    "column_layout": {
       "column_label": "Column {{ number }}",
       "aria_label": "Column layout",
       "carousel_role_description": "carousel",
       "slide_role_description": "slide",
       "slide_label": "{{ index }} of {{ total }}"
-    },    
+    },
     "card_badges": {
-      "aria_label": "Product badges"      
+      "aria_label": "Product badges"
     },
     "breadcrumbs": {
-      "home": "Home", 
+      "home": "Home",
       "collections": "Collections",
-      "aria_label": "Breadcrumb" 
-    }   
-  }, 
+      "aria_label": "Breadcrumb"
+    },
+    "social_link": "{{ network }} (opens in a new window)",
+    "new_window": "(opens in a new window)",
+    "payment_methods": "Payment methods",
+    "policies": "Policies"
+  },
   "404": {
     "title": "404",
     "not_found": "Page not found.",
@@ -109,30 +113,30 @@
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
   },
-  "products":{
-    "product":{
-       "quick_view": "Quick view",
-       "add_to_cart": "Add to cart",
-       "sold_out": "Sold out",
-       "sale_price": "Sale price",
-       "regular_price": "Regular price",
-       "tags": "Tags",
-       "placeholder_title": "Product title",
-       "vendor": "Vendor",
-       "quick_view_label": "Quick view: {{ title }}",
-       "add_to_cart_label": "Add to cart: {{ title }}",
-       "impact": "{{ value }}% impact",
-       "water_usage_label": "Water usage:",
-       "water_usage": "{{ value }} L",
-       "carbon_footprint_label": "Carbon footprint:",
-       "carbon_footprint": "{{ value }} kg",
-       "made_in": "Made in {{ country }}",
-       "material": "Material",
-       "discount_note": "{{ percent }}% off (price as marked)",
-       "quick_add": "Quick add",
-       "quick_add_label": "Quick add: {{ title }}",
-       "sold_out_label": "Sold out: {{ title }}",
-       "added_to_cart": "Added to cart"
+  "products": {
+    "product": {
+      "quick_view": "Quick view",
+      "add_to_cart": "Add to cart",
+      "sold_out": "Sold out",
+      "sale_price": "Sale price",
+      "regular_price": "Regular price",
+      "tags": "Tags",
+      "placeholder_title": "Product title",
+      "vendor": "Vendor",
+      "quick_view_label": "Quick view: {{ title }}",
+      "add_to_cart_label": "Add to cart: {{ title }}",
+      "impact": "{{ value }}% impact",
+      "water_usage_label": "Water usage:",
+      "water_usage": "{{ value }} L",
+      "carbon_footprint_label": "Carbon footprint:",
+      "carbon_footprint": "{{ value }} kg",
+      "made_in": "Made in {{ country }}",
+      "material": "Material",
+      "discount_note": "{{ percent }}% off (price as marked)",
+      "quick_add": "Quick add",
+      "quick_add_label": "Quick add: {{ title }}",
+      "sold_out_label": "Sold out: {{ title }}",
+      "added_to_cart": "Added to cart"
     },
     "badges": {
       "sale": "Sale",
@@ -159,12 +163,26 @@
       }
     }
   },
-  "content":{
+  "content": {
     "pagination": {
       "nav_label": "Pagination",
       "previous": "Previous",
       "next": "Next",
       "page": "Page {{ page }}"
+    }
+  },
+  "general": {
+    "localization": {
+      "editor_notice": "Country and language selectors show when the store sells in more than one country or language."
+    },
+    "social": {
+      "editor_notice": "Add your social media links in Theme settings > Social media."
+    },
+    "payment": {
+      "editor_notice": "Payment icons show once you set up payment methods."
+    },
+    "menu": {
+      "editor_notice": "Choose a menu with links to show it here."
     }
   }
 }

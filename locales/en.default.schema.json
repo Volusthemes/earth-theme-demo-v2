@@ -1295,6 +1295,18 @@
 					},
 					"options__32": {
 						"label": "Honest progress"
+					},
+					"options__33": {
+						"label": "Email"
+					},
+					"options__34": {
+						"label": "Phone"
+					},
+					"options__35": {
+						"label": "Location"
+					},
+					"options__36": {
+						"label": "Arrow"
 					}
 				},
 				"icon_size_desktop": {

@@ -1,16 +1,67 @@
 {% style %}  
-	{% # Loads all font variantions with display: swap %}
-	{{ settings.heading_font_family | font_face: font_display: 'swap' }}
-	{{ settings.heading_font_family | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-	{{ settings.heading_font_family | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-	{{ settings.heading_font_family | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
+	{%- liquid
+		# Font faces: only the weights the Typography, Navigation and Buttons settings use,
+		# so every Font weight option renders with its real face (no faux bold, no
+		# fallback to the nearest weight) without loading unused files.
+		# Body text also gets 700 and italics for <strong> and <em> in rich text.
+		assign heading_weights = settings.heading_font_weight | default: '700'
+		assign body_weights = '400,700,' | append: settings.body_font_weight | append: ',' | append: settings.large_font_weight | append: ',' | append: settings.small_font_weight | append: ',' | append: settings.extra_small_font_weight | append: ',' | append: settings.sub_heading_font_weight
 
-	{% if settings.type_body_font and settings.type_body_font.family != settings.heading_font_family.family %}
-		{{ settings.type_body_font | font_face: font_display: 'swap' }}
-		{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
-		{{ settings.type_body_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-		{{ settings.type_body_font | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
-	{% endif %}
+		if settings.nav_font == 'heading'
+			assign heading_weights = heading_weights | append: ',' | append: settings.nav_font_weight
+		else
+			assign body_weights = body_weights | append: ',' | append: settings.nav_font_weight
+		endif
+
+		if settings.buttons_font == 'heading'
+			assign heading_weights = heading_weights | append: ',' | append: settings.buttons_font_weight
+		else
+			assign body_weights = body_weights | append: ',' | append: settings.buttons_font_weight
+		endif
+
+		# One family for both: one list, so no face is declared twice
+		assign same_family = false
+		if settings.type_body_font == blank or settings.type_body_font.family == settings.heading_font_family.family
+			assign same_family = true
+			assign heading_weights = heading_weights | append: ',' | append: body_weights
+		endif
+
+		assign heading_weights = heading_weights | split: ',' | compact | uniq
+		for weight in heading_weights
+			if weight == blank
+				continue
+			endif
+			assign face = settings.heading_font_family | font_modify: 'weight', weight
+			if face
+				echo face | font_face: font_display: 'swap'
+			endif
+		endfor
+
+		assign italic_font = settings.heading_font_family
+		unless same_family
+			assign body_weights = body_weights | split: ',' | compact | uniq
+			for weight in body_weights
+				if weight == blank
+					continue
+				endif
+				assign face = settings.type_body_font | font_modify: 'weight', weight
+				if face
+					echo face | font_face: font_display: 'swap'
+				endif
+			endfor
+			assign italic_font = settings.type_body_font
+		endunless
+
+		# Italics of the body font for <em>, regular and bold
+		assign face = italic_font | font_modify: 'weight', '400' | font_modify: 'style', 'italic'
+		if face
+			echo face | font_face: font_display: 'swap'
+		endif
+		assign face = italic_font | font_modify: 'weight', '700' | font_modify: 'style', 'italic'
+		if face
+			echo face | font_face: font_display: 'swap'
+		endif
+	-%}
   
 
     {% comment %}

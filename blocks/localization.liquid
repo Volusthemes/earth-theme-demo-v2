@@ -1,0 +1,111 @@
+{% doc %}
+  Country and language selectors for any section, such as the footer. Each one
+  only shows when the store sells in more than one country or language. Uses the
+  same selector as the header (snippets/localization-selector.liquid), with a
+  choice of Link or Box style and of opening below or above.
+
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'localization', id: 'localization' %}
+{% enddoc %}
+
+{%- liquid
+  assign show_country = false
+  if block.settings.show_country and localization.available_countries.size > 1
+    assign show_country = true
+  endif
+
+  assign show_language = false
+  if block.settings.show_language and localization.available_languages.size > 1
+    assign show_language = true
+  endif
+
+  assign group_class = 'vt-localization-group vt-localization-group--' | append: block.settings.style | append: ' vt-localization-group--' | append: block.settings.open_direction | append: ' flex flex-wrap items-center gap-x-5 gap-y-3 ' | append: block.settings.text_size
+-%}
+
+{%- if show_country or show_language -%}
+  <vt-localization class="{{ group_class }}" {{ block.shopify_attributes }}>
+    {%- if show_country -%}
+      {%- assign country_form_id = 'LocalizationCountry-' | append: block.id -%}
+      {%- render 'localization-selector', type: 'country', form_id: country_form_id -%}
+    {%- endif -%}
+    {%- if show_language -%}
+      {%- assign language_form_id = 'LocalizationLanguage-' | append: block.id -%}
+      {%- render 'localization-selector', type: 'language', form_id: language_form_id -%}
+    {%- endif -%}
+  </vt-localization>
+
+  <script src="{{ 'theme-localization.js' | asset_url }}" type="module"></script>
+{%- elsif request.design_mode -%}
+  <p class="vt-paragraph-small opacity-70" {{ block.shopify_attributes }}>
+    {{- 'general.localization.editor_notice' | t -}}
+  </p>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Country and language",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Each selector shows when the store sells in more than one country or language. Manage them in Settings > Markets and Settings > Languages."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_country",
+      "label": "Show country selector",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "Show language selector",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        { "value": "link", "label": "Link" },
+        { "value": "box", "label": "Box" }
+      ],
+      "default": "box"
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text size",
+      "options": [
+        { "value": "vt-paragraph-extra-small", "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label" },
+        { "value": "vt-paragraph-small", "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label" },
+        { "value": "vt-paragraph-medium", "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label" },
+        { "value": "vt-paragraph-large", "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label" }
+      ],
+      "default": "vt-paragraph-medium"
+    },
+    {
+      "type": "select",
+      "id": "open_direction",
+      "label": "Open list",
+      "options": [
+        { "value": "down", "label": "Below" },
+        { "value": "up", "label": "Above" }
+      ],
+      "default": "down",
+      "info": "Use Above near the bottom of the page."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Country and language"
+    }
+  ]
+}
+{% endschema %}

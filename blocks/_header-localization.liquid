@@ -6,7 +6,7 @@
   {% content_for 'block', type: '_header-localization', id: 'localization' %}
 {% enddoc %}
 
-<div class="vt-header__localization" {{ block.shopify_attributes }}>
+<vt-localization class="vt-header__localization" {{ block.shopify_attributes }}>
   {%- if block.settings.show_country and localization.available_countries.size > 1 -%}
     {%- assign country_form_id = 'HeaderCountry-' | append: block.id -%}
     {%- render 'localization-selector', type: 'country', form_id: country_form_id -%}
@@ -15,7 +15,9 @@
     {%- assign language_form_id = 'HeaderLanguage-' | append: block.id -%}
     {%- render 'localization-selector', type: 'language', form_id: language_form_id -%}
   {%- endif -%}
-</div>
+</vt-localization>
+
+<script src="{{ 'theme-localization.js' | asset_url }}" type="module"></script>
 
 {% schema %}
 {

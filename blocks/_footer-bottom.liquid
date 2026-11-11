@@ -1,0 +1,139 @@
+{% doc %}
+  Bottom bar of the footer: a static block under the footer content, with a
+  full-width divider above it. Holds the copyright line and legal links by
+  default; its blocks sit in a row from 750px and stack below.
+
+  Only used by sections/footer.liquid. Self-contained: callers must leave the
+  body empty.
+
+  @example
+  {% content_for 'block', type: '_footer-bottom', id: 'footer-bottom' %}
+{% enddoc %}
+
+{%- liquid
+  assign inner_class = 'vt-footer-bottom__inner flex flex-col gap-y-5 md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-x-8 ' | append: block.settings.mobile_alignment
+  if section.settings.make_section_page_width
+    assign inner_class = inner_class | append: ' vt-page-width'
+  endif
+
+  assign root_class = 'vt-footer-bottom'
+  if block.settings.show_divider
+    assign root_class = root_class | append: ' vt-footer-bottom--divider'
+  endif
+-%}
+
+<div
+  class="{{ root_class }}"
+  style="
+    --vt-footer-bottom-padding-top: {% render 'fluid-clamp', min_px: block.settings.padding_top_mobile, max_px: block.settings.padding_top_desktop %};
+    --vt-footer-bottom-padding-bottom: {% render 'fluid-clamp', min_px: block.settings.padding_bottom_mobile, max_px: block.settings.padding_bottom_desktop %};
+    {%- if block.settings.divider_color != blank %} --vt-footer-bottom-divider: {{ block.settings.divider_color }};{% endif -%}
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="{{ inner_class }}">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Same background, colors and side gutters as the footer above it */
+  .vt-footer-bottom {
+    background: var(--vt-section-bg, var(--vt-background-color, transparent));
+    color: var(--vt-section-color, var(--vt-foreground-color, inherit));
+    padding-block: var(--vt-footer-bottom-padding-top, 1.5rem) var(--vt-footer-bottom-padding-bottom, 1.5rem);
+  }
+
+  .vt-footer-bottom:not(:has(.vt-page-width)) {
+    padding-inline: var(--vt-section-padding-inline-start, 0) var(--vt-section-padding-inline-end, 0);
+  }
+
+  .vt-footer-bottom--divider {
+    border-block-start: 1px solid var(--vt-footer-bottom-divider, currentColor);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bottom bar",
+  "tag": null,
+  "blocks": [
+    { "type": "copyright" },
+    { "type": "menu" },
+    { "type": "text-link" },
+    { "type": "paragraph" },
+    { "type": "social-links" },
+    { "type": "payment-icons" },
+    { "type": "localization" }
+  ],
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show divider",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "info": "Leave empty to use the heading color.",
+      "visible_if": "{{ block.settings.show_divider }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_alignment",
+      "label": "Alignment on mobile",
+      "options": [
+        { "value": "max-md:items-start max-md:text-start", "label": "Left" },
+        { "value": "max-md:items-center max-md:text-center", "label": "Center" }
+      ],
+      "default": "max-md:items-start max-md:text-start"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",      
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    }
+  ]
+}
+{% endschema %}

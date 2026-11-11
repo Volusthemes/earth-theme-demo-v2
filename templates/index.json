@@ -3469,7 +3469,7 @@
                 "accordion_block": {
                     "type": "accordion",
                     "settings": {
-                        "open_one_at_a_time": false,
+                        "open_one_at_a_time": true,
                         "keep_first_open": true,
                         "expand_effect": "slide_fade",
                         "indicator": "arrow",
@@ -3488,12 +3488,13 @@
                         "header_divider": true,
                         "border_thickness": 1,
                         "border_opacity": 100,
-                        "border_color_source": "custom",
                         "border_color": "{{ settings.color_palette.accent }}",
                         "border_radius": 0,
-                        "interaction_state": "background",
-                        "state_background": "{{ settings.color_palette.cactus_green }}",
-                        "animation_type": "none"
+                        "animation_type": "none",
+                        "hover_highlight": "background",
+                        "hover_background": "{{ settings.color_palette.cactus_green }}",
+                        "open_highlight": "background",
+                        "open_background": "{{ settings.color_palette.cactus_green }}"
                     },
                     "blocks": {
                         "item_why_block": {

@@ -1,0 +1,149 @@
+{% doc %}
+  Store logo for any section, such as a large wordmark in the footer. Uses its
+  own image, or the logo from Theme settings, and falls back to the store name
+  as text, so it never shows an empty placeholder.
+
+  The image is lazy loaded with a responsive srcset; width is a share of the
+  space around it, set separately for mobile.
+
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'logo', id: 'logo' %}
+{% enddoc %}
+
+{%- liquid
+  assign logo = block.settings.image | default: settings.logo
+  assign width_desktop = block.settings.width_desktop
+  assign width_mobile = block.settings.width_mobile
+
+  assign tag = 'div'
+  if block.settings.link_to_home
+    assign tag = 'a'
+  endif
+-%}
+
+<{{ tag }}
+  class="vt-logo flex {{ block.settings.alignment }}"
+  {% if tag == 'a' %}
+    href="{{ routes.root_url }}"
+  {% endif %}
+  style="--vt-logo-width: {{ width_mobile }}%; --vt-logo-width-desktop: {{ width_desktop }}%;"
+  {{ block.shopify_attributes }}
+>
+  {%- if logo != blank -%}
+    {%- liquid
+      assign logo_alt = logo.alt | default: shop.name
+      assign logo_sizes = '(min-width: 750px) ' | append: width_desktop | append: 'vw, ' | append: width_mobile | append: 'vw'
+    -%}
+    {{
+      logo
+      | image_url: width: 2400
+      | image_tag:
+        alt: logo_alt,
+        widths: '300, 450, 600, 750, 900, 1200, 1500, 1800, 2400',
+        sizes: logo_sizes,
+        loading: 'lazy',
+        class: 'vt-logo__image'
+    }}
+  {%- else -%}
+    <span class="vt-logo__text {{ block.settings.text_style }}">{{ shop.name | escape }}</span>
+  {%- endif -%}
+</{{ tag }}>
+
+{% stylesheet %}
+  /* Full width even in a Stack that aligns its blocks to the start, so the
+     width settings are a share of the whole row, not of the image's own size */
+  .vt-logo {
+    inline-size: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .vt-logo__image {
+    display: block;
+    inline-size: var(--vt-logo-width, 100%);
+    block-size: auto;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-logo__image {
+      inline-size: var(--vt-logo-width-desktop, 100%);
+    }
+  }
+
+  .vt-logo__text {
+    overflow-wrap: anywhere;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Logo",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Leave empty to use the logo in Theme settings. Without a logo, the store name shows as text."
+    },
+    {
+      "type": "range",
+      "id": "width_desktop",
+      "label": "Width (desktop)",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "width_mobile",
+      "label": "Width (mobile)",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "justify-start", "label": "Left" },
+        { "value": "justify-center", "label": "Center" },
+        { "value": "justify-end", "label": "Right" }
+      ],
+      "default": "justify-start"
+    },
+    {
+      "type": "checkbox",
+      "id": "link_to_home",
+      "label": "Link to home page",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "Store name style",
+      "info": "Used when there's no logo image.",
+      "options": [
+        { "value": "vt-hero-heading", "label": "t:blocks.heading.settings.heading_size.options__1.label" },
+        { "value": "vt-heading-h1", "label": "t:blocks.heading.settings.heading_size.options__2.label" },
+        { "value": "vt-heading-h2", "label": "t:blocks.heading.settings.heading_size.options__3.label" },
+        { "value": "vt-heading-h3", "label": "t:blocks.heading.settings.heading_size.options__4.label" },
+        { "value": "vt-heading-h4", "label": "t:blocks.heading.settings.heading_size.options__5.label" }
+      ],
+      "default": "vt-hero-heading"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo"
+    }
+  ]
+}
+{% endschema %}

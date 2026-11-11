@@ -2,6 +2,10 @@
   Country or language selector as a popover. Each option submits the localization
   form, so it also works without JavaScript.
 
+  Not a text link: it doesn't take Theme settings > Link hover effect. Options get
+  a light background on hover and focus, and the current one a check mark
+  (with aria-current for screen readers).
+
   @param {string} type - 'country' or 'language'
   @param {string} form_id - Unique id of the form
 
@@ -10,17 +14,17 @@
 {% enddoc %}
 
 <details class="vt-localization" data-localization>
-  <summary class="vt-localization__summary vt-link">
+  <summary class="vt-localization__summary">
     {%- if type == 'country' -%}
       <span class="vt-visually-hidden">{{ 'accessibility.country_selector' | t }}: </span>
-      <span class="vt-link-label">
+      <span class="vt-localization__label">
         {{- localization.country.name }} ({{ localization.country.currency.iso_code }}
         {{ localization.country.currency.symbol -}}
         )
       </span>
     {%- else -%}
       <span class="vt-visually-hidden">{{ 'accessibility.language_selector' | t }}: </span>
-      <span class="vt-link-label">{{ localization.language.endonym_name | capitalize }}</span>
+      <span class="vt-localization__label">{{ localization.language.endonym_name | capitalize }}</span>
     {%- endif -%}
     <span class="vt-localization__icon" aria-hidden="true">{% render 'icons', icon: 'dropdown' %}</span>
   </summary>
@@ -31,7 +35,7 @@
         {%- for country in localization.available_countries -%}
           <li>
             <button
-              class="vt-localization__option vt-link"
+              class="vt-localization__option"
               type="submit"
               name="country_code"
               value="{{ country.iso_code }}"
@@ -39,11 +43,14 @@
                 aria-current="true"
               {% endif %}
             >
-              <span class="vt-link-label">
+              <span class="vt-localization__label">
                 {{- country.name }} ({{ country.currency.iso_code }}
                 {{ country.currency.symbol -}}
                 )
               </span>
+              {%- if country.iso_code == localization.country.iso_code -%}
+                <span class="vt-localization__check">{% render 'icons', icon: 'check' %}</span>
+              {%- endif -%}
             </button>
           </li>
         {%- endfor -%}
@@ -51,7 +58,7 @@
         {%- for language in localization.available_languages -%}
           <li>
             <button
-              class="vt-localization__option vt-link"
+              class="vt-localization__option"
               type="submit"
               name="language_code"
               value="{{ language.iso_code }}"
@@ -60,7 +67,10 @@
                 aria-current="true"
               {% endif %}
             >
-              <span class="vt-link-label">{{ language.endonym_name | capitalize }}</span>
+              <span class="vt-localization__label">{{ language.endonym_name | capitalize }}</span>
+              {%- if language.iso_code == localization.language.iso_code -%}
+                <span class="vt-localization__check">{% render 'icons', icon: 'check' %}</span>
+              {%- endif -%}
             </button>
           </li>
         {%- endfor -%}

@@ -59,6 +59,12 @@
   # -----------------------------------------------------------------------
   assign vt_class_list = 'vt-icon'
 
+  # No color and no box: the icon follows the text color, also when a link around it
+  # changes color on hover (Link hover effect: Color only)
+  if block.settings.icon_color == blank and block.settings.show_box == false
+    assign vt_class_list = vt_class_list | append: ' vt-icon--inherit'
+  endif
+
   if block.settings.show_box
     assign vt_class_list = vt_class_list | append: ' has-box'
   endif
@@ -162,7 +168,11 @@
         { "value": "materials", "label": "t:blocks.icon.settings.icon.options__29.label" },
         { "value": "partners", "label": "t:blocks.icon.settings.icon.options__30.label" },
         { "value": "recycle", "label": "t:blocks.icon.settings.icon.options__31.label" },
-        { "value": "honest-progress", "label": "t:blocks.icon.settings.icon.options__32.label" }
+        { "value": "honest-progress", "label": "t:blocks.icon.settings.icon.options__32.label" },
+        { "value": "mail", "label": "t:blocks.icon.settings.icon.options__33.label" },
+        { "value": "telephone-call", "label": "t:blocks.icon.settings.icon.options__34.label" },
+        { "value": "location-map", "label": "t:blocks.icon.settings.icon.options__35.label" },
+        { "value": "arrow-right", "label": "t:blocks.icon.settings.icon.options__36.label" }
       ],
       "default": "leaf",
       "label": "t:blocks.icon.settings.icon.label"

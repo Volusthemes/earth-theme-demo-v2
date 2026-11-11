@@ -1,0 +1,653 @@
+{% doc %}
+  A menu with an optional heading: footer menu columns, or a row of legal links
+  in the bottom bar (Horizontal, with a dot or line between the links). Links come
+  from a menu, or from the store policies set in Settings > Policies.
+
+  "Collapse on mobile" turns it into a disclosure below 750px: the heading opens
+  and closes the links, animated by assets/theme-accordion.js (the accordion's
+  data-static-from mode keeps it open and fixed from 750px up). The markup ships
+  open, so the links stay reachable without JavaScript.
+
+  Child blocks (contact details, a divider) render after the links, inside the
+  collapsible part.
+
+  @example
+  {% content_for 'block', type: 'menu', id: 'menu' %}
+{% enddoc %}
+
+{%- liquid
+  assign menu = block.settings.menu
+  assign links = menu.links
+  if block.settings.source == 'policies'
+    assign links = shop.policies
+  endif
+
+  # A heading left empty falls back to the menu name (policies have none)
+  assign menu_name = menu.title
+  if block.settings.source == 'policies'
+    assign menu_name = 'accessibility.policies' | t
+  endif
+  
+  assign heading = block.settings.heading | default: menu_name
+  unless block.settings.show_heading
+    assign heading = blank
+  endunless
+
+  assign is_horizontal = false
+  if block.settings.layout == 'horizontal'
+    assign is_horizontal = true
+  endif
+
+  assign is_collapsible = false
+  if block.settings.collapse_on_mobile and heading != blank and is_horizontal == false
+    assign is_collapsible = true
+  endif
+
+  assign root_class = 'vt-menu vt-menu--' | append: block.settings.layout
+  if is_horizontal
+    assign root_class = root_class | append: ' vt-menu--separator-' | append: block.settings.separator
+  endif
+  if is_collapsible
+    assign root_class = root_class | append: ' vt-menu--collapse'
+  endif
+
+  assign heading_tag = block.settings.heading_tag
+  assign heading_class = 'vt-menu__heading ' | append: block.settings.heading_style
+  if block.settings.heading_uppercase
+    assign heading_class = heading_class | append: ' uppercase!'
+  endif
+
+  assign link_class = 'vt-menu__link vt-link ' | append: block.settings.link_style
+
+  # A Font weight other than Default loads its own face, from the font the
+  # text style uses (headings or body), so the weight renders exactly
+  assign link_weight = block.settings.link_weight
+  assign link_face = blank
+  if link_weight != 'default'
+    assign link_font = settings.type_body_font
+    if block.settings.link_style contains 'vt-heading'
+      assign link_font = settings.heading_font_family
+    endif
+    assign link_face = link_font | font_modify: 'weight', link_weight
+    assign root_class = root_class | append: ' vt-menu--weight'
+  endif
+  assign label = heading | default: menu_name | strip_html | escape
+-%}
+
+<nav
+  class="{{ root_class }}"
+  {% if label != blank %}
+    aria-label="{{ label }}"
+  {% endif %}
+  style="
+    --vt-menu-heading-gap: {% render 'fluid-clamp', min_px: block.settings.heading_gap_mobile, max_px: block.settings.heading_gap_desktop %};
+    --vt-menu-link-gap: {% render 'fluid-clamp', min_px: block.settings.link_gap_mobile, max_px: block.settings.link_gap_desktop %};
+    {%- if block.settings.link_color != blank %} --vt-menu-link-color: {{ block.settings.link_color }};{% endif -%}
+    {%- if block.settings.hover_color != blank %} --vt-link-hover-color: {{ block.settings.hover_color }};{% endif -%}
+    {%- if block.settings.divider_color != blank %} --vt-menu-divider-color: {{ block.settings.divider_color }};{% endif -%}
+    {%- if link_weight != 'default' %} --vt-menu-link-weight: {{ link_weight }};{% endif -%}
+    {%- if is_collapsible %} --vt-menu-indicator-size: {{ block.settings.indicator_size | divided_by: 16.0 }}rem;{% endif -%}
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if is_collapsible -%}
+    <vt-accordion class="vt-menu__accordion" data-effect="slide_fade" data-static-from="750">
+      <details class="vt-menu__details" data-vt-accordion-item open>
+        <summary class="vt-menu__summary">
+          <{{ heading_tag }} class="{{ heading_class }}">{{ heading | escape }}</{{ heading_tag }}>
+          <span class="vt-menu__indicator" aria-hidden="true">{% render 'icons', icon: 'arrow-down-right' %}</span>
+        </summary>
+  {%- elsif heading != blank -%}
+    <{{ heading_tag }} class="{{ heading_class }}">{{ heading | escape }}</{{ heading_tag }}>
+  {%- endif -%}
+  <div class="vt-menu__panel">
+    {%- if links.size > 0 -%}
+      <ul class="vt-menu__list" role="list">
+        {%- for link in links -%}
+          <li class="vt-menu__item">
+            <a
+              href="{{ link.url }}"
+              class="{{ link_class }}"
+              {% if link.current or link.url == request.path %}
+                aria-current="page"
+              {% endif %}
+            >
+              <span class="vt-link-label">{{ link.title | escape }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    {%- elsif request.design_mode -%}
+      <p class="vt-paragraph-small m-0 opacity-70">{{ 'general.menu.editor_notice' | t }}</p>
+    {%- endif -%}
+    {%- if block.blocks.size > 0 -%}
+      <div class="vt-menu__extra">{% content_for 'blocks' %}</div>
+    {%- endif -%}
+  </div>
+  {%- if is_collapsible -%}
+      </details>
+    </vt-accordion>
+  {%- endif -%}
+</nav>
+
+{%- if is_collapsible -%}
+  <script src="{{ 'theme-accordion.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+
+{%- if link_face -%}
+  {% style %}
+    {{ link_face | font_face: font_display: 'swap' }}
+  {% endstyle %}
+{%- endif -%}
+
+{% stylesheet %}
+  /* Vertical menus take the full width even in a Stack that aligns its blocks to
+     the start, so the mobile divider and the arrow reach the edge. Horizontal menus
+     keep their own width, so they can share a row (Bottom bar: next to Copyright). */
+  .vt-menu,
+  .vt-menu__accordion {
+    display: block;
+  }
+
+  .vt-menu--vertical,
+  .vt-menu__accordion {
+    inline-size: 100%;
+  }
+
+  .vt-menu__heading {
+    margin: 0;
+  }
+
+  .vt-menu__heading + .vt-menu__panel,
+  .vt-menu__details > .vt-menu__panel {
+    padding-block-start: var(--vt-menu-heading-gap, 1.5rem);
+  }
+
+  .vt-menu__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-menu-link-gap, 0.75rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-menu__link {
+    color: var(--vt-menu-link-color, var(--vt-section-paragraph-color, inherit));
+    text-decoration: none;
+  }
+
+  /* Font weight other than Default: beats the weight of the text style class */
+  .vt-menu--weight .vt-menu__link {
+    font-weight: var(--vt-menu-link-weight);
+  }
+
+  .vt-menu__extra {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-menu-link-gap, 0.75rem);
+    margin-block-start: var(--vt-menu-heading-gap, 1.5rem);
+  }
+
+  /* Horizontal: one row that wraps, with an optional mark between links.
+     The marks are decoration only, so screen readers skip them. */
+  .vt-menu--horizontal .vt-menu__list {
+    flex-flow: row wrap;
+    align-items: center;
+  }
+
+  .vt-menu--horizontal .vt-menu__item {
+    display: flex;
+    align-items: center;
+    gap: var(--vt-menu-link-gap, 0.75rem);
+  }
+
+  .vt-menu--separator-dot .vt-menu__item + .vt-menu__item::before {
+    content: '';
+    inline-size: 0.3125rem;
+    block-size: 0.3125rem;
+    border-radius: 50%;
+    background: var(--vt-menu-link-color, var(--vt-section-paragraph-color, currentColor));
+  }
+
+  .vt-menu--separator-line .vt-menu__item + .vt-menu__item::before {
+    content: '';
+    inline-size: 1px;
+    block-size: 1em;
+    background: currentColor;
+  }
+
+  /* Collapsible heading */
+  .vt-menu__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .vt-menu__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .vt-menu__indicator {
+    display: flex;
+    flex-shrink: 0;
+    inline-size: var(--vt-menu-indicator-size, 0.75rem);
+    transition: transform 0.25s ease;
+  }
+
+  .vt-menu__indicator svg {
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  /* Open: the arrow turns from down-right to up-right */
+  .vt-menu__details[open]:not(.is-closing) .vt-menu__indicator {
+    transform: rotate(-90deg);
+  }
+
+  @media screen and (max-width: 749.98px) {
+    .vt-menu--collapse .vt-menu__details {
+      border-block-end: 1px solid var(--vt-menu-divider-color, currentColor);
+    }
+
+    .vt-menu--collapse .vt-menu__summary {
+      padding-block: 1.25rem;
+    }
+
+    .vt-menu--collapse .vt-menu__details > .vt-menu__panel {
+      padding-block: 0 1.75rem;
+    }
+  }
+
+  /* From 750px the collapsible menu is a plain, always-open column */
+  @media screen and (min-width: 750px) {
+    .vt-menu--collapse .vt-menu__summary {
+      cursor: default;
+    }
+
+    .vt-menu--collapse .vt-menu__indicator {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-menu__indicator {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Menu",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "text-link"
+    },
+    {
+      "type": "divider"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "social-links"
+    },
+    {
+      "type": "stack"
+    }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Links",
+      "options": [
+        {
+          "value": "menu",
+          "label": "Menu"
+        },
+        {
+          "value": "policies",
+          "label": "Store policies"
+        }
+      ],
+      "default": "menu",
+      "info": "Store policies lists the policies added in Settings > Policies."
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "footer",
+      "visible_if": "{{ block.settings.source == 'menu' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty to use the menu name.",
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        }
+      ],
+      "default": "vertical"
+    },
+    {
+      "type": "select",
+      "id": "separator",
+      "label": "Separator",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "line",
+          "label": "Line"
+        }
+      ],
+      "default": "none",
+      "visible_if": "{{ block.settings.layout == 'horizontal' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "collapse_on_mobile",
+      "label": "Collapse on mobile",
+      "info": "Below 750px wide the heading opens and closes the links.",
+      "default": true,
+      "visible_if": "{{ block.settings.layout == 'vertical' and block.settings.show_heading }}"
+    },
+    {
+      "type": "range",
+      "id": "indicator_size",
+      "label": "Arrow size",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "info": "The arrow shows on mobile only, next to the heading.",
+      "visible_if": "{{ block.settings.layout == 'vertical' and block.settings.show_heading and block.settings.collapse_on_mobile }}"
+    },
+    {
+      "type": "header",
+      "content": "Heading style",
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "select",
+      "id": "heading_style",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "vt-paragraph-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+        },
+        {
+          "value": "vt-paragraph-medium",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+        },
+        {
+          "value": "vt-paragraph-large",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+        },
+        {
+          "value": "vt-heading-h1",
+          "label": "t:blocks.heading.settings.heading_size.options__2.label"
+        },
+        {
+          "value": "vt-heading-h2",
+          "label": "t:blocks.heading.settings.heading_size.options__3.label"
+        },
+        {
+          "value": "vt-heading-h3",
+          "label": "t:blocks.heading.settings.heading_size.options__4.label"
+        },
+        {
+          "value": "vt-heading-h4",
+          "label": "t:blocks.heading.settings.heading_size.options__5.label"
+        },
+        {
+          "value": "vt-heading-h5",
+          "label": "t:blocks.heading.settings.heading_size.options__6.label"
+        },
+        {
+          "value": "vt-heading-h6",
+          "label": "t:blocks.heading.settings.heading_size.options__7.label"
+        }
+      ],
+      "default": "vt-heading-h5",
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_uppercase",
+      "label": "Uppercase",
+      "default": true,
+      "info": "Overrides the text case set for this text style in Theme settings > Typography.",
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "HTML tag",
+      "options": [
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        },
+        {
+          "value": "p",
+          "label": "Paragraph"
+        }
+      ],
+      "default": "h2",
+      "info": "Changes how search engines and screen readers read the page, not how it looks.",
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "header",
+      "content": "Menu style"
+    },
+    {
+      "type": "select",
+      "id": "link_style",
+      "label": "Text style",
+      "options": [
+        {
+          "value": "vt-paragraph-extra-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label"
+        },
+        {
+          "value": "vt-paragraph-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+        },
+        {
+          "value": "vt-paragraph-medium",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+        },
+        {
+          "value": "vt-paragraph-large",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+        },
+        {
+          "value": "vt-heading-h4",
+          "label": "t:blocks.heading.settings.heading_size.options__5.label"
+        },
+        {
+          "value": "vt-heading-h5",
+          "label": "t:blocks.heading.settings.heading_size.options__6.label"
+        },
+        {
+          "value": "vt-heading-h6",
+          "label": "t:blocks.heading.settings.heading_size.options__7.label"
+        }
+      ],
+      "default": "vt-paragraph-medium",
+      "info": "The hover effect follows Theme settings > Typography > Link hover effect."
+    },
+    {
+      "type": "select",
+      "id": "link_weight",
+      "label": "Font weight",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "300",
+          "label": "t:general.typography.font_weight.options__1.label"
+        },
+        {
+          "value": "400",
+          "label": "t:general.typography.font_weight.options__2.label"
+        },
+        {
+          "value": "500",
+          "label": "t:general.typography.font_weight.options__3.label"
+        },
+        {
+          "value": "600",
+          "label": "t:general.typography.font_weight.options__4.label"
+        },
+        {
+          "value": "700",
+          "label": "t:general.typography.font_weight.options__5.label"
+        },
+        {
+          "value": "800",
+          "label": "t:general.typography.font_weight.options__6.label"
+        }
+      ],
+      "default": "600",
+      "info": "Default uses the weight of the text style in Theme settings > Typography."
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link color",
+      "info": "Leave empty to use the section's paragraph color."
+    },
+    {
+      "type": "color",
+      "id": "hover_color",
+      "label": "Hover effect color",
+      "info": "Leave empty to use the link color."
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color on mobile",
+      "info": "Leave empty to use the heading color.",
+      "visible_if": "{{ block.settings.layout == 'vertical' and block.settings.show_heading and block.settings.collapse_on_mobile }}"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "heading_gap_desktop",
+      "label": "Below heading (desktop)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "range",
+      "id": "heading_gap_mobile",
+      "label": "Below heading (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ block.settings.show_heading }}"
+    },
+    {
+      "type": "range",
+      "id": "link_gap_desktop",
+      "label": "Gap links (desktop)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "link_gap_mobile",
+      "label": "Gap links (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Menu"
+    },
+    {
+      "name": "Policy links",
+      "settings": {
+        "source": "policies",
+        "show_heading": false,
+        "layout": "horizontal",
+        "separator": "dot",
+        "link_style": "vt-paragraph-medium",
+        "link_gap_desktop": 16,
+        "link_gap_mobile": 12
+      }
+    }
+  ]
+}
+{% endschema %}

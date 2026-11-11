@@ -208,13 +208,16 @@ body {
 }
 
 /* Text links: the effect comes from the Link hover effect theme setting (class on body).
-   Markup: .vt-link on the interactive element, .vt-link-label on its text. */
+   Markup: .vt-link on the interactive element, .vt-link-label on its text.
+   A link whose markup the theme can't change (Powered by Shopify) goes in a
+   .vt-link-wrap element instead: the <a> inside is both the link and its label. */
 
 :root {
   --vt-link-transition: 0.25s ease-out;
 }
 
-.vt-link-label {
+.vt-link-label,
+.vt-link-wrap > a {
   position: relative;
   display: inline-block;
   /* Even on both sides, so the text stays vertically centered */
@@ -223,6 +226,7 @@ body {
 
 /* Sliding underline */
 .vt-link-hover--underline .vt-link-label::after,
+.vt-link-hover--underline .vt-link-wrap > a::after,
 .vt-link:is([aria-current='page'], [aria-current='true']) .vt-link-label::after {
   content: '';
   position: absolute;
@@ -232,22 +236,26 @@ body {
   background: var(--vt-link-hover-color, currentColor);
 }
 
-.vt-link-hover--underline .vt-link-label::after {
+.vt-link-hover--underline .vt-link-label::after,
+.vt-link-hover--underline .vt-link-wrap > a::after {
   transform: scaleX(0);
   transform-origin: right;
   transition: transform var(--vt-link-transition);
 }
 
-.vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after {
+.vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after,
+.vt-link-hover--underline .vt-link-wrap > a:is(:hover, :focus-visible)::after {
   transform: scaleX(1);
   transform-origin: left;
 }
 
-[dir='rtl'] .vt-link-hover--underline .vt-link-label::after {
+[dir='rtl'] .vt-link-hover--underline .vt-link-label::after,
+[dir='rtl'] .vt-link-hover--underline .vt-link-wrap > a::after {
   transform-origin: left;
 }
 
-[dir='rtl'] .vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after {
+[dir='rtl'] .vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label::after,
+[dir='rtl'] .vt-link-hover--underline .vt-link-wrap > a:is(:hover, :focus-visible)::after {
   transform-origin: right;
 }
 
@@ -257,13 +265,15 @@ body {
 }
 
 /* Sliding border: a thin bar fades in before the text */
-.vt-link-hover--border .vt-link-label {
+.vt-link-hover--border .vt-link-label,
+.vt-link-hover--border .vt-link-wrap > a {
   /* Space reserved for the bar, so neighbors never jump */
   padding-inline-start: 0.6em;
   transition: transform var(--vt-link-transition);
 }
 
-.vt-link-hover--border .vt-link-label::before {
+.vt-link-hover--border .vt-link-label::before,
+.vt-link-hover--border .vt-link-wrap > a::before {
   content: '';
   position: absolute;
   inset-inline-start: 0;
@@ -279,28 +289,33 @@ body {
     transform var(--vt-link-transition);
 }
 
-.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label {
+.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label,
+.vt-link-hover--border .vt-link-wrap > a:is(:hover, :focus-visible) {
   transform: translateX(0.25em);
 }
 
 /* Bar cancels the text shift, so it stays exactly before the text's start */
-.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before {
+.vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before,
+.vt-link-hover--border .vt-link-wrap > a:is(:hover, :focus-visible)::before {
   opacity: 1;
   transform: translate(-0.25em, -50%);
 }
 
-[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label {
+[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label,
+[dir='rtl'] .vt-link-hover--border .vt-link-wrap > a:is(:hover, :focus-visible) {
   transform: translateX(-0.25em);
 }
 
-[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before {
+[dir='rtl'] .vt-link-hover--border .vt-link:is(:hover, :focus-visible) .vt-link-label::before,
+[dir='rtl'] .vt-link-hover--border .vt-link-wrap > a:is(:hover, :focus-visible)::before {
   transform: translate(0.25em, -50%);
 }
 
 /* Wave fade: a second color sweeps across the text.
    Guarded so text never turns invisible on unsupported browsers. */
 @supports ((background-clip: text) or (-webkit-background-clip: text)) and (color: color-mix(in srgb, red, blue)) {
-  .vt-link-hover--wave_fade .vt-link-label {
+  .vt-link-hover--wave_fade .vt-link-label,
+  .vt-link-hover--wave_fade .vt-link-wrap > a {
     background-image: linear-gradient(
       90deg,
       var(--vt-link-hover-color, color-mix(in srgb, currentColor 60%, transparent)) 35%,
@@ -314,12 +329,14 @@ body {
     transition: background-position var(--vt-link-transition);
   }
 
-  .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label {
+  .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label,
+  .vt-link-hover--wave_fade .vt-link-wrap > a:is(:hover, :focus-visible) {
     background-position: 0 0;
   }
 
   /* RTL: the color enters from the right */
-  [dir='rtl'] .vt-link-hover--wave_fade .vt-link-label {
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link-label,
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link-wrap > a {
     background-image: linear-gradient(
       270deg,
       var(--vt-link-hover-color, color-mix(in srgb, currentColor 60%, transparent)) 35%,
@@ -328,14 +345,51 @@ body {
     background-position: 0 0;
   }
 
-  [dir='rtl'] .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label {
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link:is(:hover, :focus-visible) .vt-link-label,
+  [dir='rtl'] .vt-link-hover--wave_fade .vt-link-wrap > a:is(:hover, :focus-visible) {
     background-position: 100% 0;
   }
 }
 
+/* Color only: the text (and an icon that follows it) changes color, nothing moves.
+   Theme-wide with Link hover effect: Color only, or per link with .vt-link--color-only
+   (Text link > Hover effect). Without a hover color the text fades to 75%, which keeps
+   the palette's primary above 4.5:1 on the background. */
+.vt-link-hover--color .vt-link > *,
+.vt-link--color-only > * {
+  transition: color var(--vt-link-transition);
+}
+
+:is(.vt-link-hover--color .vt-link, .vt-link.vt-link--color-only):is(:hover, :focus-visible)
+  > :is(:not(.vt-icon, .vt-visually-hidden), .vt-icon--inherit) {
+  color: var(--vt-link-hover-color, color-mix(in srgb, currentColor 75%, transparent));
+}
+
+.vt-link-hover--color .vt-link-wrap > a {
+  transition: color var(--vt-link-transition);
+}
+
+.vt-link-hover--color .vt-link-wrap > a:is(:hover, :focus-visible) {
+  color: var(--vt-link-hover-color, color-mix(in srgb, currentColor 75%, transparent));
+}
+
+/* A link set to Color only drops the theme-wide effect */
+.vt-link.vt-link--color-only .vt-link-label {
+  padding-inline-start: 0;
+  transform: none;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.vt-link.vt-link--color-only .vt-link-label::before,
+.vt-link.vt-link--color-only:not([aria-current]) .vt-link-label::after {
+  content: none;
+}
+
 /* Windows high contrast: plain system text */
 @media (forced-colors: active) {
-  .vt-link-hover--wave_fade .vt-link-label {
+  .vt-link-hover--wave_fade .vt-link-label,
+  .vt-link-hover--wave_fade .vt-link-wrap > a {
     background: none;
     -webkit-text-fill-color: currentColor;
   }
@@ -1135,6 +1189,131 @@ body {
   display: flex;  
   flex-direction: column;
   gap: var(--vt-section-gap, 0);
+}
+
+/* ---- Country and language selectors ----
+   Markup: snippets/localization-selector.liquid inside <vt-localization>
+   (assets/theme-localization.js). Link style by default; the Country and
+   language block adds Box style and opening above. */
+.vt-localization {
+  position: relative;
+}
+
+.vt-localization__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.25rem;
+  white-space: nowrap;
+  list-style: none;
+  cursor: pointer;
+}
+
+.vt-localization__summary::-webkit-details-marker {
+  display: none;
+}
+
+.vt-localization__icon {
+  display: flex;
+  width: 0.8125rem;
+  transition: transform 200ms ease;
+}
+
+.vt-localization__icon svg {
+  width: 100%;
+  height: auto;
+}
+
+.vt-localization[open] .vt-localization__icon {
+  transform: rotate(180deg);
+}
+
+.vt-localization__panel {
+  position: absolute;
+  z-index: 3;
+  top: 100%;
+  right: 0;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  max-height: min(60vh, 24rem);
+  margin-top: 0.5rem;
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  background: var(--vt-localization-panel-bg, var(--vt-background-color));
+}
+
+.vt-localization__list {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;  
+}
+
+.vt-localization__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+.vt-localization__option:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Hover and keyboard focus: a light tint of the text color, on any background */
+.vt-localization__option:is(:hover, :focus-visible) {
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+.vt-localization__check {
+  display: flex;
+  flex-shrink: 0;
+  inline-size: 1rem;
+}
+
+.vt-localization__check svg {
+  inline-size: 100%;
+  block-size: auto;  
+}
+
+/* Box style: a bordered field, the list opens from its start edge */
+.vt-localization-group--box .vt-localization__summary {
+  justify-content: space-between;
+  gap: 1.5rem;
+  min-height: 2.75rem;
+  padding: 0.375rem 1rem 0.375rem 1.25rem;   
+  border: 1px solid currentColor;
+}
+
+.vt-localization-group--box .vt-localization__panel {
+  right: auto;
+  left: 0;
+  min-width: 100%;
+}
+
+.vt-localization-group--box .vt-localization__icon {
+  width: 1rem;
+}
+
+/* Opening above: for selectors near the bottom of the page */
+.vt-localization-group--up .vt-localization__panel {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-localization__icon {
+    transition: none;
+  }
 }
 
 /* ---- Shared column grid ----

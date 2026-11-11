@@ -7,6 +7,8 @@
   - the expand effect (height, optionally with a fade), interruptible mid-way
   - "Open one answer at a time" with the closing item animated too
   - opening the right item when a block is selected in the theme editor
+  - data-static-from="750": from that width up the items stay open and can't be
+    closed (a footer menu that only collapses on mobile); below it they start closed
 */
 
 if (!customElements.get('vt-accordion')) {
@@ -19,6 +21,7 @@ if (!customElements.get('vt-accordion')) {
   class VtAccordion extends HTMLElement {
     // details element -> { opening, animations }
     #running = new Map();
+    #staticQuery = null;
 
     connectedCallback() {
       // The shared name gives exclusive items without JavaScript, but the browser would
@@ -29,14 +32,41 @@ if (!customElements.get('vt-accordion')) {
       // Items can also open without a click (find-in-page); keep one open when exclusive
       this.addEventListener('toggle', this.#onToggle, true);
       this.addEventListener('shopify:block:select', this.#onBlockSelect);
+
+      if (this.dataset.staticFrom) {
+        this.#staticQuery = window.matchMedia(`(min-width: ${this.dataset.staticFrom}px)`);
+        this.#staticQuery.addEventListener('change', this.#applyStatic);
+        this.#applyStatic();
+      }
     }
 
     disconnectedCallback() {
       this.removeEventListener('click', this.#onClick);
       this.removeEventListener('toggle', this.#onToggle, true);
       this.removeEventListener('shopify:block:select', this.#onBlockSelect);
+      this.#staticQuery?.removeEventListener('change', this.#applyStatic);
       this.#running.forEach((_, item) => this.#settle(item));
     }
+
+    get #isStatic() {
+      return this.#staticQuery?.matches ?? false;
+    }
+
+    // Wide screens: every item open, headers out of the tab order (nothing to toggle).
+    // Narrow screens: items start closed and work as an accordion.
+    #applyStatic = () => {
+      const isStatic = this.#isStatic;
+      this.toggleAttribute('data-static', isStatic);
+
+      this.#items().forEach((item) => {
+        this.#settle(item);
+        item.open = isStatic;
+
+        const summary = item.querySelector(':scope > summary');
+        if (isStatic) summary?.setAttribute('tabindex', '-1');
+        else summary?.removeAttribute('tabindex');
+      });
+    };
 
     get #exclusive() {
       return this.hasAttribute('data-exclusive');
@@ -61,6 +91,7 @@ if (!customElements.get('vt-accordion')) {
       if (!item || item.parentElement !== this || summary !== item.querySelector(':scope > summary')) return;
 
       event.preventDefault();
+      if (this.#isStatic) return;
       this.#set(item, !this.#isOpening(item));
     };
 
@@ -72,6 +103,7 @@ if (!customElements.get('vt-accordion')) {
 
     // Theme editor: show the selected item, or the item holding the selected block
     #onBlockSelect = (event) => {
+      if (this.#isStatic) return;
       this.#items().forEach((item) => {
         if (item.contains(event.target) && !this.#isOpening(item)) this.#set(item, true, false);
       });
@@ -97,7 +129,8 @@ if (!customElements.get('vt-accordion')) {
       if (run?.opening === open || (!run && item.open === open)) return;
 
       const summary = item.querySelector(':scope > summary');
-      const panel = item.querySelector(':scope > .vt-accordion__panel');
+      // The panel is whatever follows the header (accordion items, collapsible menus)
+      const panel = item.querySelector(':scope > summary + *');
 
       // Start from wherever the item is now, also mid-animation
       const startHeight = item.getBoundingClientRect().height;

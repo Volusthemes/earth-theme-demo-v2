@@ -16,7 +16,6 @@
 
 {%- liquid
   assign border_style = block.settings.border_style
-  assign interaction = block.settings.interaction_state
 
   # Items: shared attributes. Exclusive items share a name, so even without
   # JavaScript the browser closes the open item when another one opens.
@@ -27,7 +26,7 @@
 
   # Border color: the text color unless a custom one is picked, then the opacity
   assign border_color = 'currentColor'
-  if block.settings.border_color_source == 'custom' and block.settings.border_color != blank
+  if block.settings.border_color != blank
     assign border_color = block.settings.border_color
   endif
   if block.settings.border_opacity < 100
@@ -45,19 +44,47 @@
   if block.settings.header_divider
     assign root_class = root_class | append: ' vt-accordion--header-divider'
   endif
-  if interaction contains 'background'
-    assign root_class = root_class | append: ' vt-accordion--state-bg'
-  endif
-  assign has_state_border = false
-  if block.settings.state_border != blank and block.settings.border_style != 'none'
-    assign has_state_border = true
-    assign root_class = root_class | append: ' vt-accordion--state-border'
-  endif
-  if interaction contains 'gradient'
-    assign root_class = root_class | append: ' vt-accordion--state-gradient'
-  endif
-  if interaction contains 'text' and block.settings.state_text != blank
-    assign root_class = root_class | append: ' vt-accordion--state-text'
+  # Highlight per state: Hover and focus (pointer over a heading, or the heading
+  # reached with the keyboard: one look for both) and Active (open item). Settings
+  # are prefixed hover_ and open_.
+  assign state_vars = ''
+  assign has_layer = false
+  assign states = 'hover,open' | split: ','
+  for state in states
+    assign key = state | append: '_highlight'
+    assign highlight = block.settings[key]
+
+    if highlight contains 'background'
+      assign root_class = root_class | append: ' vt-accordion--' | append: state | append: '-bg'
+      assign key = state | append: '_background'
+      if block.settings[key] != blank
+        assign state_vars = state_vars | append: ' --vt-accordion-' | append: state | append: '-bg: ' | append: block.settings[key] | append: ';'
+      endif
+    endif
+
+    if highlight contains 'gradient'
+      assign has_layer = true
+      assign root_class = root_class | append: ' vt-accordion--' | append: state | append: '-gradient'
+      assign key = state | append: '_gradient'
+      if block.settings[key] != blank
+        assign state_vars = state_vars | append: ' --vt-accordion-' | append: state | append: '-gradient: ' | append: block.settings[key] | append: ';'
+      endif
+    endif
+
+    assign key = state | append: '_text'
+    if highlight contains 'text' and block.settings[key] != blank
+      assign root_class = root_class | append: ' vt-accordion--' | append: state | append: '-text'
+      assign state_vars = state_vars | append: ' --vt-accordion-' | append: state | append: '-color: ' | append: block.settings[key] | append: ';'
+    endif
+
+    assign key = state | append: '_border'
+    if block.settings[key] != blank and border_style != 'none'
+      assign root_class = root_class | append: ' vt-accordion--' | append: state | append: '-border'
+      assign state_vars = state_vars | append: ' --vt-accordion-' | append: state | append: '-border-color: ' | append: block.settings[key] | append: ';'
+    endif
+  endfor
+  if has_layer
+    assign root_class = root_class | append: ' vt-accordion--layer'
   endif
 
   # Scroll-in animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
@@ -123,18 +150,7 @@
     {%- if block.settings.item_background != blank %}
     --vt-accordion-item-bg: {{ block.settings.item_background }};
     {%- endif %}
-    {%- if block.settings.state_background != blank %}
-    --vt-accordion-state-bg: {{ block.settings.state_background }};
-    {%- endif %}
-    {%- if block.settings.state_gradient != blank %}
-    --vt-accordion-state-gradient: {{ block.settings.state_gradient }};
-    {%- endif %}
-    {%- if block.settings.state_text != blank %}
-    --vt-accordion-state-color: {{ block.settings.state_text }};
-    {%- endif %}
-    {%- if has_state_border %}
-    --vt-accordion-state-border-color: {{ block.settings.state_border }};
-    {%- endif %}
+    {{- state_vars }}
     {%- if is_animated %}
     --vt-duration: {{ block.settings.animation_duration }}s;
     --vt-delay: {{ block.settings.animation_delay }}s;
@@ -358,63 +374,6 @@
     rotate: 0deg;
   }
 
-  /* ---- Hover, focus and open ---------------------------------------------- */
-
-  .vt-accordion--state-bg > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible)) {
-    background-color: var(--vt-accordion-state-bg, color-mix(in srgb, currentColor 8%, transparent));
-  }
-
-  /* Text color changes the header only, so the borders keep the text color */
-  .vt-accordion--state-text > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible)) > .vt-accordion__summary {
-    color: var(--vt-accordion-state-color, inherit);
-  }
-
-  /* An open item's content follows too, so it stays readable on a dark highlight.
-     Paragraphs take their color from the section, so that variable is set here as well */
-  .vt-accordion--state-text > .vt-accordion__item[open] > .vt-accordion__panel {
-    color: var(--vt-accordion-state-color);
-    --vt-section-paragraph-color: var(--vt-accordion-state-color);
-  }
-
-  /* A gradient can't transition, so it sits on a layer behind the content that fades in */
-  .vt-accordion--state-gradient > .vt-accordion__item {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .vt-accordion--state-gradient > .vt-accordion__item::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    background-image: var(
-      --vt-accordion-state-gradient,
-      linear-gradient(90deg, color-mix(in srgb, currentColor 14%, transparent), transparent)
-    );
-    opacity: 0;
-    transition: opacity var(--vt-accordion-speed) ease;
-    pointer-events: none;
-  }
-
-  .vt-accordion--state-gradient > .vt-accordion__item:is([open]:not(.is-closing), :has(> .vt-accordion__summary:focus-visible))::before {
-    opacity: 1;
-  }
-
-  @media (hover: hover) {
-    .vt-accordion--state-bg > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
-      background-color: var(--vt-accordion-state-bg, color-mix(in srgb, currentColor 8%, transparent));
-    }
-
-    .vt-accordion--state-gradient > .vt-accordion__item:has(> .vt-accordion__summary:hover)::before {
-      opacity: 1;
-    }
-
-    .vt-accordion--state-text > .vt-accordion__item > .vt-accordion__summary:hover {
-      color: var(--vt-accordion-state-color, inherit);
-    }
-  }
-
   /* ---- Panel -------------------------------------------------------------- */
 
   .vt-accordion > .vt-accordion__item > .vt-accordion__panel {
@@ -431,39 +390,119 @@
     transition: border-color var(--vt-accordion-speed) ease;
   }
 
-  /* ---- Highlight border ----------------------------------------------------
-     Only the sides that have a width change color. When items touch, the line
-     above an item belongs to the item before it, so that line follows as well.
-     Each state is its own rule: :has() can't nest, and one unsupported selector
-     would drop the whole rule */
+  /* ---- Hover, focus and active ------------------------------------------- *
+     Hover and keyboard focus share one highlight, Active (open) has its own. Rules
+     come in the order Active, Hover, Focus with the same specificity, so hovering
+     an open item shows Hover, and keyboard focus wins over both. Only the sides that have a width change border color;
+     when items touch, the line above an item belongs to the item before it, so
+     that line follows as well. Each state is its own rule: :has() can't nest, and
+     one unsupported selector would drop the whole rule. */
 
-  .vt-accordion--state-border > .vt-accordion__item[open]:not(.is-closing),
-  .vt-accordion--state-border > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__panel {
-    border-color: var(--vt-accordion-state-border-color);
+  /* A gradient can't transition, so it sits on a layer behind the content that fades in */
+  .vt-accordion--layer > .vt-accordion__item {
+    position: relative;
+    isolation: isolate;
+    --vt-accordion-layer-fallback: linear-gradient(90deg, color-mix(in srgb, currentColor 14%, transparent), transparent);
   }
 
-  .vt-accordion--state-border > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) {
-    border-color: var(--vt-accordion-state-border-color);
+  .vt-accordion--layer > .vt-accordion__item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: var(
+      --vt-accordion-layer,
+      var(--vt-accordion-open-gradient, var(--vt-accordion-hover-gradient, var(--vt-accordion-layer-fallback)))
+    );
+    opacity: 0;
+    transition: opacity var(--vt-accordion-speed) ease;
+    pointer-events: none;
   }
 
-  .vt-accordion--state-border.vt-accordion--joined > .vt-accordion__item:has(+ .vt-accordion__item[open]:not(.is-closing)) {
-    border-block-end-color: var(--vt-accordion-state-border-color);
+  /* Active (open item) */
+  .vt-accordion--open-bg > .vt-accordion__item[open]:not(.is-closing) {
+    background-color: var(--vt-accordion-open-bg, color-mix(in srgb, currentColor 8%, transparent));
   }
 
-  .vt-accordion--state-border.vt-accordion--joined
-    > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:focus-visible) {
-    border-block-end-color: var(--vt-accordion-state-border-color);
+  .vt-accordion--open-gradient > .vt-accordion__item[open]:not(.is-closing) {
+    --vt-accordion-layer: var(--vt-accordion-open-gradient, var(--vt-accordion-layer-fallback));
   }
 
+  .vt-accordion--open-gradient > .vt-accordion__item[open]:not(.is-closing)::before {
+    opacity: 1;
+  }
+
+  .vt-accordion--open-text > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__summary {
+    color: var(--vt-accordion-open-color);
+  }
+
+  /* An open item's content follows too, so it stays readable on a dark highlight.
+     Paragraphs take their color from the section, so that variable is set here as well */
+  .vt-accordion--open-text > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__panel {
+    color: var(--vt-accordion-open-color);
+    --vt-section-paragraph-color: var(--vt-accordion-open-color);
+  }
+
+  .vt-accordion--open-border > .vt-accordion__item[open]:not(.is-closing),
+  .vt-accordion--open-border > .vt-accordion__item[open]:not(.is-closing) > .vt-accordion__panel {
+    border-color: var(--vt-accordion-open-border-color);
+  }
+
+  .vt-accordion--open-border.vt-accordion--joined > .vt-accordion__item:has(+ .vt-accordion__item[open]:not(.is-closing)) {
+    border-block-end-color: var(--vt-accordion-open-border-color);
+  }
+
+  /* Hover */
   @media (hover: hover) {
-    .vt-accordion--state-border > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
-      border-color: var(--vt-accordion-state-border-color);
+    .vt-accordion--hover-bg > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
+      background-color: var(--vt-accordion-hover-bg, color-mix(in srgb, currentColor 8%, transparent));
     }
 
-    .vt-accordion--state-border.vt-accordion--joined
-      > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:hover) {
-      border-block-end-color: var(--vt-accordion-state-border-color);
+    .vt-accordion--hover-gradient > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
+      --vt-accordion-layer: var(--vt-accordion-hover-gradient, var(--vt-accordion-layer-fallback));
     }
+
+    .vt-accordion--hover-gradient > .vt-accordion__item:has(> .vt-accordion__summary:hover)::before {
+      opacity: 1;
+    }
+
+    .vt-accordion--hover-text > .vt-accordion__item:has(> .vt-accordion__summary:hover) > .vt-accordion__summary {
+      color: var(--vt-accordion-hover-color);
+    }
+
+    .vt-accordion--hover-border > .vt-accordion__item:has(> .vt-accordion__summary:hover) {
+      border-color: var(--vt-accordion-hover-border-color);
+    }
+
+    .vt-accordion--hover-border.vt-accordion--joined > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:hover) {
+      border-block-end-color: var(--vt-accordion-hover-border-color);
+    }
+  }
+
+  /* Keyboard focus: same look as Hover, and wins over Active */
+  .vt-accordion--hover-bg > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) {
+    background-color: var(--vt-accordion-hover-bg, color-mix(in srgb, currentColor 8%, transparent));
+  }
+
+  .vt-accordion--hover-gradient > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) {
+    --vt-accordion-layer: var(--vt-accordion-hover-gradient, var(--vt-accordion-layer-fallback));
+  }
+
+  .vt-accordion--hover-gradient > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible)::before {
+    opacity: 1;
+  }
+
+  .vt-accordion--hover-text > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) > .vt-accordion__summary {
+    color: var(--vt-accordion-hover-color);
+  }
+
+  .vt-accordion--hover-border > .vt-accordion__item:has(> .vt-accordion__summary:focus-visible) {
+    border-color: var(--vt-accordion-hover-border-color);
+  }
+
+  .vt-accordion--hover-border.vt-accordion--joined > .vt-accordion__item:has(+ .vt-accordion__item > .vt-accordion__summary:focus-visible) {
+    border-block-end-color: var(--vt-accordion-hover-border-color);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -483,7 +522,11 @@
 {
   "name": "Accordion",
   "tag": null,
-  "blocks": [{ "type": "_accordion-item" }],
+  "blocks": [
+    {
+      "type": "_accordion-item"
+    }
+  ],
   "settings": [
     {
       "type": "header",
@@ -507,9 +550,18 @@
       "id": "expand_effect",
       "label": "Expand effect",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "slide", "label": "Slide down" },
-        { "value": "slide_fade", "label": "Slide and fade" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "slide",
+          "label": "Slide down"
+        },
+        {
+          "value": "slide_fade",
+          "label": "Slide and fade"
+        }
       ],
       "default": "slide"
     },
@@ -522,13 +574,34 @@
       "id": "indicator",
       "label": "Icon",
       "options": [
-        { "value": "chevron", "label": "Chevron" },
-        { "value": "caret", "label": "Caret" },
-        { "value": "plus_minus", "label": "Plus and minus" },
-        { "value": "plus_close", "label": "Plus and close" },
-        { "value": "plus_circle", "label": "Circle plus and close" },
-        { "value": "arrow", "label": "Arrow" },
-        { "value": "none", "label": "None" }
+        {
+          "value": "chevron",
+          "label": "Chevron"
+        },
+        {
+          "value": "caret",
+          "label": "Caret"
+        },
+        {
+          "value": "plus_minus",
+          "label": "Plus and minus"
+        },
+        {
+          "value": "plus_close",
+          "label": "Plus and close"
+        },
+        {
+          "value": "plus_circle",
+          "label": "Circle plus and close"
+        },
+        {
+          "value": "arrow",
+          "label": "Arrow"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
       ],
       "default": "chevron"
     },
@@ -537,8 +610,14 @@
       "id": "indicator_position",
       "label": "Position",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "right",
       "visible_if": "{{ block.settings.indicator != 'none' }}"
@@ -574,9 +653,18 @@
       "id": "alignment",
       "label": "Alignment",
       "options": [
-        { "value": "text-left", "label": "Left" },
-        { "value": "text-center", "label": "Center" },
-        { "value": "text-right", "label": "Right" }
+        {
+          "value": "text-left",
+          "label": "Left"
+        },
+        {
+          "value": "text-center",
+          "label": "Center"
+        },
+        {
+          "value": "text-right",
+          "label": "Right"
+        }
       ],
       "default": "text-left"
     },
@@ -681,10 +769,22 @@
       "id": "border_style",
       "label": "Style",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "top_bottom", "label": "Top and bottom" },
-        { "value": "bottom", "label": "Bottom only" },
-        { "value": "all", "label": "All sides" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "top_bottom",
+          "label": "Top and bottom"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom only"
+        },
+        {
+          "value": "all",
+          "label": "All sides"
+        }
       ],
       "default": "top_bottom",
       "info": "None places each item on a background color."
@@ -718,23 +818,11 @@
       "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
     },
     {
-      "type": "select",
-      "id": "border_color_source",
-      "label": "Color",
-      "options": [
-        { "value": "inherit", "label": "Inherit" },
-        { "value": "custom", "label": "Custom" }
-      ],
-      "default": "inherit",
-      "info": "Inherit matches the text color.",
-      "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
-    },
-    {
       "type": "color",
       "id": "border_color",
-      "label": "Custom color",
-      "default": "{{ settings.color_palette.accent }}",
-      "visible_if": "{{ block.settings.border_color_source == 'custom' }}"
+      "label": "Color",
+      "info": "Leave empty to use the text color.",
+      "visible_if": "{{ block.settings.border_style != 'none' or block.settings.header_divider }}"
     },
     {
       "type": "range",
@@ -755,47 +843,130 @@
     },
     {
       "type": "header",
-      "content": "Hover, focus and open"
+      "content": "Hover and focus",
+      "info": "Applies while the pointer is over an item's heading, or when it's reached with the keyboard."
     },
     {
       "type": "select",
-      "id": "interaction_state",
+      "id": "hover_highlight",
       "label": "Highlight",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "background", "label": "Background color" },
-        { "value": "text", "label": "Text color" },
-        { "value": "background_text", "label": "Background and text color" },
-        { "value": "gradient", "label": "Background gradient" },
-        { "value": "gradient_text", "label": "Background gradient and text color" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "background",
+          "label": "Background color"
+        },
+        {
+          "value": "text",
+          "label": "Text color"
+        },
+        {
+          "value": "background_text",
+          "label": "Background and text color"
+        },
+        {
+          "value": "gradient",
+          "label": "Background gradient"
+        },
+        {
+          "value": "gradient_text",
+          "label": "Background gradient and text color"
+        }
       ],
-      "default": "none",
-      "info": "Applies on hover, keyboard focus and while an item is open."
+      "default": "none"
     },
     {
       "type": "color",
-      "id": "state_background",
+      "id": "hover_background",
       "label": "Background color",
       "info": "Leave empty for a light tint of the text color.",
-      "visible_if": "{{ block.settings.interaction_state contains 'background' }}"
+      "visible_if": "{{ block.settings.hover_highlight contains 'background' }}"
     },
     {
       "type": "color_background",
-      "id": "state_gradient",
+      "id": "hover_gradient",
       "label": "Background gradient",
       "info": "Leave empty for a soft fade of the text color.",
-      "visible_if": "{{ block.settings.interaction_state contains 'gradient' }}"
+      "visible_if": "{{ block.settings.hover_highlight contains 'gradient' }}"
     },
     {
       "type": "color",
-      "id": "state_text",
+      "id": "hover_text",
       "label": "Text color",
       "default": "{{ settings.color_palette.accent }}",
-      "visible_if": "{{ block.settings.interaction_state contains 'text' }}"
+      "visible_if": "{{ block.settings.hover_highlight contains 'text' }}"
     },
     {
       "type": "color",
-      "id": "state_border",
+      "id": "hover_border",
+      "label": "Border color",
+      "info": "Leave empty to keep the border color.",
+      "visible_if": "{{ block.settings.border_style != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Active",
+      "info": "Applies while an item is open."
+    },
+    {
+      "type": "select",
+      "id": "open_highlight",
+      "label": "Highlight",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "background",
+          "label": "Background color"
+        },
+        {
+          "value": "text",
+          "label": "Text color"
+        },
+        {
+          "value": "background_text",
+          "label": "Background and text color"
+        },
+        {
+          "value": "gradient",
+          "label": "Background gradient"
+        },
+        {
+          "value": "gradient_text",
+          "label": "Background gradient and text color"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "open_background",
+      "label": "Background color",
+      "info": "Leave empty for a light tint of the text color.",
+      "visible_if": "{{ block.settings.open_highlight contains 'background' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "open_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty for a soft fade of the text color.",
+      "visible_if": "{{ block.settings.open_highlight contains 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "open_text",
+      "label": "Text color",
+      "default": "{{ settings.color_palette.accent }}",
+      "visible_if": "{{ block.settings.open_highlight contains 'text' }}"
+    },
+    {
+      "type": "color",
+      "id": "open_border",
       "label": "Border color",
       "info": "Leave empty to keep the border color.",
       "visible_if": "{{ block.settings.border_style != 'none' }}"
@@ -808,11 +979,26 @@
       "type": "select",
       "id": "animation_type",
       "options": [
-        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
-        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
-        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.icon.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.icon.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.icon.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.icon.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.icon.settings.animation_type.options__5.label"
+        }
       ],
       "default": "none",
       "label": "t:blocks.icon.settings.animation_type.label"
@@ -821,10 +1007,22 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.icon.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.icon.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.icon.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.icon.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.icon.settings.animation_direction.label",
@@ -856,13 +1054,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.icon.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.icon.settings.animation_easing.label",
@@ -887,18 +1106,36 @@
       "blocks": [
         {
           "type": "_accordion-item",
-          "settings": { "heading": "What are your clothes made of?" },
-          "blocks": [{ "type": "paragraph" }]
+          "settings": {
+            "heading": "What are your clothes made of?"
+          },
+          "blocks": [
+            {
+              "type": "paragraph"
+            }
+          ]
         },
         {
           "type": "_accordion-item",
-          "settings": { "heading": "How long does shipping take?" },
-          "blocks": [{ "type": "paragraph" }]
+          "settings": {
+            "heading": "How long does shipping take?"
+          },
+          "blocks": [
+            {
+              "type": "paragraph"
+            }
+          ]
         },
         {
           "type": "_accordion-item",
-          "settings": { "heading": "Can I return an item?" },
-          "blocks": [{ "type": "paragraph" }]
+          "settings": {
+            "heading": "Can I return an item?"
+          },
+          "blocks": [
+            {
+              "type": "paragraph"
+            }
+          ]
         }
       ]
     },
@@ -906,7 +1143,7 @@
       "name": "Accordion boxed",
       "category": "t:general.categories.basic",
       "settings": {
-        "open_one_at_a_time": false,
+        "open_one_at_a_time": true,
         "keep_first_open": true,
         "expand_effect": "slide_fade",
         "indicator": "arrow",
@@ -919,8 +1156,8 @@
         "content_gap_mobile": 24,
         "border_style": "all",
         "header_divider": true,
-        "border_color_source": "custom",
-        "interaction_state": "background"
+        "hover_highlight": "background",
+        "open_highlight": "background"
       },
       "blocks": [
         {
@@ -931,7 +1168,11 @@
             "heading_size": "vt-heading-h2",
             "show_icon": true
           },
-          "blocks": [{ "type": "paragraph" }]
+          "blocks": [
+            {
+              "type": "paragraph"
+            }
+          ]
         },
         {
           "type": "_accordion-item",
@@ -941,7 +1182,11 @@
             "heading_size": "vt-heading-h2",
             "show_icon": true
           },
-          "blocks": [{ "type": "paragraph" }]
+          "blocks": [
+            {
+              "type": "paragraph"
+            }
+          ]
         }
       ]
     }

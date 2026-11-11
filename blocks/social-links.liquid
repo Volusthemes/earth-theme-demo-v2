@@ -1,0 +1,467 @@
+{% doc %}
+  Social media icons. The links come from Theme settings > Social media, so they
+  are entered once and every Social media icons block (footer, header, popups)
+  shows the same networks; only the networks with a link appear.
+
+  Style and Size are presets defined once in the stylesheet below, so each
+  placement only picks a look. Boxed styles follow Theme settings > Buttons >
+  Hover effect (Standard wipes the hover background in, like buttons). Colors are shared by all icons of the block and
+  fall back to the color palette when left empty.
+
+  Self-contained: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'social-links', id: 'social-links' %}
+{% enddoc %}
+
+{%- liquid
+  assign networks = 'facebook,instagram,threads,tiktok,youtube,pinterest,twitter,snapchat,linkedin' | split: ','
+  assign has_links = false
+  for network in networks
+    assign setting_id = 'social_' | append: network | append: '_link'
+    if settings[setting_id] != blank
+      assign has_links = true
+      break
+    endif
+  endfor
+
+  assign root_class = 'vt-social flex flex-wrap items-center vt-social--' | append: block.settings.style | append: ' vt-social--' | append: block.settings.size | append: ' ' | append: block.settings.alignment
+
+  # Boxed styles follow Theme settings > Buttons > Hover effect, like buttons and
+  # slideshow arrows: Standard wipes the hover background in from the start edge
+  if settings.buttons_hover_effect == 'standard' and block.settings.style != 'plain'
+    assign root_class = root_class | append: ' vt-social--wipe'
+  endif
+-%}
+
+{%- if has_links -%}
+  <ul
+    class="{{ root_class }}"
+    role="list"
+    style="
+      --vt-social-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop %};
+      {%- if block.settings.icon_color != blank %} --vt-social-icon: {{ block.settings.icon_color }};{% endif -%}
+      {%- if block.settings.background_color != blank %} --vt-social-bg: {{ block.settings.background_color }};{% endif -%}
+      {%- if block.settings.hover_icon_color != blank %} --vt-social-icon-hover: {{ block.settings.hover_icon_color }};{% endif -%}
+      {%- if block.settings.hover_background_color != blank %} --vt-social-bg-hover: {{ block.settings.hover_background_color }};{% endif -%}
+      {%- if block.settings.enable_padding %}
+      --vt-social-padding-top: {% render 'fluid-clamp', min_px: block.settings.padding_top_mobile, max_px: block.settings.padding_top_desktop %};
+      --vt-social-padding-bottom: {% render 'fluid-clamp', min_px: block.settings.padding_bottom_mobile, max_px: block.settings.padding_bottom_desktop %};
+      --vt-social-padding-left: {% render 'fluid-clamp', min_px: block.settings.padding_left_mobile, max_px: block.settings.padding_left_desktop %};
+      --vt-social-padding-right: {% render 'fluid-clamp', min_px: block.settings.padding_right_mobile, max_px: block.settings.padding_right_desktop %};
+      {%- endif %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {%- for network in networks -%}
+      {%- liquid
+        assign setting_id = 'social_' | append: network | append: '_link'
+        assign url = settings[setting_id]
+        if url == blank
+          continue
+        endif
+
+        case network
+          when 'facebook'
+            assign network_name = 'Facebook'
+          when 'instagram'
+            assign network_name = 'Instagram'
+          when 'youtube'
+            assign network_name = 'YouTube'
+          when 'tiktok'
+            assign network_name = 'TikTok'
+          when 'twitter'
+            assign network_name = 'X'
+          when 'pinterest'
+            assign network_name = 'Pinterest'
+          when 'linkedin'
+            assign network_name = 'LinkedIn'
+          when 'threads'
+            assign network_name = 'Threads'
+          when 'snapchat'
+            assign network_name = 'Snapchat'
+        endcase
+      -%}
+      <li class="flex">
+        <a
+          href="{{ url }}"
+          class="vt-social__link vt-social__link--{{ network }}"
+          target="_blank"
+          rel="noopener"
+          aria-label="{{ 'accessibility.social_link' | t: network: network_name | escape }}"
+        >
+          {%- render 'icons', icon: network -%}
+        </a>
+      </li>
+    {%- endfor -%}
+  </ul>
+{%- elsif request.design_mode -%}
+  <p class="vt-paragraph-small opacity-70" {{ block.shopify_attributes }}>
+    {{- 'general.social.editor_notice' | t -}}
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  /* Sizes: the box is the tap target, the icon sits in its center */
+  .vt-social {
+    --vt-social-box: 2.75rem;
+    --vt-social-icon-size: 1.25rem;
+    gap: var(--vt-social-gap, 0.75rem);
+    margin: 0;
+    /* Own variable names, so a parent Stack's padding variables never leak in */
+    padding-block: var(--vt-social-padding-top, 0) var(--vt-social-padding-bottom, 0);
+    padding-inline: var(--vt-social-padding-left, 0) var(--vt-social-padding-right, 0);
+    list-style: none;
+  }
+
+  .vt-social--small {
+    --vt-social-box: 2.25rem;
+    --vt-social-icon-size: 1rem;
+  }
+
+  .vt-social--large {
+    --vt-social-box: 2.875rem;
+    --vt-social-icon-size: 1.375rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-social--large {
+      --vt-social-box: 3.375rem;
+      --vt-social-icon-size: 1.625rem;
+    }
+  }
+
+  .vt-social__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--vt-social-box);
+    block-size: var(--vt-social-box);
+    color: var(--vt-social-icon, currentColor);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+  }
+
+  .vt-social__link svg {
+    inline-size: var(--vt-social-icon-size);
+    block-size: var(--vt-social-icon-size);
+  }
+
+  /* Facebook's glyph is narrow: same height as the others reads as the same size */
+  .vt-social__link--facebook svg {
+    inline-size: auto;
+  }
+
+  .vt-social__link:hover {
+    color: var(--vt-social-icon-hover, var(--vt-social-icon, currentColor));
+  }
+
+  /* Icon only: no box, the icon keeps a full-size tap target */
+  .vt-social--plain .vt-social__link:hover {
+    color: var(--vt-social-icon-hover, var(--vt-color-primary));
+  }
+
+  /* Boxed styles: --vt-social-fill at rest, --vt-social-fill-hover on hover */
+  .vt-social--square .vt-social__link,
+  .vt-social--circle .vt-social__link {
+    --vt-social-fill: var(--vt-social-bg, var(--vt-color-primary));
+    --vt-social-fill-hover: var(--vt-social-bg-hover, var(--vt-foreground-color));
+    color: var(--vt-social-icon, var(--vt-background-color));
+  }
+
+  .vt-social--square .vt-social__link:hover,
+  .vt-social--circle .vt-social__link:hover {
+    color: var(--vt-social-icon-hover, var(--vt-social-icon, var(--vt-background-color)));
+  }
+
+  /* Outline: border in the icon color, a light tint on hover. Thickness follows
+     Theme settings > Buttons > Border thickness, like Outline buttons; at least 1px,
+     so the style keeps its outline when buttons have none. The border sits inside
+     the box, so changing it never resizes the icons. */
+  .vt-social--outline .vt-social__link,
+  .vt-social--outline-circle .vt-social__link {
+    --vt-social-fill: transparent;
+    --vt-social-fill-hover: var(--vt-social-bg-hover, color-mix(in srgb, currentColor 10%, transparent));
+    box-sizing: border-box;
+    border: max(1px, var(--vt-button-border-width, 1px)) solid currentColor;
+  }
+
+  .vt-social--circle .vt-social__link,
+  .vt-social--outline-circle .vt-social__link {
+    border-radius: 50%;
+  }
+
+  .vt-social:not(.vt-social--plain) .vt-social__link {
+    background-color: var(--vt-social-fill);
+  }
+
+  /* Hover effect None: the background changes in place */
+  .vt-social:not(.vt-social--plain, .vt-social--wipe) .vt-social__link:hover {
+    background-color: var(--vt-social-fill-hover);
+  }
+
+  /* Hover effect Standard: same wipe as .vt-button--hover-standard. The layer sits
+     inside the border and is clipped to the box, so circles stay round. */
+  .vt-social--wipe .vt-social__link {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .vt-social--wipe .vt-social__link::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-color: var(--vt-social-fill-hover);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  [dir='rtl'] .vt-social--wipe .vt-social__link::before {
+    transform-origin: right;
+  }
+
+  .vt-social--wipe .vt-social__link:hover::before {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-social__link,
+    .vt-social--wipe .vt-social__link::before {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Social media icons",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Add your social media links in Theme settings > Social media."
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "plain",
+          "label": "Icon only"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "outline",
+          "label": "Outline square"
+        },
+        {
+          "value": "outline-circle",
+          "label": "Outline circle"
+        }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "justify-start",
+          "label": "Left"
+        },
+        {
+          "value": "justify-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-end",
+          "label": "Right"
+        }
+      ],
+      "default": "justify-start"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_padding",
+      "label": "Enable padding",
+      "default": true,
+      "info": "Space around the icons."
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "label": "Top (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "label": "Bottom (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "label": "Left (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "label": "Right (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "Left (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "Right (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_padding }}"
+    },
+    {
+      "type": "header",
+      "content": "Colors",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "visible_if": "{{ block.settings.style == 'square' or block.settings.style == 'circle' }}"
+    },
+    {
+      "type": "color",
+      "id": "hover_icon_color",
+      "label": "Icon on hover"
+    },
+    {
+      "type": "color",
+      "id": "hover_background_color",
+      "label": "Background on hover",
+      "visible_if": "{{ block.settings.style != 'plain' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Social media icons"
+    }
+  ]
+}
+{% endschema %}

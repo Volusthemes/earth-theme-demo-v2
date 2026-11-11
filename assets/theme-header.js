@@ -1,5 +1,6 @@
 /**
- * Header: sticky behavior, hamburger state, selector popovers and cart count.
+ * Header: sticky behavior, hamburger state and cart count.
+ * Country and language popovers: assets/theme-localization.js.
  */
 // Pixels to scroll in one direction before the sticky header hides or comes back
 const HIDE_DISTANCE = 8;
@@ -11,10 +12,6 @@ class VtHeader extends HTMLElement {
     const { signal } = this.abort;
 
     this.addEventListener('click', this.onClick, { signal });
-    this.addEventListener('toggle', this.onToggle, { signal, capture: true });
-    this.addEventListener('focusout', this.onFocusOut, { signal });
-    document.addEventListener('click', this.onDocumentClick, { signal });
-    document.addEventListener('keydown', this.onKeydown, { signal });
     document.addEventListener('vt:cart:added', this.refreshCartCount, { signal });
 
     if (this.dataset.sticky !== 'none') {
@@ -30,6 +27,7 @@ class VtHeader extends HTMLElement {
     this.abort.abort();
   }
 
+  // Keeps the sticky header in view while a selector is open
   get openSelectors() {
     return this.querySelectorAll('[data-localization][open]');
   }
@@ -41,35 +39,6 @@ class VtHeader extends HTMLElement {
     const isOpen = toggle.getAttribute('aria-expanded') !== 'true';
     toggle.setAttribute('aria-expanded', String(isOpen));
     toggle.setAttribute('aria-label', isOpen ? toggle.dataset.labelClose : toggle.dataset.labelOpen);
-  };
-
-  // Only one selector stays open at a time
-  onToggle = (event) => {
-    if (!event.target.matches('[data-localization]') || !event.target.open) return;
-
-    this.openSelectors.forEach((selector) => {
-      if (selector !== event.target) selector.open = false;
-    });
-  };
-
-  onFocusOut = (event) => {
-    const selector = event.target.closest('[data-localization]');
-    if (selector && event.relatedTarget && !selector.contains(event.relatedTarget)) selector.open = false;
-  };
-
-  onDocumentClick = (event) => {
-    this.openSelectors.forEach((selector) => {
-      if (!selector.contains(event.target)) selector.open = false;
-    });
-  };
-
-  onKeydown = (event) => {
-    if (event.key !== 'Escape') return;
-
-    this.openSelectors.forEach((selector) => {
-      selector.open = false;
-      selector.querySelector('summary').focus();
-    });
   };
 
   onScroll = () => {

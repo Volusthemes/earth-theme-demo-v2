@@ -1191,7 +1191,7 @@
 				"type": "select",
 				"id": "link_hover_effect",
 				"label": "Link hover effect",
-				"info": "Used by the main menu, breadcrumbs and country and language selectors",
+				"info": "Used by menus, text links and breadcrumbs. Color only changes the text color without a line.",
 				"options": [
 					{
 						"value": "underline",
@@ -1204,6 +1204,10 @@
 					{
 						"value": "wave_fade",
 						"label": "Wave fade"
+					},
+					{
+						"value": "color",
+						"label": "Color only"
 					}
 				],
 				"default": "underline"
@@ -2297,6 +2301,60 @@
 				"step": 1,
 				"default": 8,
 				"unit": "px"
+			}
+		]
+	},
+	{
+		"name": "Social media",
+		"settings": [
+			{
+				"type": "paragraph",
+				"content": "Add the full link to each profile. Social media icons show only the networks with a link."
+			},
+			{
+				"type": "url",
+				"id": "social_facebook_link",
+				"label": "Facebook"
+			},
+			{
+				"type": "url",
+				"id": "social_instagram_link",
+				"label": "Instagram"
+			},
+			{
+				"type": "url",
+				"id": "social_threads_link",
+				"label": "Threads"
+			},
+			{
+				"type": "url",
+				"id": "social_tiktok_link",
+				"label": "TikTok"
+			},
+			{
+				"type": "url",
+				"id": "social_youtube_link",
+				"label": "YouTube"
+			},
+			{
+				"type": "url",
+				"id": "social_pinterest_link",
+				"label": "Pinterest"
+			},
+			{
+				"type": "url",
+				"id": "social_twitter_link",
+				"label": "X (Twitter)"
+			},
+			{
+				"type": "url",
+				"id": "social_snapchat_link",
+				"label": "Snapchat"
+			},
+			{
+				"type": "url",
+				"id": "social_linkedin_link",
+				"label": "LinkedIn"
 			}
 		]
 	}	

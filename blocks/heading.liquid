@@ -23,6 +23,7 @@
   {%- capture heading_class -%}
     vt-heading
     {{ block.settings.heading_size }}
+    {% if block.settings.uppercase %}uppercase!{% endif %}
     {{ vt_anim_classes }}
   {%- endcapture -%}
   {%- assign heading_class = heading_class | strip -%}
@@ -191,6 +192,13 @@
       ],
       "default": "vt-heading-h3",
       "label": "t:blocks.heading.settings.heading_size.label"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": false,
+      "info": "Overrides the text case set for this heading size in Theme settings > Typography."
     },    
     {
       "type": "select",

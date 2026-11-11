@@ -254,80 +254,27 @@
   margin-inline-end: 1.5rem;
 }
 
-.vt-localization {
-  position: relative;
+/* Country and language selectors: shared styles in assets/theme.css */
+.vt-header {
+  --vt-localization-panel-bg: var(--vt-header-background);
 }
 
-.vt-localization__summary {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  min-height: 36px;
+.vt-header .vt-localization__summary {
   font-family: var(--font-nav--family);
   font-size: var(--font-nav--size);
-  white-space: nowrap;
-  list-style: none;
-  cursor: pointer;
 }
 
-.vt-localization__summary::-webkit-details-marker {
-  display: none;
+.vt-header .vt-localization__option {
+  font-family: var(--font-nav--family);
 }
 
-.vt-localization__icon {
-  display: flex;
-  width: 13px;
-  transition: transform 200ms ease;
-}
-
-.vt-localization__icon svg {
-  width: 100%;
-  height: auto;
-}
-
-.vt-localization[open] .vt-localization__icon {
-  transform: rotate(180deg);
-}
-
-.vt-localization__panel {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: max-content;
+.vt-header .vt-localization__panel {
   max-width: calc(100vw - 2 * var(--vt-header-padding-inline));
-  max-height: min(60vh, 24rem);
-  margin-top: 0.5rem;
-  overflow-y: auto;
-  border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
-  background: var(--vt-header-background);
 }
 
 .vt-header__zone--start .vt-localization__panel {
   right: auto;
   left: 0;
-}
-
-.vt-localization__list {
-  margin: 0;
-  padding: 0.5rem 0;
-  list-style: none;
-}
-
-.vt-localization__option {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 1rem;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font-family: var(--font-nav--family);
-  font-size: 1rem;
-  text-align: start;
-  cursor: pointer;
-}
-
-.vt-localization__option:focus-visible {
-  outline-offset: -2px;
 }
 
 /* Desktop */

@@ -135,10 +135,8 @@
       </span>
 
       {% if block.settings.button_style == 'link' or block.settings.button_style == 'link-light' %}
-        <span role="button" class="vt-button-icon vt-button__arrow" aria-hidden="true">    
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10">
-            <path d="M0,5.58H10.05l-3.6,3.77,.59,.61c.05,.05,.1,.05,.15,0l4.77-4.83c.05-.05,.05-.15,0-.2L7.19,.04c-.05-.05-.1-.05-.15,0l-.59,.66,3.69,3.77H0" fill="currentColor" fill-rule="evenodd"/>
-          </svg>
+        <span class="vt-button-icon vt-button__arrow" aria-hidden="true">
+          {%- render 'icons', icon: 'arrow-next-2' -%}
         </span>
       {% endif %}
     </a>
