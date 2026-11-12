@@ -5130,7 +5130,7 @@
                             "type": "heading",
                             "settings": {
                                 "heading": "Sustainable fabrics",
-                                "heading_size": "vt-heading-h4",
+                                "heading_size": "vt-heading-h5",
                                 "heading_tag": "p",
                                 "uppercase": true,
                                 "heading_alignment": "text-inherit",
@@ -5142,7 +5142,7 @@
                             "type": "heading",
                             "settings": {
                                 "heading": "Feel good clothes",
-                                "heading_size": "vt-heading-h4",
+                                "heading_size": "vt-heading-h5",
                                 "heading_tag": "p",
                                 "uppercase": true,
                                 "heading_alignment": "text-inherit",
