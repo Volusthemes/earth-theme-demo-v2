@@ -5124,7 +5124,7 @@
                         "separator_color": "{{ settings.color_palette.secondary }}",
                         "image_height_desktop": 48,
                         "image_height_mobile": 32
-                    },
+                    },                    
                     "blocks": {
                         "fabrics_text": {
                             "type": "heading",
