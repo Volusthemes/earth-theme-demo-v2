@@ -219,6 +219,12 @@
         assign vt_tag_count = 0
         assign vt_visible_tags = ''
         for tag in product.tags
+          # "badge:" tags feed the Collection badge block, never the product card
+          assign vt_tag_prefix = tag | slice: 0, 6 | downcase
+          if vt_tag_prefix == 'badge:'
+            continue
+          endif
+
           assign vt_tag_handle = tag | handle
           assign vt_needle = ',' | append: vt_tag_handle | append: ','
           unless vt_hidden_tags contains vt_needle

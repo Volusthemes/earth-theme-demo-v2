@@ -664,6 +664,23 @@
     },
     {
       "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
       "id": "background_style",
       "label": "Background",
       "options": [
@@ -676,27 +693,27 @@
       "type": "color",
       "id": "background_color",      
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",      
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",      
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -825,7 +842,7 @@
             "padding_bottom_desktop": 30,
             "padding_bottom_mobile": 16,
             "padding_left_desktop": 34,
-            "padding_right_desktop": 34            
+            "padding_right_desktop": 34
           },
           "blocks": [
             {
@@ -836,7 +853,7 @@
                 "vertical_alignment": "center",
                 "gap_desktop": 16,
                 "gap_mobile": 12,
-                "width": "fit",                                
+                "width": "fit",
                 "max_width": 420,
                 "hide_icon_mobile": true
               },
@@ -845,7 +862,6 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#71CC3B",
                     "icon_size_desktop": 32,
                     "icon_size_mobile": 24,
                     "show_box": false,
@@ -857,13 +873,14 @@
                     "animation_duration": 1.2,
                     "animation_delay": 0.2,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5     
+                    "animation_blur_intensity": 5,
+                    "color_style": "secondary"
                   }
                 },
                 {
                   "type": "heading",
                   "settings": {
-                    "heading": "Elevate Your Everyday",                                        
+                    "heading": "Elevate Your Everyday",
                     "heading_size": "vt-heading-h2",
                     "heading_alignment": "text-inherit",
                     "heading_tag": "h2",
@@ -879,11 +896,10 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#71CC3B",
                     "icon_size_desktop": 32,
                     "icon_size_mobile": 24,
                     "show_box": false,
-                    "box_size_desktop": 56,                    
+                    "box_size_desktop": 56,
                     "box_size_mobile": 40,
                     "box_radius": "50%",
                     "animation_type": "slide",
@@ -891,19 +907,20 @@
                     "animation_duration": 1.2,
                     "animation_delay": 0.2,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5     
+                    "animation_blur_intensity": 5,
+                    "color_style": "secondary"
                   }
                 }
               ]
             },
             {
-              "type": "paragraph",   
+              "type": "paragraph",
               "settings": {
                 "text": "<p>Shop the official store and get up to 40% off selected items this week only.</p>",
                 "paragraph_size": "vt-paragraph-large",
-                "paragraph_alignment": "text-inherit", 
-                "paragraph_width": "fit",       
-                "enable_max_width": true,                  
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fit",
+                "enable_max_width": true,
                 "paragraph_max_width": 600,
                 "animation_type": "slide",
                 "animation_direction": "from-bottom",

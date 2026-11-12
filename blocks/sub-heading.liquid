@@ -11,7 +11,7 @@
 
   {%- comment -%} Build animation classes {%- endcomment -%}
   {%- assign vt_anim_classes = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
 
     {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
@@ -22,16 +22,14 @@
     {%- endif -%}
   {%- endunless -%}
 
-  {%- capture subheading_class -%}    
-    vt-subheading
-    {{ block.settings.subheading_alignment }}
-    {{ vt_anim_classes }}
-  {%- endcapture -%}
-  {%- assign subheading_class = subheading_class | strip -%}
+  {%- assign subheading_class = 'vt-subheading ' | append: block.settings.subheading_alignment -%}
+  {%- if vt_anim_classes != blank -%}
+    {%- assign subheading_class = subheading_class | append: ' ' | append: vt_anim_classes -%}
+  {%- endif -%}
 
   {%- comment -%} Build animation CSS custom properties {%- endcomment -%}
   {%- assign vt_style = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_style = vt_style
       | append: '--vt-duration: '
       | append: block.settings.animation_duration
@@ -71,13 +69,12 @@
     {%- endif -%}    
   {%- endunless -%}
 
-  <div class="vt-sub-heading">
+  <div class="vt-sub-heading" {{ block.shopify_attributes }}>
     <{{ sub_heading_tag }}
       class="{{ subheading_class }}"
       {% if vt_style != '' %}
         style="{{ vt_style | strip }}"
       {% endif %}
-      {{ block.shopify_attributes }}
     >
       {{ block.settings.sub_heading }}
     </{{ sub_heading_tag }}>
@@ -176,6 +173,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         {
           "value": "none",

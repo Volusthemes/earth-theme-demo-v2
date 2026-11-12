@@ -66,6 +66,23 @@
     },
     {
       "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
       "id": "background_style",
       "label": "Background",
       "options": [
@@ -84,27 +101,27 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",

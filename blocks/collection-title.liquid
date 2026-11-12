@@ -1,4 +1,3 @@
-{% # theme-check-disable UndefinedObject %}
 
 {% doc %}
   Renders a heading block with optional scroll-in animation.
@@ -39,7 +38,7 @@
   {%- assign animation_type = block.settings.animation_type -%}
 
   {%- assign vt_anim_classes = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
     {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
       {%- assign vt_anim_classes = vt_anim_classes
@@ -57,7 +56,7 @@
   {%- assign heading_class = heading_class | strip -%}
 
   {%- assign vt_style = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_style = vt_style
       | append: '--vt-duration: '
       | append: block.settings.animation_duration
@@ -316,6 +315,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none",  "label": "t:blocks.heading.settings.animation_type.options__1.label" },
         { "value": "fade",  "label": "t:blocks.heading.settings.animation_type.options__2.label" },
@@ -409,4 +409,3 @@
   ]
 }
 {% endschema %}
-{% # theme-check-enable UndefinedObject %}

@@ -42,7 +42,7 @@
   # Animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
   assign animation_type = block.settings.animation_type
   assign animate_class = ''
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign animate_class = ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide' or animation_type == 'reveal'
       assign animate_class = animate_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -323,6 +323,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },

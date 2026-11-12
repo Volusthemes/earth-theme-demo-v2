@@ -1,4 +1,3 @@
-{% # theme-check-disable UndefinedObject %}
 
 {% doc %}
   Renders a button block.
@@ -17,8 +16,11 @@
   assign vt_button_label = block.settings.button_label
   assign vt_button_link = block.settings.button_link
 
+  # Several cards repeat the same label, so screen readers also get the collection
+  assign vt_button_aria_label = blank
   if closest.collection != blank
     assign vt_button_link = closest.collection.url
+    assign vt_button_aria_label = vt_button_label | append: ': ' | append: closest.collection.title
   endif
 -%}
 
@@ -47,7 +49,7 @@
 {%- assign animation_type = block.settings.animation_type -%}
 {%- assign vt_anim_classes = '' -%}
 
-{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+{%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
   {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
 
   {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
@@ -58,7 +60,7 @@
 {%- comment -%} Animation CSS custom properties {%- endcomment -%}
 {%- assign vt_style = '' -%}
 
-{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+{%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
   {%- assign vt_style = vt_style | append: '--vt-duration: ' | append: block.settings.animation_duration | append: 's;' -%}
   {%- assign vt_style = vt_style | append: ' --vt-delay: ' | append: block.settings.animation_delay | append: 's;' -%}
 
@@ -99,7 +101,9 @@
       {% else %}
         href="{{ vt_button_link }}"
       {% endif %}
-      aria-label="{{ vt_button_label }}"
+      {% if vt_button_aria_label != blank %}
+        aria-label="{{ vt_button_aria_label | escape }}"
+      {% endif %}
       {% if block.settings.open_in_new_tab %}
         target="_blank"
         rel="noopener noreferrer"
@@ -115,10 +119,8 @@
       </span>
 
       {% if block.settings.button_style == 'link' or block.settings.button_style == 'link-light' %}
-        <span role="button" class="vt-button-icon vt-button__arrow" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 10">
-            <path d="M0,5.58H10.05l-3.6,3.77,.59,.61c.05,.05,.1,.05,.15,0l4.77-4.83c.05-.05,.05-.15,0-.2L7.19,.04c-.05-.05-.1-.05-.15,0l-.59,.66,3.69,3.77H0" fill="currentColor" fill-rule="evenodd"/>
-          </svg>
+        <span class="vt-button-icon vt-button__arrow" aria-hidden="true">
+          {%- render 'icons', icon: 'arrow-next-2' -%}
         </span>
       {% endif %}
     </a>
@@ -170,6 +172,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none",  "label": "t:blocks.button.settings.animation_type.options__1.label" },
         { "value": "fade",  "label": "t:blocks.button.settings.animation_type.options__2.label" },
@@ -255,4 +258,3 @@
 }
 {% endschema %}
 
-{% # theme-check-enable UndefinedObject %}

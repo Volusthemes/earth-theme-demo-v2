@@ -1,6 +1,7 @@
 {%- comment -%}
-  Section: Featured Collections
-  Highlights a grid of sustainable and eco-friendly fashion collections.
+  Section: Collection list
+  A heading area and a grid of collection cards, built from theme blocks.
+  Hidden on the storefront when it has no blocks.
 {%- endcomment -%}
 
 {%- liquid
@@ -16,23 +17,26 @@
   endif
 -%}
 
-{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
-{% render 'section-styles', section: section %}
+{%- comment -%} Without blocks the storefront shows nothing, so no empty space. The theme editor keeps it visible to add blocks. {%- endcomment -%}
+{%- if section.blocks.size > 0 or request.design_mode -%}
+  {%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+  {% render 'section-styles', section: section %}
 
-<div
-  class="{{ section_classes }}"
-  {{ section.shopify_attributes }}
->
-  <div class="{{ inner_classes }}">
-    {% content_for 'blocks' %}
+  <div
+    class="{{ section_classes }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="{{ inner_classes }}">
+      {% content_for 'blocks' %}
+    </div>
   </div>
-</div>
+{%- endif -%}
 
 {% schema %}
 {
-  "name": "Featured collections",
+  "name": "Collection list",
   "tag": "section",
-  "class": "featured-collections-section",
+  "class": "collection-list-section",
   "settings": [
     {
       "type": "header",
@@ -64,11 +68,34 @@
     },
     {
       "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
       "id": "background_style",
       "label": "Background",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "default": "solid"
     },
@@ -76,27 +103,27 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -200,21 +227,29 @@
     }
   ],
   "blocks": [
-    { "type": "stack" },
-    { "type": "heading-group" },
-    { "type": "paragraph" },
-    { "type": "column-layout" },
-    { "type": "collection-list" }
-  ],
-  "presets": [    
     {
-      "name": "Featured collections",
+      "type": "stack"
+    },
+    {
+      "type": "heading-group"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "column-layout"
+    },
+    {
+      "type": "collection-list"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection list",
       "settings": {
         "gap": 64,
         "gap_mobile": 40,
         "background_style": "gradient",
-        "background_color": "#EAE060",
-        "background_gradient": "linear-gradient(145deg, #EAE060 0%, #71CC3B 100%)",
         "padding_top_desktop": 110,
         "padding_bottom_desktop": 110,
         "padding_left_desktop": 34,
@@ -260,14 +295,13 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#003225",
                     "icon_size_desktop": 40
                   }
                 },
                 {
                   "type": "heading",
                   "settings": {
-                    "heading": "Summer Collection",
+                    "heading": "Shop by collection",
                     "heading_size": "vt-heading-h2",
                     "heading_alignment": "text-inherit",
                     "heading_tag": "h2",
@@ -300,7 +334,7 @@
                 {
                   "type": "paragraph",
                   "settings": {
-                    "text": "<p>Shop the official store and get up to 40% off selected items this week only.</p>",
+                    "text": "<p>Tell customers what they will find in these collections.</p>",
                     "paragraph_size": "vt-paragraph-large",
                     "paragraph_alignment": "text-inherit",
                     "animation_type": "slide",
@@ -311,7 +345,7 @@
                     "animation_blur_intensity": 5
                   }
                 },
-                {                  
+                {
                   "type": "button",
                   "settings": {
                     "button_label": "Shop Collection",

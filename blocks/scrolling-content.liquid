@@ -1,0 +1,542 @@
+{% doc %}
+  Scrolling content (marquee): child blocks run in a seamless loop. Use it on its
+  own (Scrolling content section) or inside any section that accepts theme
+  blocks, for example a Stack beside an Image.
+
+  Motion is a CSS transform animation. assets/theme-marquee.js copies the content
+  as many times as the row needs (copies are aria-hidden and inert) and turns the
+  Speed setting into a duration. Without JavaScript, or with reduced motion, the
+  row stays still and scrolls sideways.
+
+  Items come from the block's child blocks: callers must leave the body empty.
+
+  @example
+  {% content_for 'block', type: 'scrolling-content', id: 'scrolling-content' %}
+{% enddoc %}
+
+{%- liquid
+  assign marquee_class = 'vt-marquee vt-marquee--' | append: block.settings.direction | append: ' vt-marquee--sep-' | append: block.settings.separator
+  if block.settings.pause_on_hover
+    assign marquee_class = marquee_class | append: ' vt-marquee--pause-hover'
+  endif
+-%}
+
+{%- comment -%}
+  The separator icon becomes a CSS mask, so one icon in the markup draws every
+  separator, including those in the copies, with no extra elements or layout shift.
+  Capturing the icon is the only way to turn the snippet into a data URL.
+{%- endcomment -%}
+{%- if block.settings.separator == 'icon' -%}
+  {%- capture separator_svg -%}{%- render 'icons', icon: block.settings.separator_icon -%}{%- endcapture -%}
+{%- endif -%}
+
+<vt-marquee
+  class="{{ marquee_class }}"
+  style="
+    --vt-marquee-speed-desktop: {{ block.settings.speed_desktop }};
+    --vt-marquee-speed-mobile: {{ block.settings.speed_mobile }};
+    --vt-marquee-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop %};
+    --vt-marquee-image-height: {% render 'fluid-clamp', min_px: block.settings.image_height_mobile, max_px: block.settings.image_height_desktop %};
+    {%- if block.settings.separator != 'none' %}
+    --vt-marquee-separator-size: {% render 'fluid-clamp', min_px: block.settings.separator_size_mobile, max_px: block.settings.separator_size_desktop %};
+    --vt-marquee-separator-color: {{ block.settings.separator_color | default: 'var(--vt-color-secondary)' }};
+    {%- endif %}
+    {%- if separator_svg != blank %}
+    --vt-marquee-separator-icon: url('data:image/svg+xml;base64,{{ separator_svg | strip | base64_encode }}');
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="vt-marquee__viewport">
+    <div class="vt-marquee__track" data-marquee-track>
+      <div class="vt-marquee__group" data-marquee-group>
+        {% content_for 'blocks' %}
+      </div>
+    </div>
+  </div>
+
+</vt-marquee>
+
+<script src="{{ 'theme-marquee.js' | asset_url }}" type="module"></script>
+
+{% stylesheet %}
+  .vt-marquee {
+    --vt-marquee-speed: var(--vt-marquee-speed-mobile, 30);
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-marquee {
+      --vt-marquee-speed: var(--vt-marquee-speed-desktop, 40);
+    }
+  }
+
+  /* Still row (no JavaScript yet, or reduced motion): scrolls sideways, no scrollbar */
+  .vt-marquee__viewport {
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .vt-marquee__viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vt-marquee__track,
+  .vt-marquee__group {
+    display: flex;
+    align-items: center;
+    gap: var(--vt-marquee-gap, 2.5rem);
+    width: max-content;
+    white-space: nowrap;
+  }
+
+  .vt-marquee__group {
+    flex-shrink: 0;
+  }
+
+  /* Items: keep their own width on one line; the separator follows each item */
+  .vt-marquee .vt-marquee__group > * {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    align-items: center;
+    width: auto;
+    max-width: none;
+    margin: 0;
+  }
+
+  .vt-marquee:not(.vt-marquee--sep-none) .vt-marquee__group > *::after {
+    content: '';
+    flex-shrink: 0;
+    margin-inline-start: var(--vt-marquee-gap, 2.5rem);
+    color: var(--vt-marquee-separator-color, var(--vt-color-secondary));
+  }
+
+  .vt-marquee.vt-marquee--sep-icon .vt-marquee__group > *::after {
+    width: var(--vt-marquee-separator-size, 2rem);
+    height: var(--vt-marquee-separator-size, 2rem);
+    background-color: currentColor;
+    mask: var(--vt-marquee-separator-icon) center / contain no-repeat;
+  }
+
+  .vt-marquee.vt-marquee--sep-dot .vt-marquee__group > *::after {
+    width: calc(var(--vt-marquee-separator-size, 2rem) * 0.3);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  .vt-marquee.vt-marquee--sep-slash .vt-marquee__group > *::after {
+    content: '/';
+    font-size: var(--vt-marquee-separator-size, 2rem);
+    line-height: 1;
+  }
+
+  /* Images (logos…): one height for the whole row, width from the image */
+  .vt-marquee .vt-image__media {
+    height: var(--vt-marquee-image-height, 3rem);
+    width: auto;
+  }
+
+  .vt-marquee .vt-image__img,
+  .vt-marquee .vt-image__placeholder {
+    width: auto;
+    height: 100%;
+    aspect-ratio: var(--vt-aspect-ratio, auto);
+  }
+
+  /* Moving row */
+  @media (prefers-reduced-motion: no-preference) {
+    .vt-marquee[data-ready] .vt-marquee__viewport {
+      overflow: hidden;
+    }
+
+    .vt-marquee[data-ready] .vt-marquee__track {
+      animation: vt-marquee var(--vt-marquee-duration, 30s) linear infinite;
+      will-change: transform;
+    }
+
+    .vt-marquee--right[data-ready] .vt-marquee__track {
+      animation-direction: reverse;
+    }
+
+    .vt-marquee[data-offscreen] .vt-marquee__track,
+    .vt-marquee:focus-within .vt-marquee__track,
+    .vt-marquee--pause-hover:hover .vt-marquee__track {
+      animation-play-state: paused;
+    }
+  }
+
+  @keyframes vt-marquee {
+    to {
+      transform: translate3d(calc(var(--vt-marquee-shift, 50%) * -1), 0, 0);
+    }
+  }
+
+  [dir='rtl'] .vt-marquee__track {
+    animation-direction: reverse;
+  }
+
+  [dir='rtl'] .vt-marquee--right .vt-marquee__track {
+    animation-direction: normal;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Scrolling content",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Motion"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "left",
+          "label": "Right to left"
+        },
+        {
+          "value": "right",
+          "label": "Left to right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "speed_desktop",
+      "label": "Speed (desktop)",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "default": 40,
+      "info": "How many pixels the row moves each second."
+    },
+    {
+      "type": "range",
+      "id": "speed_mobile",
+      "label": "Speed (mobile)",
+      "min": 10,
+      "max": 200,
+      "step": 5,
+      "default": 30
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true,
+      "info": "The row also pauses while a link in it has keyboard focus."
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "info": "Space between items and separators."
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Separator"
+    },
+    {
+      "type": "select",
+      "id": "separator",
+      "label": "Separator",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "dot",
+          "label": "Dot"
+        },
+        {
+          "value": "slash",
+          "label": "Slash"
+        },
+        {
+          "value": "icon",
+          "label": "Icon"
+        }
+      ],
+      "default": "icon",
+      "info": "Shown after each item."
+    },
+    {
+      "type": "select",
+      "id": "separator_icon",
+      "label": "t:blocks.icon.settings.icon.label",
+      "options": [
+        {
+          "value": "leaf",
+          "label": "t:blocks.icon.settings.icon.options__1.label"
+        },
+        {
+          "value": "carbon",
+          "label": "t:blocks.icon.settings.icon.options__2.label"
+        },
+        {
+          "value": "cotton-plant",
+          "label": "t:blocks.icon.settings.icon.options__20.label"
+        },
+        {
+          "value": "tree",
+          "label": "t:blocks.icon.settings.icon.options__3.label"
+        },
+        {
+          "value": "zero-emissions",
+          "label": "t:blocks.icon.settings.icon.options__4.label"
+        },
+        {
+          "value": "quality",
+          "label": "t:blocks.icon.settings.icon.options__5.label"
+        },
+        {
+          "value": "drop",
+          "label": "t:blocks.icon.settings.icon.options__6.label"
+        },
+        {
+          "value": "ecology",
+          "label": "t:blocks.icon.settings.icon.options__7.label"
+        },
+        {
+          "value": "flower",
+          "label": "t:blocks.icon.settings.icon.options__11.label"
+        },
+        {
+          "value": "sparkle",
+          "label": "t:blocks.icon.settings.icon.options__12.label"
+        },
+        {
+          "value": "handshake",
+          "label": "t:blocks.icon.settings.icon.options__13.label"
+        },
+        {
+          "value": "organic-cotton",
+          "label": "t:blocks.icon.settings.icon.options__14.label"
+        },
+        {
+          "value": "recycled-materials",
+          "label": "t:blocks.icon.settings.icon.options__15.label"
+        },
+        {
+          "value": "vegan-cruelty-free",
+          "label": "t:blocks.icon.settings.icon.options__16.label"
+        },
+        {
+          "value": "eco",
+          "label": "t:blocks.icon.settings.icon.options__17.label"
+        },
+        {
+          "value": "certificate-regulation",
+          "label": "t:blocks.icon.settings.icon.options__18.label"
+        },
+        {
+          "value": "shake-hand-cooperate",
+          "label": "t:blocks.icon.settings.icon.options__19.label"
+        },
+        {
+          "value": "heart",
+          "label": "t:blocks.icon.settings.icon.options__21.label"
+        },
+        {
+          "value": "calculator",
+          "label": "t:blocks.icon.settings.icon.options__22.label"
+        },
+        {
+          "value": "check-circle",
+          "label": "t:blocks.icon.settings.icon.options__23.label"
+        },
+        {
+          "value": "close-circle",
+          "label": "t:blocks.icon.settings.icon.options__24.label"
+        },
+        {
+          "value": "info-circle",
+          "label": "t:blocks.icon.settings.icon.options__25.label"
+        },
+        {
+          "value": "washing",
+          "label": "t:blocks.icon.settings.icon.options__26.label"
+        },
+        {
+          "value": "get-dressed",
+          "label": "t:blocks.icon.settings.icon.options__27.label"
+        },
+        {
+          "value": "hands-light",
+          "label": "t:blocks.icon.settings.icon.options__28.label"
+        },
+        {
+          "value": "materials",
+          "label": "t:blocks.icon.settings.icon.options__29.label"
+        },
+        {
+          "value": "partners",
+          "label": "t:blocks.icon.settings.icon.options__30.label"
+        },
+        {
+          "value": "recycle",
+          "label": "t:blocks.icon.settings.icon.options__31.label"
+        },
+        {
+          "value": "honest-progress",
+          "label": "t:blocks.icon.settings.icon.options__32.label"
+        },
+        {
+          "value": "mail",
+          "label": "t:blocks.icon.settings.icon.options__33.label"
+        },
+        {
+          "value": "telephone-call",
+          "label": "t:blocks.icon.settings.icon.options__34.label"
+        },
+        {
+          "value": "location-map",
+          "label": "t:blocks.icon.settings.icon.options__35.label"
+        },
+        {
+          "value": "arrow-right",
+          "label": "t:blocks.icon.settings.icon.options__36.label"
+        }
+      ],
+      "default": "flower",
+      "visible_if": "{{ block.settings.separator == 'icon' }}"
+    },
+    {
+      "type": "range",
+      "id": "separator_size_desktop",
+      "label": "Size (desktop)",
+      "min": 8,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "visible_if": "{{ block.settings.separator != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "separator_size_mobile",
+      "label": "Size (mobile)",
+      "min": 8,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.separator != 'none' }}"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ block.settings.separator != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "range",
+      "id": "image_height_desktop",
+      "label": "Height (desktop)",
+      "min": 16,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 48,
+      "info": "For Image blocks in the row, such as partner logos."
+    },
+    {
+      "type": "range",
+      "id": "image_height_mobile",
+      "label": "Height (mobile)",
+      "min": 16,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "text-link"
+    },
+    {
+      "type": "icons"
+    },
+    {
+      "type": "image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling content",
+      "category": "t:general.categories.basic",
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Sustainable fabrics",
+            "heading_size": "vt-heading-h4",
+            "heading_tag": "p",
+            "uppercase": true,
+            "heading_alignment": "text-inherit",
+            "heading_width": "fit",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Feel good clothes",
+            "heading_size": "vt-heading-h4",
+            "heading_tag": "p",
+            "uppercase": true,
+            "heading_alignment": "text-inherit",
+            "heading_width": "fit",
+            "animation_type": "none"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

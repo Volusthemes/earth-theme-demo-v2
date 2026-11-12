@@ -90,7 +90,7 @@
   # Scroll-in animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
   assign animation_type = block.settings.animation_type
   assign is_animated = false
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign is_animated = true
     assign root_class = root_class | append: ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide' or animation_type == 'reveal'
@@ -280,6 +280,13 @@
     flex-shrink: 0;
     margin-inline-start: 1rem;
     transition: rotate var(--vt-accordion-speed) ease;
+  }
+
+  /* Small phones: a tighter gap leaves the heading room for whole words */
+  @media screen and (max-width: 749px) {
+    .vt-accordion__indicator {
+      margin-inline-start: 0.75rem;
+    }
   }
 
   .vt-accordion--indicator-left > .vt-accordion__item > .vt-accordion__summary > .vt-accordion__indicator {
@@ -978,6 +985,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         {
           "value": "none",

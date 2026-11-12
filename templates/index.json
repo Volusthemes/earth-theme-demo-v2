@@ -204,7 +204,7 @@
             "type": "multicolumn",
             "settings": {
                 "gap": 64,
-                "gap_mobile": 32,
+                "gap_mobile": 40,
                 "padding_top_desktop": 110,
                 "padding_bottom_desktop": 0,
                 "padding_left_desktop": 34,
@@ -276,11 +276,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_color": "#71CC3B",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
                                         "icon_size_desktop": 32,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
-                                        "box_bg_color": "#F8F9DC",
+                                        "box_bg_color": "{{ settings.color_palette.background }}",
                                         "box_size_desktop": 56,
                                         "box_size_mobile": 40,
                                         "box_radius": "50%",
@@ -296,11 +296,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_color": "#71CC3B",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
                                         "icon_size_desktop": 32,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
-                                        "box_bg_color": "#F8F9DC",
+                                        "box_bg_color": "{{ settings.color_palette.background }}",
                                         "box_size_desktop": 56,
                                         "box_size_mobile": 40,
                                         "box_radius": "50%",
@@ -371,16 +371,16 @@
                         "card_block_one": {
                             "type": "card",
                             "settings": {
-                                "background_color": "#224E09",
-                                "heading_color": "#F8F9DC",
-                                "text_color": "#F8F9DC",
+                                "background_color": "{{ settings.color_palette.primary }}",
+                                "heading_color": "{{ settings.color_palette.background }}",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "ecology",
                                 "decorative_icon_position": "center",
                                 "decorative_icon_alignment": "center",
-                                "decorative_icon_color": "#F8F9DC",
+                                "decorative_icon_color": "{{ settings.color_palette.background }}",
                                 "decorative_icon_size_desktop": 226,
                                 "decorative_icon_size_mobile": 212,
                                 "decorative_icon_opacity": 5,
@@ -398,7 +398,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 5,
                                 "border": "none",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 0,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -414,11 +414,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "cotton-plant",
-                                        "icon_color": "#F8F9DC",
+                                        "icon_color": "{{ settings.color_palette.background }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28,
                                         "show_box": false,
-                                        "box_bg_color": "#003225",
+                                        "box_bg_color": "{{ settings.color_palette.foreground }}",
                                         "box_size_desktop": 60,
                                         "box_size_mobile": 42,
                                         "box_radius": "50%",
@@ -492,16 +492,16 @@
                         "card_block_two": {
                             "type": "card",
                             "settings": {
-                                "background_color": "#224E09",
-                                "heading_color": "#F8F9DC",
-                                "text_color": "#F8F9DC",
+                                "background_color": "{{ settings.color_palette.primary }}",
+                                "heading_color": "{{ settings.color_palette.background }}",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "ecology",
                                 "decorative_icon_position": "center",
                                 "decorative_icon_alignment": "center",
-                                "decorative_icon_color": "#F8F9DC",
+                                "decorative_icon_color": "{{ settings.color_palette.background }}",
                                 "decorative_icon_size_desktop": 226,
                                 "decorative_icon_size_mobile": 212,
                                 "decorative_icon_opacity": 5,
@@ -519,7 +519,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 5,
                                 "border": "none",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 0,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -535,11 +535,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "zero-emissions",
-                                        "icon_color": "#F8F9DC",
+                                        "icon_color": "{{ settings.color_palette.background }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28,
                                         "show_box": false,
-                                        "box_bg_color": "#003225",
+                                        "box_bg_color": "{{ settings.color_palette.foreground }}",
                                         "box_size_desktop": 60,
                                         "box_size_mobile": 42,
                                         "box_radius": "50%",
@@ -613,16 +613,16 @@
                         "card_block_three": {
                             "type": "card",
                             "settings": {
-                                "background_color": "#224E09",
-                                "heading_color": "#F8F9DC",
-                                "text_color": "#F8F9DC",
+                                "background_color": "{{ settings.color_palette.primary }}",
+                                "heading_color": "{{ settings.color_palette.background }}",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "ecology",
                                 "decorative_icon_position": "center",
                                 "decorative_icon_alignment": "center",
-                                "decorative_icon_color": "#F8F9DC",
+                                "decorative_icon_color": "{{ settings.color_palette.background }}",
                                 "decorative_icon_size_desktop": 226,
                                 "decorative_icon_size_mobile": 212,
                                 "decorative_icon_opacity": 5,
@@ -640,7 +640,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 5,
                                 "border": "none",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 0,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -675,9 +675,9 @@
                                                 "width_custom": 50,
                                                 "show_border": false,
                                                 "border_size": 1,
-                                                "bg_color": "#EAE060",
-                                                "text_color": "#003225",
-                                                "border_color": "#003225",
+                                                "bg_color": "{{ settings.color_palette.accent }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
+                                                "border_color": "{{ settings.color_palette.foreground }}",
                                                 "gap": 4,
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
@@ -698,9 +698,9 @@
                                                 "width_custom": 50,
                                                 "show_border": false,
                                                 "border_size": 1,
-                                                "bg_color": "#EAE060",
-                                                "text_color": "#003225",
-                                                "border_color": "#003225",
+                                                "bg_color": "{{ settings.color_palette.accent }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
+                                                "border_color": "{{ settings.color_palette.foreground }}",
                                                 "gap": 4,
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
@@ -720,11 +720,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "quality",
-                                        "icon_color": "#F8F9DC",
+                                        "icon_color": "{{ settings.color_palette.background }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28,
                                         "show_box": false,
-                                        "box_bg_color": "#003225",
+                                        "box_bg_color": "{{ settings.color_palette.foreground }}",
                                         "box_size_desktop": 60,
                                         "box_size_mobile": 42,
                                         "box_radius": "50%",
@@ -780,16 +780,16 @@
                         "card_block_four": {
                             "type": "card",
                             "settings": {
-                                "background_color": "#224E09",
-                                "heading_color": "#F8F9DC",
-                                "text_color": "#F8F9DC",
+                                "background_color": "{{ settings.color_palette.primary }}",
+                                "heading_color": "{{ settings.color_palette.background }}",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "ecology",
                                 "decorative_icon_position": "center",
                                 "decorative_icon_alignment": "center",
-                                "decorative_icon_color": "#F8F9DC",
+                                "decorative_icon_color": "{{ settings.color_palette.background }}",
                                 "decorative_icon_size_desktop": 226,
                                 "decorative_icon_size_mobile": 212,
                                 "decorative_icon_opacity": 5,
@@ -807,7 +807,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 5,
                                 "border": "none",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 0,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -823,11 +823,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "drop",
-                                        "icon_color": "#F8F9DC",
+                                        "icon_color": "{{ settings.color_palette.background }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28,
                                         "show_box": false,
-                                        "box_bg_color": "#003225",
+                                        "box_bg_color": "{{ settings.color_palette.foreground }}",
                                         "box_size_desktop": 60,
                                         "box_size_mobile": 42,
                                         "box_radius": "50%",
@@ -1057,8 +1057,8 @@
                             "type": "card",
                             "settings": {
                                 "background_color": "#00000000",
-                                "heading_color": "#003225",
-                                "text_color": "#224E09",
+                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                "text_color": "{{ settings.color_palette.primary }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": false,
@@ -1074,7 +1074,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 4,
                                 "border": "solid",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 1,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -1146,8 +1146,8 @@
                             "type": "card",
                             "settings": {
                                 "background_color": "#00000000",
-                                "heading_color": "#003225",
-                                "text_color": "#224E09",
+                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                "text_color": "{{ settings.color_palette.primary }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": false,
@@ -1163,7 +1163,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 4,
                                 "border": "solid",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 1,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -1235,8 +1235,8 @@
                             "type": "card",
                             "settings": {
                                 "background_color": "#00000000",
-                                "heading_color": "#003225",
-                                "text_color": "#224E09",
+                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                "text_color": "{{ settings.color_palette.primary }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": false,
@@ -1252,7 +1252,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 4,
                                 "border": "solid",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 1,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -1324,8 +1324,8 @@
                             "type": "card",
                             "settings": {
                                 "background_color": "#00000000",
-                                "heading_color": "#003225",
-                                "text_color": "#224E09",
+                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                "text_color": "{{ settings.color_palette.primary }}",
                                 "position": "middle",
                                 "alignment": "center",
                                 "enable_decorative_icon": false,
@@ -1341,7 +1341,7 @@
                                 "enable_gap_mobile": true,
                                 "gap_mobile": 4,
                                 "border": "solid",
-                                "border_color": "#003225",
+                                "border_color": "{{ settings.color_palette.foreground }}",
                                 "border_width": 1,
                                 "border_opacity": 100,
                                 "border_radius": 0,
@@ -1422,14 +1422,14 @@
                 "column_layout_block"
             ]
         },
-        "featured_collections_section": {
-            "type": "featured-collections",
+        "collection_list_section": {
+            "type": "collection-list",
             "settings": {
                 "gap": 64,
                 "gap_mobile": 40,
                 "background_style": "gradient",
-                "background_color": "#EAE060",
-                "background_gradient": "linear-gradient(145deg, #EAE060 0%, #71CC3B 100%)",
+                "background_color": "{{ settings.color_palette.accent }}",
+                "background_gradient": "",
                 "padding_top_desktop": 110,
                 "padding_bottom_desktop": 110,
                 "padding_left_desktop": 34,
@@ -1476,7 +1476,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "animation_type": "slide",
-                                        "icon_color": "#003225",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
                                         "icon_size_desktop": 40,
                                         "hide_icon_mobile": true
                                     }
@@ -1580,9 +1580,9 @@
                                 "alignment": "justify-items-start",
                                 "aspect_ratio_desktop": "landscape",
                                 "aspect_ratio_mobile": "landscape",
-                                "text_color": "#F8F9DC",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "background_style": "gradient",
-                                "background_color": "#224E09",
+                                "background_color": "{{ settings.color_palette.primary }}",
                                 "overlay_opacity": 40,
                                 "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
                                 "gap_desktop": 32,
@@ -1618,8 +1618,9 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "width": "fit",
                                                 "gap": 6,
-                                                "bg_color": "#F8F9DC",
-                                                "text_color": "#003225",
+                                                "source": "tags",
+                                                "bg_color": "{{ settings.color_palette.background }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
                                                 "animation_duration": 1.2,
@@ -1703,9 +1704,9 @@
                                 "alignment": "justify-items-start",
                                 "aspect_ratio_desktop": "portrait",
                                 "aspect_ratio_mobile": "portrait",
-                                "text_color": "#F8F9DC",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "background_style": "gradient",
-                                "background_color": "#224E09",
+                                "background_color": "{{ settings.color_palette.primary }}",
                                 "overlay_opacity": 40,
                                 "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
                                 "gap_desktop": 32,
@@ -1741,8 +1742,9 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "width": "fit",
                                                 "gap": 6,
-                                                "bg_color": "#F8F9DC",
-                                                "text_color": "#003225",
+                                                "source": "tags",
+                                                "bg_color": "{{ settings.color_palette.background }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
                                                 "animation_duration": 1.2,
@@ -1826,9 +1828,9 @@
                                 "alignment": "justify-items-start",
                                 "aspect_ratio_desktop": "portrait",
                                 "aspect_ratio_mobile": "portrait",
-                                "text_color": "#F8F9DC",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "background_style": "gradient",
-                                "background_color": "#224E09",
+                                "background_color": "{{ settings.color_palette.primary }}",
                                 "overlay_opacity": 40,
                                 "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
                                 "gap_desktop": 32,
@@ -1864,8 +1866,9 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "width": "fit",
                                                 "gap": 6,
-                                                "bg_color": "#F8F9DC",
-                                                "text_color": "#003225",
+                                                "source": "tags",
+                                                "bg_color": "{{ settings.color_palette.background }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
                                                 "animation_duration": 1.2,
@@ -1949,9 +1952,9 @@
                                 "alignment": "justify-items-start",
                                 "aspect_ratio_desktop": "landscape",
                                 "aspect_ratio_mobile": "landscape",
-                                "text_color": "#F8F9DC",
+                                "text_color": "{{ settings.color_palette.background }}",
                                 "background_style": "gradient",
-                                "background_color": "#224E09",
+                                "background_color": "{{ settings.color_palette.primary }}",
                                 "overlay_opacity": 40,
                                 "background_gradient": "linear-gradient(0deg, rgba(1, 58, 43, 1.0) 0%, rgba(1, 58, 43, 0.20) 60%, rgba(1, 58, 43, 0) 100%)",
                                 "gap_desktop": 32,
@@ -1987,8 +1990,9 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "width": "fit",
                                                 "gap": 6,
-                                                "bg_color": "#F8F9DC",
-                                                "text_color": "#003225",
+                                                "source": "tags",
+                                                "bg_color": "{{ settings.color_palette.background }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
                                                 "animation_type": "slide",
                                                 "animation_direction": "from-bottom",
                                                 "animation_duration": 1.2,
@@ -2149,11 +2153,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_color": "#71CC3B",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
                                         "icon_size_desktop": 32,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
-                                        "box_bg_color": "#F8F9DC",
+                                        "box_bg_color": "{{ settings.color_palette.background }}",
                                         "box_size_desktop": 56,
                                         "box_size_mobile": 40,
                                         "box_radius": "50%",
@@ -2184,11 +2188,11 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_color": "#71CC3B",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
                                         "icon_size_desktop": 32,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
-                                        "box_bg_color": "#F8F9DC",
+                                        "box_bg_color": "{{ settings.color_palette.background }}",
                                         "box_size_desktop": 56,
                                         "box_size_mobile": 40,
                                         "box_radius": "50%",
@@ -2284,9 +2288,9 @@
                 "gap": 64,
                 "gap_mobile": 40,
                 "background_style": "solid",
-                "background_color": "#224E09",
-                "heading_color": "#F8F9DC",
-                "paragraph_color": "#F8F9DC",
+                "background_color": "{{ settings.color_palette.primary }}",
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}",
                 "padding_top_desktop": 110,
                 "padding_bottom_desktop": 110,
                 "padding_left_desktop": 0,
@@ -2301,8 +2305,8 @@
                 "slide_width_tablet": 88,
                 "slide_width_mobile": 90,
                 "slide_style": "offset",
-                "slide_gap_desktop": 30,
-                "slide_gap_mobile": 15,
+                "slide_gap_desktop": 32,
+                "slide_gap_mobile": 16,
                 "show_arrows": true,
                 "arrows_style": "secondary",
                 "arrows_on_hover": true,
@@ -2310,8 +2314,8 @@
                 "autoplay": false,
                 "autoplay_delay": 3,
                 "tab_font_size": "vt-heading-h6",
-                "tab_color": "#EAE060",
-                "tab_active_color": "#F8F9DC",
+                "tab_color": "{{ settings.color_palette.accent }}",
+                "tab_active_color": "{{ settings.color_palette.background }}",
                 "animation_type": "slide",
                 "animation_direction": "from-bottom",
                 "animation_duration": 1,
@@ -2354,7 +2358,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "animation_type": "slide",
-                                        "icon_color": "#EAE060",
+                                        "icon_color": "{{ settings.color_palette.accent }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28
                                     }
@@ -2379,7 +2383,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "animation_type": "slide",
-                                        "icon_color": "#EAE060",
+                                        "icon_color": "{{ settings.color_palette.accent }}",
                                         "icon_size_desktop": 36,
                                         "icon_size_mobile": 28
                                     }
@@ -2396,7 +2400,7 @@
                             "settings": {
                                 "text": "<p>Find fashion that matches your ethics - filter by what matters most to you</p>",
                                 "paragraph_size": "vt-paragraph-large",
-                                "paragraph_alignment": "text-center",
+                                "paragraph_alignment": "text-inherit",
                                 "enable_max_width": true,
                                 "paragraph_max_width": 580,
                                 "animation_type": "slide",
@@ -2450,9 +2454,9 @@
                                 "card_block": {
                                     "type": "card",
                                     "settings": {
-                                        "background_color": "#F8F9DC",
-                                        "heading_color": "#003225",
-                                        "text_color": "#224E09",
+                                        "background_color": "{{ settings.color_palette.background }}",
+                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                        "text_color": "{{ settings.color_palette.primary }}",
                                         "position": "middle",
                                         "alignment": "left",
                                         "enable_decorative_icon": false,
@@ -2488,8 +2492,8 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "radius": "3.125rem",
                                                 "width": "fit",
-                                                "bg_color": "#003225",
-                                                "text_color": "#EAE060",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}",
                                                 "animation_type": "none"
                                             }
                                         },
@@ -2514,7 +2518,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "organic-cotton",
-                                                        "icon_color": "#224E09",
+                                                        "icon_color": "{{ settings.color_palette.primary }}",
                                                         "icon_size_desktop": 20,
                                                         "icon_size_mobile": 18,
                                                         "show_box": false,
@@ -2611,9 +2615,9 @@
                                 "card_block": {
                                     "type": "card",
                                     "settings": {
-                                        "background_color": "#F8F9DC",
-                                        "heading_color": "#003225",
-                                        "text_color": "#224E09",
+                                        "background_color": "{{ settings.color_palette.background }}",
+                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                        "text_color": "{{ settings.color_palette.primary }}",
                                         "position": "middle",
                                         "alignment": "left",
                                         "enable_decorative_icon": false,
@@ -2649,8 +2653,8 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "radius": "3.125rem",
                                                 "width": "fit",
-                                                "bg_color": "#003225",
-                                                "text_color": "#EAE060",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}",
                                                 "animation_type": "none"
                                             }
                                         },
@@ -2675,7 +2679,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "recycled-materials",
-                                                        "icon_color": "#224E09",
+                                                        "icon_color": "{{ settings.color_palette.primary }}",
                                                         "icon_size_desktop": 20,
                                                         "icon_size_mobile": 18,
                                                         "show_box": false,
@@ -2772,9 +2776,9 @@
                                 "card_block": {
                                     "type": "card",
                                     "settings": {
-                                        "background_color": "#F8F9DC",
-                                        "heading_color": "#003225",
-                                        "text_color": "#224E09",
+                                        "background_color": "{{ settings.color_palette.background }}",
+                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                        "text_color": "{{ settings.color_palette.primary }}",
                                         "position": "middle",
                                         "alignment": "left",
                                         "enable_decorative_icon": false,
@@ -2810,8 +2814,8 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "radius": "3.125rem",
                                                 "width": "fit",
-                                                "bg_color": "#003225",
-                                                "text_color": "#EAE060",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}",
                                                 "animation_type": "none"
                                             }
                                         },
@@ -2836,7 +2840,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "handshake",
-                                                        "icon_color": "#224E09",
+                                                        "icon_color": "{{ settings.color_palette.primary }}",
                                                         "icon_size_desktop": 20,
                                                         "icon_size_mobile": 18,
                                                         "show_box": false,
@@ -2933,9 +2937,9 @@
                                 "card_block": {
                                     "type": "card",
                                     "settings": {
-                                        "background_color": "#F8F9DC",
-                                        "heading_color": "#003225",
-                                        "text_color": "#224E09",
+                                        "background_color": "{{ settings.color_palette.background }}",
+                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                        "text_color": "{{ settings.color_palette.primary }}",
                                         "position": "middle",
                                         "alignment": "left",
                                         "enable_decorative_icon": false,
@@ -2971,8 +2975,8 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "radius": "3.125rem",
                                                 "width": "fit",
-                                                "bg_color": "#003225",
-                                                "text_color": "#EAE060",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}",
                                                 "animation_type": "none"
                                             }
                                         },
@@ -2997,7 +3001,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "handshake",
-                                                        "icon_color": "#224E09",
+                                                        "icon_color": "{{ settings.color_palette.primary }}",
                                                         "icon_size_desktop": 20,
                                                         "icon_size_mobile": 18,
                                                         "show_box": false,
@@ -3094,9 +3098,9 @@
                                 "card_block": {
                                     "type": "card",
                                     "settings": {
-                                        "background_color": "#F8F9DC",
-                                        "heading_color": "#003225",
-                                        "text_color": "#224E09",
+                                        "background_color": "{{ settings.color_palette.background }}",
+                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                        "text_color": "{{ settings.color_palette.primary }}",
                                         "position": "middle",
                                         "alignment": "left",
                                         "enable_decorative_icon": false,
@@ -3132,8 +3136,8 @@
                                                 "badge_size": "vt-paragraph-extra-small",
                                                 "radius": "3.125rem",
                                                 "width": "fit",
-                                                "bg_color": "#003225",
-                                                "text_color": "#EAE060",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}",
                                                 "animation_type": "none"
                                             }
                                         },
@@ -3158,7 +3162,7 @@
                                                     "type": "icons",
                                                     "settings": {
                                                         "icon": "vegan-cruelty-free",
-                                                        "icon_color": "#224E09",
+                                                        "icon_color": "{{ settings.color_palette.primary }}",
                                                         "icon_size_desktop": 20,
                                                         "icon_size_mobile": 18,
                                                         "show_box": false,
@@ -3236,7 +3240,7 @@
                 "loop": true,
                 "ratio_desktop": "16 / 9",
                 "ratio_mobile": "9 / 16",
-                "overlay_color": "#000000",
+                "overlay_color": "{{ settings.color_palette.foreground }}",
                 "overlay_opacity": 20,
                 "content_position": "center",
                 "desktop_content_alignment": "justify-center",
@@ -3244,8 +3248,8 @@
                 "text_alignment": "center",
                 "gap": 26,
                 "gap_mobile": 16,
-                "heading_color": "#F8F9DC",
-                "paragraph_color": "#F8F9DC"
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}"
             },
             "blocks": {
                 "heading_block": {
@@ -4169,6 +4173,990 @@
                 "column_layout_block",
                 "accordion_block"
             ]
+        },
+        "testimonials_section": {
+            "type": "carousel",
+            "settings": {
+                "gap": 64,
+                "gap_mobile": 40,
+                "slide_width_desktop": 40,
+                "slide_width_tablet": 60,
+                "slide_width_mobile": 80,
+                "slide_gap_desktop": 32,
+                "slide_gap_mobile": 16,
+                "show_arrows": true,
+                "arrows_style": "primary",
+                "arrows_on_hover": false,
+                "loop": false,
+                "autoplay": false,
+                "autoplay_delay": 3,
+                "background_style": "solid",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": false,
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "slide_style": "page",
+                "slide_offset": 15
+            },
+            "blocks": {
+                "carousel-intro": {
+                    "type": "stack",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "gap_desktop": 24,
+                        "gap_mobile": 20,
+                        "enable_padding": false
+                    },
+                    "static": true,
+                    "blocks": {
+                        "intro_title_group": {
+                            "type": "heading-group",
+                            "settings": {
+                                "direction": "vertical",
+                                "alignment": "left",
+                                "vertical_alignment": "top",
+                                "gap_desktop": 24,
+                                "gap_mobile": 16,
+                                "width": "fill",
+                                "hide_icon_mobile": true
+                            },
+                            "blocks": {
+                                "intro_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_size_desktop": 48,
+                                        "icon_size_mobile": 40,
+                                        "show_box": false,
+                                        "animation_type": "none",
+                                        "icon_color": "{{ settings.color_palette.secondary }}"
+                                    }
+                                },
+                                "intro_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "The hands that hold the harvest",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "intro_icon",
+                                "intro_heading"
+                            ]
+                        },
+                        "intro_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Meet the farmers and artisans who cultivate our materials with generations of wisdom and care for the earth.</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "enable_max_width": true,
+                                "paragraph_max_width": 760,
+                                "animation_type": "none"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "intro_title_group",
+                        "intro_text"
+                    ]
+                },
+                "ananya_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "ananya_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "ananya_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"I grow this cotton for my children, so they may inherit a soil that is healthy and full of life.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "ananya_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "ananya_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Ananya R.",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "ananya_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "ananya_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Organic Farmer, Gujarat</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "ananya_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Regeneration",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "ananya_role",
+                                        "ananya_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "ananya_name",
+                                "ananya_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "ananya_image",
+                        "ananya_quote",
+                        "ananya_author"
+                    ]
+                },
+                "mateo_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "mateo_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "mateo_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"Every thread is a silent conversation between my hands and the fibers of the Earth.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "mateo_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "mateo_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Mateo S.",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "mateo_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "mateo_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Master Weaver, Peru</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "mateo_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Fair Trade Certified",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "mateo_role",
+                                        "mateo_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "mateo_name",
+                                "mateo_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "mateo_image",
+                        "mateo_quote",
+                        "mateo_author"
+                    ]
+                },
+                "elias_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "elias_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "elias_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"Sustainability isn't a trend here; it's the only way we know how to exist respectfully.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "elias_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "elias_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Elias K.",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "elias_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "elias_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Flax Cultivator, Belgium</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "elias_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Low-Impact Farming",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "elias_role",
+                                        "elias_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "elias_name",
+                                "elias_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "elias_image",
+                        "elias_quote",
+                        "elias_author"
+                    ]
+                },
+                "jonas_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "jonas_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "jonas_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"We work with the brand to help customers extend the life of pieces they love.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "jonas_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "jonas_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Jonas",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "jonas_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "jonas_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Repair Workshop Partner</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "jonas_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Organic Cotton",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "jonas_role",
+                                        "jonas_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "jonas_name",
+                                "jonas_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "jonas_image",
+                        "jonas_quote",
+                        "jonas_author"
+                    ]
+                },
+                "mateo_linen_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "mateo_linen_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "mateo_linen_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"We value how the brand listens to the land, water, and people who grow its fibres.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "mateo_linen_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "mateo_linen_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Mateo",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "mateo_linen_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "mateo_linen_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Linen Grower</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "mateo_linen_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Natural Materials",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "mateo_linen_role",
+                                        "mateo_linen_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "mateo_linen_name",
+                                "mateo_linen_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "mateo_linen_image",
+                        "mateo_linen_quote",
+                        "mateo_linen_author"
+                    ]
+                },
+                "sofia_card": {
+                    "type": "card",
+                    "settings": {
+                        "position": "top",
+                        "alignment": "left",
+                        "padding_vertical": 30,
+                        "padding_horizontal": 30,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 20,
+                        "padding_horizontal_mobile": 20,
+                        "width": "fill",
+                        "height": "fill",
+                        "gap": 32,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 24,
+                        "border": "none",
+                        "animation_type": "none",
+                        "background_color": "{{ settings.color_palette.accent }}",
+                        "heading_color": "{{ settings.color_palette.foreground }}",
+                        "text_color": "{{ settings.color_palette.primary }}"
+                    },
+                    "blocks": {
+                        "sofia_image": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "portrait",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "sofia_quote": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>\"This partnership helps traditional weaving skills continue to be preserved and shared.\"</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-left",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "sofia_author": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "sofia_name": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Sofia",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "sofia_meta": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "space-between",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "wrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "sofia_role": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Weaver</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "sofia_badge": {
+                                            "type": "badge",
+                                            "settings": {
+                                                "text": "Handcrafted",
+                                                "badge_size": "vt-paragraph-extra-small",
+                                                "radius": "3.125rem",
+                                                "show_border": false,
+                                                "width": "fit",
+                                                "animation_type": "none",
+                                                "bg_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.accent }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "sofia_role",
+                                        "sofia_badge"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "sofia_name",
+                                "sofia_meta"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "sofia_image",
+                        "sofia_quote",
+                        "sofia_author"
+                    ]
+                }
+            },
+            "block_order": [
+                "ananya_card",
+                "mateo_card",
+                "elias_card",
+                "jonas_card",
+                "mateo_linen_card",
+                "sofia_card"
+            ]
+        },
+        "scrolling_content_section": {
+            "type": "scrolling-content",
+            "settings": {
+                "color_style": "default",
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "border": "none",
+                "border_width": 1,
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 0,
+                "padding_right_desktop": 0,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 0,
+                "padding_right_mobile": 0,
+                "make_section_page_width": false
+            },
+            "blocks": {
+                "scrolling-content": {
+                    "type": "scrolling-content",
+                    "static": true,
+                    "settings": {
+                        "direction": "left",
+                        "speed_desktop": 40,
+                        "speed_mobile": 30,
+                        "pause_on_hover": true,
+                        "gap_desktop": 40,
+                        "gap_mobile": 24,
+                        "separator": "icon",
+                        "separator_icon": "flower",
+                        "separator_size_desktop": 32,
+                        "separator_size_mobile": 24,
+                        "separator_color": "{{ settings.color_palette.secondary }}",
+                        "image_height_desktop": 48,
+                        "image_height_mobile": 32
+                    },
+                    "blocks": {
+                        "fabrics_text": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Sustainable fabrics",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "p",
+                                "uppercase": true,
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fit",
+                                "animation_type": "none"
+                            }
+                        },
+                        "clothes_text": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Feel good clothes",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "p",
+                                "uppercase": true,
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fit",
+                                "animation_type": "none"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "fabrics_text",
+                        "clothes_text"
+                    ]
+                }
+            }
         }
     },
     "order": [
@@ -4178,10 +5166,12 @@
         "multicolumn_metrics_section",
         "rich_text_two_section",
         "multicolumn_stats_section",
-        "featured_collections_section",
+        "collection_list_section",
         "products_tab_carousel_section",
+        "scrolling_content_section",
         "slideshow_section",
         "video_with_text_overlay_section",
+        "testimonials_section",
         "knowledge_accordion_section"
     ]
 }

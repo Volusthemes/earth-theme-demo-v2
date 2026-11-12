@@ -1,7 +1,6 @@
 {% comment %}
   Multicolumn: a row of columns (Column layout with cards) with an optional heading
-  above, for things like impact metrics or key stats. Presets: "Multicolumn" (heading,
-  intro and icon cards) and "Stats" (number cards only).
+  above. Presets: "Multicolumn" (heading, intro and icon cards).  
 {% endcomment %}
 
 {%- liquid
@@ -62,6 +61,23 @@
     },
     {
       "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
       "id": "background_style",
       "label": "Background",
       "options": [
@@ -80,27 +96,27 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -222,7 +238,7 @@
   ],
   "presets": [
     {
-      "name": "Multicolumn",
+      "name": "Multicolumn solid",
       "settings": {
         "gap": 64,
         "gap_mobile": 32,
@@ -282,14 +298,13 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#71CC3B",
                     "icon_size_desktop": 40,
                     "icon_size_mobile": 30,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 64,
                     "box_size_mobile": 54,
-                    "box_radius": "50%"
+                    "box_radius": "50%",
+                    "color_style": "secondary"
                   }
                 },
                 {
@@ -311,14 +326,13 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#71CC3B",
                     "icon_size_desktop": 40,
                     "icon_size_mobile": 30,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 64,
                     "box_size_mobile": 54,
-                    "box_radius": "50%"
+                    "box_radius": "50%",
+                    "color_style": "secondary"
                   }
                 }
               ]
@@ -405,11 +419,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "cotton-plant",
-                    "icon_color": "#F8F9DC",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
@@ -418,7 +430,8 @@
                     "animation_duration": 1,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
+                    "animation_blur_intensity": 5,
+                    "color_style": "text"
                   }
                 },
                 {
@@ -515,11 +528,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "zero-emissions",
-                    "icon_color": "#F8F9DC",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
@@ -528,7 +539,8 @@
                     "animation_duration": 1,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
+                    "animation_blur_intensity": 5,
+                    "color_style": "text"
                   }
                 },
                 {
@@ -625,11 +637,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "quality",
-                    "icon_color": "#F8F9DC",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
@@ -638,7 +648,8 @@
                     "animation_duration": 1,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
+                    "animation_blur_intensity": 5,
+                    "color_style": "text"
                   }
                 },
                 {
@@ -756,11 +767,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "drop",
-                    "icon_color": "#F8F9DC",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
                     "show_box": false,
-                    "box_bg_color": "#003225",
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
@@ -769,7 +778,8 @@
                     "animation_duration": 1,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
+                    "animation_blur_intensity": 5,
+                    "color_style": "text"
                   }
                 },
                 {
@@ -830,7 +840,7 @@
       ]
     },
     {
-      "name": "Stats",
+      "name": "Multicolumn outline",
       "settings": {
         "gap": 0,
         "gap_mobile": 0,
@@ -875,9 +885,6 @@
             {
               "type": "card",
               "settings": {
-                "background_color": "#00000000",
-                "heading_color": "#003225",
-                "text_color": "#224E09",
                 "position": "middle",
                 "alignment": "center",
                 "enable_decorative_icon": false,
@@ -901,7 +908,8 @@
                 "animation_duration": 1.2,
                 "animation_delay": 0.1,
                 "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 1
+                "animation_blur_intensity": 1,
+                "color_style": "transparent"
               },
               "blocks": [
                 {
@@ -958,9 +966,6 @@
             {
               "type": "card",
               "settings": {
-                "background_color": "#00000000",
-                "heading_color": "#003225",
-                "text_color": "#224E09",
                 "position": "middle",
                 "alignment": "center",
                 "enable_decorative_icon": false,
@@ -984,7 +989,8 @@
                 "animation_duration": 1.2,
                 "animation_delay": 0.2,
                 "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 1
+                "animation_blur_intensity": 1,
+                "color_style": "transparent"
               },
               "blocks": [
                 {
@@ -1041,9 +1047,6 @@
             {
               "type": "card",
               "settings": {
-                "background_color": "#00000000",
-                "heading_color": "#003225",
-                "text_color": "#224E09",
                 "position": "middle",
                 "alignment": "center",
                 "enable_decorative_icon": false,
@@ -1067,7 +1070,8 @@
                 "animation_duration": 1.2,
                 "animation_delay": 0.3,
                 "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 1
+                "animation_blur_intensity": 1,
+                "color_style": "transparent"
               },
               "blocks": [
                 {
@@ -1124,9 +1128,6 @@
             {
               "type": "card",
               "settings": {
-                "background_color": "#00000000",
-                "heading_color": "#003225",
-                "text_color": "#224E09",
                 "position": "middle",
                 "alignment": "center",
                 "enable_decorative_icon": false,
@@ -1150,7 +1151,8 @@
                 "animation_duration": 1.2,
                 "animation_delay": 0.4,
                 "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 1
+                "animation_blur_intensity": 1,
+                "color_style": "transparent"
               },
               "blocks": [
                 {

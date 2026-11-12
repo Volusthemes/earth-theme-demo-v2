@@ -12,7 +12,7 @@
   assign animation_type = block.settings.animation_type
 
   assign vt_anim_classes = ''
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign vt_anim_classes = ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide'
       assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -127,13 +127,13 @@
       "type": "color",
       "id": "button_color",
       "label": "Button color",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "icon_color",
       "label": "Icon color",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "range",
@@ -162,6 +162,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },

@@ -38,7 +38,7 @@
 {%- assign animation_type = block.settings.animation_type -%}
 {%- assign vt_anim_classes = '' -%}
 
-{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+{%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
   {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
 
   {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
@@ -55,7 +55,7 @@
 
 {%- assign vt_style = '' -%}
 
-{%- unless animation_type == 'none' or request.visual_preview_mode -%}
+{%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
   {%- assign vt_style = vt_style
     | append: '--vt-duration: '
     | append: block.settings.animation_duration
@@ -105,34 +105,27 @@
 
 {%- if block.settings.button_label != blank -%}
   <div class="vt-buttons">
-    <a aria-label="{{ block.settings.button_label }}"
+    <a
       {% if block.settings.button_link == blank %}
         role="link"
         aria-disabled="true"
-
       {% else %}
         href="{{ block.settings.button_link }}"
       {% endif %}
-
       {% if block.settings.open_in_new_tab %}
         target="_blank"
         rel="noopener noreferrer"
       {% endif %}
-
-      class="
-        {{ button_class }}        
-        {{ vt_anim_classes }}
-      "
-
+      class="{{ button_class }} {{ vt_anim_classes }}"
       {% if vt_style != blank %}
         style="{{ vt_style | strip }}"
       {% endif %}
-
       {{ block.shopify_attributes }}
     >
-      <span class="vt-button-label" data-label="{{ block.settings.button_label }}">
-        {{ block.settings.button_label }}
-      </span>
+      <span class="vt-button-label">{{ block.settings.button_label | escape }}</span>
+      {%- if block.settings.open_in_new_tab -%}
+        <span class="vt-visually-hidden">{{ 'accessibility.new_window' | t }}</span>
+      {%- endif -%}
 
       {% if block.settings.button_style == 'link' or block.settings.button_style == 'link-light' %}
         <span class="vt-button-icon vt-button__arrow" aria-hidden="true">
@@ -207,6 +200,7 @@
         {
             "type": "select",
             "id": "animation_type",
+            "info": "Turned off in the first section of a page, so it loads faster.",
             "options":
             [
                 {
@@ -338,7 +332,7 @@
         "category": "t:general.categories.basic",   
         "settings": {
           "button_label": "Button label",
-          "button_link": "shopify://collections/all",
+          "button_link": "shopify://collections/all",          
           "open_in_new_tab": false,
           "button_style": "primary",
           "animation_type": "slide",

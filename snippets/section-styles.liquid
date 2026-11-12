@@ -7,7 +7,7 @@
     {% render 'section-styles', section: section %}
 
   Required section settings:
-    - background_style, background_color, background_gradient
+    - color_style (optional: default | primary), background_style, background_color, background_gradient
     - heading_color, paragraph_color
     - padding_top_desktop, padding_bottom_desktop
     - padding_left_desktop, padding_right_desktop
@@ -51,24 +51,34 @@
   assign gap = s.gap | default: 0
   assign gap_mobile = s.gap_mobile | default: gap
 
+  # Color style: what empty color settings fall back to (palette only).
+  # Default keeps the page background; Primary is a dark section with light text.
+  assign default_bg = nil
+  assign default_color = 'inherit'
+  assign default_paragraph = 'var(--vt-color-primary)'
+  if s.color_style == 'primary'
+    assign default_bg = 'var(--vt-color-primary)'
+    assign default_color = 'var(--vt-background-color)'
+    assign default_paragraph = 'var(--vt-background-color)'
+  endif
+
   # Background: a blank gradient follows the color palette
   if s.background_style == 'gradient'
     assign section_bg = s.background_gradient | default: 'linear-gradient(135deg, var(--vt-color-accent) 0%, var(--vt-color-secondary) 100%)'
   else
-    assign section_bg = s.background_color
+    assign section_bg = s.background_color | default: default_bg
   endif
 
-  # Color inheritance: setting first, theme palette fallback second
-  # (heading -> inherited foreground, paragraph -> palette primary)
-  assign section_color = s.heading_color | default: nil
-  assign paragraph_color = s.paragraph_color | default: nil
+  # Color inheritance: setting first, Color style fallback second
+  assign section_color = s.heading_color | default: default_color
+  assign paragraph_color = s.paragraph_color | default: default_paragraph
 -%}
 
 {%- style -%}
   #shopify-section-{{ section.id }} {
     --vt-section-bg: {{ section_bg | default: 'transparent' }};
-    --vt-section-color: {{ section_color | default: 'inherit' }};
-    --vt-section-paragraph-color: {{ paragraph_color | default: 'var(--vt-color-primary)' }};
+    --vt-section-color: {{ section_color }};
+    --vt-section-paragraph-color: {{ paragraph_color }};
     --vt-section-padding-block-start: {% render 'fluid-clamp', min_px: pad_top_mobile, max_px: pad_top %};
     --vt-section-padding-block-end: {% render 'fluid-clamp', min_px: pad_bottom_mobile, max_px: pad_bottom %};
     /* Side gutters: mobile value below 990px, desktop value from 990px (no fluid ramp) */

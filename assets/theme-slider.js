@@ -1,6 +1,14 @@
 /*
   Shared Swiper carousel for sections and blocks.
   Loaded once in layout/theme.liquid, after swiper-bundle.min.js
+
+  data-slides-auto="true": slides keep the width their CSS gives them (Swiper's
+  slidesPerView 'auto'), for carousels whose slide width is a share of the page
+  rather than of the carousel (e.g. a carousel that runs to the screen edge).
+  data-swiper-block-select: the theme editor shows a slide when its block is selected.
+  data-slide-style="page" (Align with page, desktop): the carousel runs to both screen
+  edges while its first and last slides line up with the page content around it.
+  Slide widths come from CSS (assets/theme.css, ALIGN WITH PAGE).
 */
 
 
@@ -65,11 +73,12 @@
     const slidesMobile = (parseFloat(data.slidesMobile) || 2) + (parseFloat(data.peekMobile) || 0);
     const desktopDrag = data.desktopDrag !== 'false';
     const loop = data.loop === 'true';
+    const slidesAuto = data.slidesAuto === 'true';
 
     // Loop with only a few slides: Swiper moves some of them before the current one, so the
     // far end can run out and show an empty gap. Opt-in: copy the slides until both ends stay full
     if (loop && data.loopFill === 'true') {
-      fillLoop(container, Math.max(slidesDesktop, slidesTablet, slidesMobile));
+      fillLoop(container, slidesAuto ? 3 : Math.max(slidesDesktop, slidesTablet, slidesMobile));
     }
     const autoplay = data.autoplay === 'true' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const autoplayDelay = parseInt(data.autoplayDelay, 10) || 4000;
@@ -82,14 +91,38 @@
     const offsetPercent = data.slideStyle === 'offset' ? parseFloat(data.slideOffset) || 0 : 0;
     // Center: the current slide sits in the middle, the slides on either side show equally
     const centered = data.slideStyle === 'center';
-    const getOffset = () => (desktop.matches ? (container.clientWidth * offsetPercent) / 100 : 0);
+    // Align with page (desktop): runs to the screen edges, stops on the page content
+    const pageAligned = data.slideStyle === 'page';
 
-    // Below desktop: when CSS bleeds the carousel past the side margins (negative
+    // When CSS or applyPageBleed bleeds the carousel past the side margins (negative
     // margins), start and end on those margins so the first and last slides line up
     const getBleed = (side) =>
       Math.max(0, -parseFloat(getComputedStyle(container).getPropertyValue(`margin-inline-${side}`)) || 0);
-    const getOffsetBefore = () => (desktop.matches ? getOffset() : getBleed('start'));
-    const getOffsetAfter = () => (desktop.matches ? getOffset() : getBleed('end'));
+    const getOffset = () => {
+      if (!desktop.matches) return 0;
+      return pageAligned ? getBleed('start') : (container.clientWidth * offsetPercent) / 100;
+    };
+    const getOffsetBefore = () => (desktop.matches && !pageAligned ? getOffset() : getBleed('start'));
+    const getOffsetAfter = () => (desktop.matches && !pageAligned ? getOffset() : getBleed('end'));
+
+    // Align with page: measure the content edges against the visible screen width
+    // (clientWidth leaves out a classic scrollbar, which 100vw in CSS can't), then bleed
+    // to the screen edges. CSS holds a close fallback until this runs.
+    const pageBleedProps = ['margin-inline', '--vt-carousel-bleed-start', '--vt-carousel-bleed-end'];
+    const applyPageBleed = () => {
+      if (!pageAligned) return;
+      pageBleedProps.forEach((prop) => container.style.removeProperty(prop));
+      if (!desktop.matches) return;
+      const parent = container.parentElement;
+      const box = parent.getBoundingClientRect();
+      const parentStyle = getComputedStyle(parent);
+      const start = Math.max(0, box.left + parseFloat(parentStyle.paddingLeft));
+      const end = Math.max(0, document.documentElement.clientWidth - box.right + parseFloat(parentStyle.paddingRight));
+      container.style.setProperty('margin-inline', `${-start}px ${-end}px`);
+      container.style.setProperty('--vt-carousel-bleed-start', `${start}px`);
+      container.style.setProperty('--vt-carousel-bleed-end', `${end}px`);
+    };
+    applyPageBleed();
 
     // Arrows follow the same offset (CSS reads --vt-swiper-offset)
     const setArrowOffset = () => container.style.setProperty('--vt-swiper-offset', `${getOffset()}px`);
@@ -105,13 +138,13 @@
     const swiper = new Swiper(container, {
       ...speed,
       ...effect,
-      slidesPerView: slidesMobile,
+      slidesPerView: slidesAuto ? 'auto' : slidesMobile,
       spaceBetween: getGap(),
       watchOverflow: true,
       centeredSlides: centered,
       slidesOffsetBefore: getOffsetBefore(),
       slidesOffsetAfter: getOffsetAfter(),
-      loop: loop && container.querySelectorAll('.swiper-slide').length > slidesDesktop,
+      loop: loop && container.querySelectorAll('.swiper-slide').length > (slidesAuto ? 2 : slidesDesktop),
       autoplay: autoplay ? { delay: autoplayDelay, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
       navigation: {
         prevEl: prevBtn,
@@ -120,8 +153,8 @@
       },
       allowTouchMove: touch,
       breakpoints: {
-        750: { slidesPerView: slidesTablet, allowTouchMove: touch },
-        990: { slidesPerView: slidesDesktop, allowTouchMove: touch && desktopDrag },
+        750: { slidesPerView: slidesAuto ? 'auto' : slidesTablet, allowTouchMove: touch },
+        990: { slidesPerView: slidesAuto || pageAligned ? 'auto' : slidesDesktop, allowTouchMove: touch && desktopDrag },
       },
       // Translated labels from Liquid (Swiper's a11y would otherwise set English ones)
       a11y: {
@@ -130,6 +163,7 @@
       },
       on: {
         beforeResize(s) {
+          applyPageBleed();
           s.params.spaceBetween = getGap();
           s.params.slidesOffsetBefore = getOffsetBefore();
           s.params.slidesOffsetAfter = getOffsetAfter();
@@ -156,6 +190,7 @@
   const destroy = (container) => {
     if (!container?._swiperInstance) return;
     container._swiperInstance.destroy(true, true);
+    ['margin-inline', '--vt-carousel-bleed-start', '--vt-carousel-bleed-end'].forEach((prop) => container.style.removeProperty(prop));
     container.querySelectorAll('[data-vt-loop-copy]').forEach((copy) => copy.remove());
     container._swiperInstance = null;
     container.dataset.swiperReady = 'false';
@@ -174,4 +209,25 @@
   }
 
   document.addEventListener('shopify:section:load', (event) => initAuto(event.target));
+
+  // Theme editor: show a slide when its block is selected, and hold it there
+  document.addEventListener('shopify:block:select', (event) => {
+    const slide = event.target.closest?.('[data-swiper-block-select] .swiper-slide');
+    const swiper = slide?.closest('[data-swiper]')?._swiperInstance;
+    if (!swiper) return;
+    const index = Number(slide.dataset.swiperSlideIndex ?? swiper.slides.indexOf(slide));
+    if (Number.isNaN(index) || index < 0) return;
+    swiper.autoplay?.stop();
+    if (swiper.params.loop) swiper.slideToLoop(index);
+    else swiper.slideTo(index);
+  });
+
+  document.addEventListener('shopify:block:deselect', (event) => {
+    const swiper = event.target.closest?.('[data-swiper-block-select]')?._swiperInstance;
+    if (swiper?.params.autoplay?.enabled) swiper.autoplay.start();
+  });
+
+  document.addEventListener('shopify:section:unload', (event) => {
+    event.target.querySelectorAll?.('[data-swiper-block-select]').forEach(destroy);
+  });
 })();

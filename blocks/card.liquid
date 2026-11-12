@@ -73,6 +73,24 @@
   endcase
 
   # -----------------------------------------------------------------------
+  # Colors: empty color settings follow the chosen palette style
+  # -----------------------------------------------------------------------
+  case block.settings.color_style
+    when 'light'
+      assign vt_bg_default = 'var(--vt-background-color)'
+      assign vt_heading_default = 'var(--vt-foreground-color)'
+      assign vt_text_default = 'var(--vt-color-primary)'
+    when 'transparent'
+      assign vt_bg_default = 'transparent'
+      assign vt_heading_default = 'var(--vt-foreground-color)'
+      assign vt_text_default = 'var(--vt-color-primary)'
+    else
+      assign vt_bg_default = 'var(--vt-color-primary)'
+      assign vt_heading_default = 'var(--vt-background-color)'
+      assign vt_text_default = 'var(--vt-background-color)'
+  endcase
+
+  # -----------------------------------------------------------------------
   # Animation easing keyword -> real CSS timing function
   # -----------------------------------------------------------------------
   case block.settings.animation_easing
@@ -100,7 +118,7 @@
   # IntersectionObserver that may never fire inside the preview frame.
   # -----------------------------------------------------------------------
   assign vt_animate_classes = ''
-  if block.settings.animation_type != 'none' and request.visual_preview_mode != true
+  if block.settings.animation_type != 'none' and request.visual_preview_mode != true and section.index != 1 or section.location != 'template'
     assign vt_animate_classes = 'vt-animate vt-animate--' | append: block.settings.animation_type
     if block.settings.animation_type == 'slide'
       assign vt_animate_classes = vt_animate_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -124,9 +142,9 @@
 <div  
   class="{{ vt_class_list }}"
   style="
-    --vt-bg: {{ block.settings.background_color | default: 'var(--vt-color-primary)' }};
-    --vt-heading-color: {{ block.settings.heading_color | default: 'var(--vt-background-color)' }};
-    --vt-text-color: {{ block.settings.text_color | default: 'var(--vt-background-color)' }};
+    --vt-bg: {{ block.settings.background_color | default: vt_bg_default }};
+    --vt-heading-color: {{ block.settings.heading_color | default: vt_heading_default }};
+    --vt-text-color: {{ block.settings.text_color | default: vt_text_default }};
     --vt-justify: {{ vt_justify }};
     --vt-align: {{ vt_align }};
     --vt-text-align: {{ block.settings.alignment }};
@@ -168,7 +186,7 @@
         --vt-icon-justify: {{ vt_icon_justify }};
         --vt-icon-align: {{ vt_icon_align }};
         --vt-decorative-icon-size: {% render 'fluid-clamp', min_px: block.settings.decorative_icon_size_mobile, max_px: block.settings.decorative_icon_size_desktop %};
-        --vt-decorative-icon-color: {{ block.settings.decorative_icon_color | default: 'var(--vt-background-color)' }};
+        --vt-decorative-icon-color: {{ block.settings.decorative_icon_color | default: vt_heading_default }};
         --vt-decorative-icon-opacity: {{ block.settings.decorative_icon_opacity | times: 1.0 | divided_by: 100 }};
         --vt-decorative-icon-blend: {{ block.settings.decorative_icon_blend_mode }};
       "
@@ -320,22 +338,43 @@
       "content": "Color"
     },
     {
+      "type": "select",
+      "id": "color_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "transparent",
+          "label": "Transparent"
+        }
+      ],
+      "default": "primary",
+      "info": "Empty colors below follow this style."
+    },
+    {
       "type": "color",
       "id": "background_color",
       "label": "Background",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     }, 
     {
       "type": "color",
       "id": "text_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },    
     {
       "type": "header",
@@ -424,7 +463,7 @@
       "type": "color",
       "id": "decorative_icon_color",
       "label": "Color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
     },
     {
@@ -698,7 +737,7 @@
       "type": "color",
       "id": "border_color",
       "label": "Border color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
@@ -740,6 +779,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
@@ -812,7 +852,8 @@
       "visible_if": "{{ block.settings.animation_type == 'blur' }}"
     }   
   ],
-  "blocks": [ { "type": "icons" }, { "type": "heading" }, {"type": "paragraph"}, {"type": "heading-group"}, {"type": "stack"}, {"type": "sub-heading"}, {"type": "badge"}, {"type": "button"}],       
+  "blocks": [ { "type": "image" },
+    { "type": "icons" }, { "type": "heading" }, {"type": "paragraph"}, {"type": "heading-group"}, {"type": "stack"}, {"type": "sub-heading"}, {"type": "badge"}, {"type": "button"}],       
   "presets": [
     {
       "name": "Card",

@@ -19,7 +19,7 @@
     assign has_image = true
   endif
 
-  assign alt_text = image.alt | default: ''
+  assign alt_text = image.alt | escape
 
   # ---------------------------------------------------------------
   # Aspect ratio (CSS aspect-ratio value)
@@ -33,6 +33,9 @@
     when 'landscape'
       assign aspect_ratio = '4/3'
       assign frame_ratio = 1.3333
+    when 'portrait_4_5'
+      assign aspect_ratio = '4/5'
+      assign frame_ratio = 0.8
     when 'portrait'
       assign aspect_ratio = '3/4'
       assign frame_ratio = 0.75
@@ -139,7 +142,7 @@
   endcase
 
   assign animate_class = ''
-  if block.settings.animation_type != 'none' and request.visual_preview_mode == false
+  if block.settings.animation_type != 'none' and request.visual_preview_mode == false and section.index != 1 or section.location != 'template'
     assign animate_class = 'vt-animate vt-animate--' | append: block.settings.animation_type
     if block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal'
       assign animate_class = animate_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -148,6 +151,15 @@
 
   assign widths = '165, 360, 535, 750, 940, 1080, 1296, 1512, 1728, 1950, 2100, 3200'
   assign widths_arr = widths | split: ', '
+
+  # The first section is usually above the fold: its images load right away, so the
+  # Largest Contentful Paint isn't held back by lazy loading
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  if section.index == 1 and section.location == 'template'
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endif
 
   assign has_link = false
   if block.settings.image_link != blank
@@ -214,7 +226,7 @@
           target="_blank" rel="noopener noreferrer"
         {% endif %}
         {% if alt_text == blank %}
-          aria-label="{{ block.settings.image_link }}"          
+          aria-label="{{ 'accessibility.image_link' | t }}"
         {% endif %}
       >
     {%- endif -%}
@@ -237,7 +249,8 @@
         width="{{ image.width }}"
         height="{{ image.height }}"
         alt="{{ alt_text }}"
-        loading="lazy"
+        loading="{{ image_loading }}"
+        fetchpriority="{{ image_priority }}"
         class="vt-image__img"
       >
     </picture>
@@ -367,6 +380,10 @@
         {
           "value": "landscape",
           "label": "Landscape (4:3)"
+        },
+        {
+          "value": "portrait_4_5",
+          "label": "Portrait (4:5)"
         },
         {
           "value": "portrait",
@@ -551,6 +568,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },

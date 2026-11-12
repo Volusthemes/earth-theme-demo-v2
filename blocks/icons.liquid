@@ -15,13 +15,28 @@
   # Color: a blank icon matches the text around it. Inside a box it uses the
   # palette, because the text color could be the same as the box.
   # -----------------------------------------------------------------------
-  assign vt_icon_color = block.settings.icon_color
-  if vt_icon_color == blank
-    assign vt_icon_color = 'currentColor'
-    if block.settings.show_box
-      assign vt_icon_color = 'var(--vt-foreground-color)'
-    endif
+  # Empty colors follow Color style and Box style (palette only)
+  assign vt_box_bg = 'var(--vt-background-color)'
+  assign vt_icon_on_box = 'var(--vt-foreground-color)'
+  if block.settings.box_style == 'dark'
+    assign vt_box_bg = 'var(--vt-foreground-color)'
+    assign vt_icon_on_box = 'var(--vt-background-color)'
   endif
+
+  case block.settings.color_style
+    when 'primary'
+      assign vt_icon_color = 'var(--vt-color-primary)'
+    when 'secondary'
+      assign vt_icon_color = 'var(--vt-color-secondary)'
+    when 'accent'
+      assign vt_icon_color = 'var(--vt-color-accent)'
+    else
+      assign vt_icon_color = 'currentColor'
+      if block.settings.show_box
+        assign vt_icon_color = vt_icon_on_box
+      endif
+  endcase
+  assign vt_icon_color = block.settings.icon_color | default: vt_icon_color
 
   # -----------------------------------------------------------------------
   # Animation classes / custom properties. Skipped inside the visual preset
@@ -29,7 +44,7 @@
   # IntersectionObserver that may never fire inside the preview frame.
   # -----------------------------------------------------------------------
   assign vt_anim_classes = ''
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide' or animation_type == 'reveal'
       assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -81,7 +96,7 @@
     --vt-icon-color: {{ vt_icon_color }};
     {%- if block.settings.show_box %}
     --vt-box-size: {% render 'fluid-clamp', min_px: block.settings.box_size_mobile, max_px: block.settings.box_size_desktop %};
-    --vt-box-bg-color: {{ block.settings.box_bg_color | default: 'var(--vt-background-color)' }};
+    --vt-box-bg-color: {{ block.settings.box_bg_color | default: vt_box_bg }};
     --vt-box-radius: {{ block.settings.box_radius }};
     {%- endif %}
     {%- if vt_anim_classes != blank %}
@@ -131,59 +146,182 @@
   }
 {% endstylesheet %}
 
-{% schema %}
-{
+{% schema %}{
   "name": "t:blocks.icon.name",
-  "tag": null,  
+  "tag": null,
   "settings": [
     {
       "type": "select",
       "id": "icon",
       "options": [
-        { "value": "leaf", "label": "t:blocks.icon.settings.icon.options__1.label" },
-        { "value": "carbon", "label": "t:blocks.icon.settings.icon.options__2.label" },
-        { "value": "cotton-plant", "label": "t:blocks.icon.settings.icon.options__20.label" },
-        { "value": "tree", "label": "t:blocks.icon.settings.icon.options__3.label" },
-        { "value": "zero-emissions", "label": "t:blocks.icon.settings.icon.options__4.label" },
-        { "value": "quality", "label": "t:blocks.icon.settings.icon.options__5.label" },
-        { "value": "drop", "label": "t:blocks.icon.settings.icon.options__6.label" },
-        { "value": "ecology", "label": "t:blocks.icon.settings.icon.options__7.label" },
-        { "value": "flower", "label": "t:blocks.icon.settings.icon.options__11.label" },
-        { "value": "sparkle", "label": "t:blocks.icon.settings.icon.options__12.label" },
-        { "value": "handshake", "label": "t:blocks.icon.settings.icon.options__13.label" },
-        { "value": "organic-cotton", "label": "t:blocks.icon.settings.icon.options__14.label" },
-        { "value": "recycled-materials", "label": "t:blocks.icon.settings.icon.options__15.label" },
-        { "value": "vegan-cruelty-free", "label": "t:blocks.icon.settings.icon.options__16.label" },
-        { "value": "eco", "label": "t:blocks.icon.settings.icon.options__17.label" },
-        { "value": "certificate-regulation", "label": "t:blocks.icon.settings.icon.options__18.label" },
-        { "value": "shake-hand-cooperate", "label": "t:blocks.icon.settings.icon.options__19.label" },
-        { "value": "heart", "label": "t:blocks.icon.settings.icon.options__21.label" },
-        { "value": "calculator", "label": "t:blocks.icon.settings.icon.options__22.label" },
-        { "value": "check-circle", "label": "t:blocks.icon.settings.icon.options__23.label" },
-        { "value": "close-circle", "label": "t:blocks.icon.settings.icon.options__24.label" },
-        { "value": "info-circle", "label": "t:blocks.icon.settings.icon.options__25.label" },
-        { "value": "washing", "label": "t:blocks.icon.settings.icon.options__26.label" },
-        { "value": "get-dressed", "label": "t:blocks.icon.settings.icon.options__27.label" },
-        { "value": "hands-light", "label": "t:blocks.icon.settings.icon.options__28.label" },
-        { "value": "materials", "label": "t:blocks.icon.settings.icon.options__29.label" },
-        { "value": "partners", "label": "t:blocks.icon.settings.icon.options__30.label" },
-        { "value": "recycle", "label": "t:blocks.icon.settings.icon.options__31.label" },
-        { "value": "honest-progress", "label": "t:blocks.icon.settings.icon.options__32.label" },
-        { "value": "mail", "label": "t:blocks.icon.settings.icon.options__33.label" },
-        { "value": "telephone-call", "label": "t:blocks.icon.settings.icon.options__34.label" },
-        { "value": "location-map", "label": "t:blocks.icon.settings.icon.options__35.label" },
-        { "value": "arrow-right", "label": "t:blocks.icon.settings.icon.options__36.label" }
+        {
+          "value": "leaf",
+          "label": "t:blocks.icon.settings.icon.options__1.label"
+        },
+        {
+          "value": "carbon",
+          "label": "t:blocks.icon.settings.icon.options__2.label"
+        },
+        {
+          "value": "cotton-plant",
+          "label": "t:blocks.icon.settings.icon.options__20.label"
+        },
+        {
+          "value": "tree",
+          "label": "t:blocks.icon.settings.icon.options__3.label"
+        },
+        {
+          "value": "zero-emissions",
+          "label": "t:blocks.icon.settings.icon.options__4.label"
+        },
+        {
+          "value": "quality",
+          "label": "t:blocks.icon.settings.icon.options__5.label"
+        },
+        {
+          "value": "drop",
+          "label": "t:blocks.icon.settings.icon.options__6.label"
+        },
+        {
+          "value": "ecology",
+          "label": "t:blocks.icon.settings.icon.options__7.label"
+        },
+        {
+          "value": "flower",
+          "label": "t:blocks.icon.settings.icon.options__11.label"
+        },
+        {
+          "value": "sparkle",
+          "label": "t:blocks.icon.settings.icon.options__12.label"
+        },
+        {
+          "value": "handshake",
+          "label": "t:blocks.icon.settings.icon.options__13.label"
+        },
+        {
+          "value": "organic-cotton",
+          "label": "t:blocks.icon.settings.icon.options__14.label"
+        },
+        {
+          "value": "recycled-materials",
+          "label": "t:blocks.icon.settings.icon.options__15.label"
+        },
+        {
+          "value": "vegan-cruelty-free",
+          "label": "t:blocks.icon.settings.icon.options__16.label"
+        },
+        {
+          "value": "eco",
+          "label": "t:blocks.icon.settings.icon.options__17.label"
+        },
+        {
+          "value": "certificate-regulation",
+          "label": "t:blocks.icon.settings.icon.options__18.label"
+        },
+        {
+          "value": "shake-hand-cooperate",
+          "label": "t:blocks.icon.settings.icon.options__19.label"
+        },
+        {
+          "value": "heart",
+          "label": "t:blocks.icon.settings.icon.options__21.label"
+        },
+        {
+          "value": "calculator",
+          "label": "t:blocks.icon.settings.icon.options__22.label"
+        },
+        {
+          "value": "check-circle",
+          "label": "t:blocks.icon.settings.icon.options__23.label"
+        },
+        {
+          "value": "close-circle",
+          "label": "t:blocks.icon.settings.icon.options__24.label"
+        },
+        {
+          "value": "info-circle",
+          "label": "t:blocks.icon.settings.icon.options__25.label"
+        },
+        {
+          "value": "washing",
+          "label": "t:blocks.icon.settings.icon.options__26.label"
+        },
+        {
+          "value": "get-dressed",
+          "label": "t:blocks.icon.settings.icon.options__27.label"
+        },
+        {
+          "value": "hands-light",
+          "label": "t:blocks.icon.settings.icon.options__28.label"
+        },
+        {
+          "value": "materials",
+          "label": "t:blocks.icon.settings.icon.options__29.label"
+        },
+        {
+          "value": "partners",
+          "label": "t:blocks.icon.settings.icon.options__30.label"
+        },
+        {
+          "value": "recycle",
+          "label": "t:blocks.icon.settings.icon.options__31.label"
+        },
+        {
+          "value": "honest-progress",
+          "label": "t:blocks.icon.settings.icon.options__32.label"
+        },
+        {
+          "value": "mail",
+          "label": "t:blocks.icon.settings.icon.options__33.label"
+        },
+        {
+          "value": "telephone-call",
+          "label": "t:blocks.icon.settings.icon.options__34.label"
+        },
+        {
+          "value": "location-map",
+          "label": "t:blocks.icon.settings.icon.options__35.label"
+        },
+        {
+          "value": "arrow-right",
+          "label": "t:blocks.icon.settings.icon.options__36.label"
+        }
       ],
       "default": "leaf",
       "label": "t:blocks.icon.settings.icon.label"
     },
     {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "text",
+          "label": "Text color"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        }
+      ],
+      "default": "text",
+      "info": "Text color matches the text around the icon, or contrasts with its box."
+    },
+    {
       "type": "color",
       "id": "icon_color",
       "label": "t:blocks.icon.settings.icon_color.label",
-      "info": "Leave blank to match the text color"
+      "info": "Leave empty to follow Color style."
     },
-    {      
+    {
       "type": "range",
       "id": "icon_size_desktop",
       "min": 12,
@@ -214,10 +352,27 @@
       "label": "t:blocks.icon.settings.show_box.label"
     },
     {
+      "type": "select",
+      "id": "box_style",
+      "label": "Box style",
+      "options": [
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        }
+      ],
+      "default": "light",
+      "visible_if": "{{ block.settings.show_box == true }}"
+    },
+    {
       "type": "color",
       "id": "box_bg_color",
       "label": "t:blocks.icon.settings.box_bg_color.label",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to follow Box style.",
       "visible_if": "{{ block.settings.show_box == true }}"
     },
     {
@@ -246,9 +401,18 @@
       "type": "select",
       "id": "box_radius",
       "options": [
-        { "value": "50%", "label": "t:blocks.icon.settings.box_radius.options__1.label" },
-        { "value": "0", "label": "t:blocks.icon.settings.box_radius.options__2.label" },
-        { "value": "0.5rem", "label": "t:blocks.icon.settings.box_radius.options__3.label" }
+        {
+          "value": "50%",
+          "label": "t:blocks.icon.settings.box_radius.options__1.label"
+        },
+        {
+          "value": "0",
+          "label": "t:blocks.icon.settings.box_radius.options__2.label"
+        },
+        {
+          "value": "0.5rem",
+          "label": "t:blocks.icon.settings.box_radius.options__3.label"
+        }
       ],
       "default": "50%",
       "label": "t:blocks.icon.settings.box_radius.label",
@@ -261,12 +425,28 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
-        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
-        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.icon.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.icon.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.icon.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.icon.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.icon.settings.animation_type.options__5.label"
+        }
       ],
       "default": "none",
       "label": "t:blocks.icon.settings.animation_type.label"
@@ -275,17 +455,29 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.icon.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.icon.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.icon.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.icon.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.icon.settings.animation_direction.label",
       "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
     },
     {
-      "type": "range",      
+      "type": "range",
       "id": "animation_duration",
       "min": 0.1,
       "max": 3,
@@ -310,13 +502,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.icon.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.icon.settings.animation_easing.label",
@@ -337,9 +550,8 @@
   "presets": [
     {
       "name": "t:blocks.icon.presets.name",
-      "category": "t:general.categories.basic",   
-      "settings": 
-      {
+      "category": "t:general.categories.basic",
+      "settings": {
         "icon": "leaf",
         "icon_size_desktop": 32,
         "icon_size_mobile": 24,
@@ -354,7 +566,6 @@
         "animation_easing": "ease-in-out-sine",
         "animation_blur_intensity": 5
       }
-    }    
+    }
   ]
-}
-{% endschema %}
+}{% endschema %}

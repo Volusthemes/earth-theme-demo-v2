@@ -32,7 +32,7 @@
   # Scroll-in animation: the theme-wide options from snippets/animate.liquid (Theme settings > Animations)
   assign animation_type = block.settings.animation_type
   assign is_animated = false
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign is_animated = true
     assign root_class = root_class | append: ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide' or animation_type == 'reveal'
@@ -55,7 +55,7 @@
       assign vt_easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
     else
       assign vt_easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
-  endcase
+  endcase  
 -%}
 
 <div
@@ -411,6 +411,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         {
           "value": "none",

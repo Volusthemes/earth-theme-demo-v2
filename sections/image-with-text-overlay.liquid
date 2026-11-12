@@ -44,7 +44,7 @@
   # The first section on the page is usually the largest paint: don't lazy load it
   assign image_loading = 'lazy'
   assign image_priority = 'auto'
-  if section.index == 1
+  if section.index == 1 and section.location == 'template'
     assign image_loading = 'eager'
     assign image_priority = 'high'
   endif
@@ -62,7 +62,7 @@
     --vt-image-overlay-ratio-desktop: {{ ratio_desktop }};
     --vt-image-overlay-ratio-mobile: {{ ratio_mobile }};
     --vt-image-overlay-position: {{ section.settings.content_position }};
-    --vt-image-overlay-color: {{ section.settings.overlay_color | default: 'var(--vt-color-primary)' }};
+    --vt-image-overlay-color: {{ section.settings.overlay_color | default: 'var(--vt-foreground-color)' }};
     --vt-image-overlay-opacity: {{ overlay_opacity }};
     --vt-section-color: {{ section.settings.heading_color | default: 'var(--vt-background-color)' }};
     --vt-section-paragraph-color: {{ section.settings.paragraph_color | default: 'var(--vt-background-color)' }};
@@ -284,8 +284,7 @@
       "type": "color",
       "id": "overlay_color",
       "label": "Overlay color",
-      "default": "#000000",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "range",
@@ -362,13 +361,13 @@
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -489,7 +488,6 @@
         "height_mobile": 560,
         "image_ratio_desktop": "wide",
         "image_ratio_mobile": "classic_portrait",
-        "overlay_color": "#000000",
         "overlay_opacity": 10,
         "content_position": "center",
         "desktop_content_alignment": "justify-center",
@@ -528,7 +526,6 @@
             {
               "type": "icons",
               "settings": {
-                "icon_color": "#EAE060",
                 "icon": "sparkle",
                 "icon_size_desktop": 16,
                 "icon_size_mobile": 16,
@@ -537,7 +534,8 @@
                 "animation_direction": "from-bottom",
                 "animation_duration": 1,
                 "animation_delay": 0.2,
-                "animation_easing": "ease-out-sine"
+                "animation_easing": "ease-out-sine",
+                "color_style": "accent"
               }
             },
             {

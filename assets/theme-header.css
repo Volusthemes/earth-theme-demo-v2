@@ -84,7 +84,7 @@
   overflow-wrap: anywhere;
   text-align: center;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2;  
 }
 
 .vt-header__logo-image {
@@ -188,8 +188,8 @@
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 2.25rem;
+  height: 2.25rem;
   color: inherit;
 }
 

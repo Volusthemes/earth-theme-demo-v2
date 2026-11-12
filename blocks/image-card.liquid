@@ -1,0 +1,814 @@
+{% doc %}
+  Renders a card with a full-bleed image behind its content, an optional solid
+  or gradient overlay for text contrast, and the same content position,
+  alignment, padding and gap controls as the Card block.
+
+  The image is a real <img> (with srcset, focal point and alt text) laid behind
+  the content, not a CSS background: the browser can discover and prioritise it
+  for Largest Contentful Paint, and screen readers get its alt text.
+
+  @example
+  {% content_for 'block', type: 'image-card', id: 'image-card' %}
+{% enddoc %}
+
+{%- liquid
+  assign image = block.settings.image
+  assign image_mobile = block.settings.image_mobile
+
+  # -----------------------------------------------------------------------
+  # Aspect ratio: CSS value + width / height number for the srcset hint.
+  # "Adapt to image" uses the image's own ratio (4:5 when there is none).
+  # -----------------------------------------------------------------------
+  case block.settings.aspect_ratio
+    when 'square'
+      assign ratio = '1 / 1'
+      assign frame_ratio = 1.0
+    when 'portrait_4_5'
+      assign ratio = '4 / 5'
+      assign frame_ratio = 0.8
+    when 'portrait'
+      assign ratio = '3 / 4'
+      assign frame_ratio = 0.75
+    when 'classic_portrait'
+      assign ratio = '2 / 3'
+      assign frame_ratio = 0.6667
+    when 'landscape'
+      assign ratio = '4 / 3'
+      assign frame_ratio = 1.3333
+    when 'wide'
+      assign ratio = '16 / 9'
+      assign frame_ratio = 1.7778
+    else
+      assign frame_ratio = image.aspect_ratio | default: 0.8
+      assign ratio = frame_ratio
+  endcase
+
+  assign ratio_mobile = ratio
+  assign frame_ratio_mobile = frame_ratio
+  if block.settings.enable_aspect_ratio_mobile
+    assign mobile_source = image_mobile | default: image
+    case block.settings.aspect_ratio_mobile
+      when 'square'
+        assign ratio_mobile = '1 / 1'
+        assign frame_ratio_mobile = 1.0
+      when 'portrait_4_5'
+        assign ratio_mobile = '4 / 5'
+        assign frame_ratio_mobile = 0.8
+      when 'portrait'
+        assign ratio_mobile = '3 / 4'
+        assign frame_ratio_mobile = 0.75
+      when 'classic_portrait'
+        assign ratio_mobile = '2 / 3'
+        assign frame_ratio_mobile = 0.6667
+      when 'landscape'
+        assign ratio_mobile = '4 / 3'
+        assign frame_ratio_mobile = 1.3333
+      when 'wide'
+        assign ratio_mobile = '16 / 9'
+        assign frame_ratio_mobile = 1.7778
+      else
+        assign frame_ratio_mobile = mobile_source.aspect_ratio | default: 0.8
+        assign ratio_mobile = frame_ratio_mobile
+    endcase
+  endif
+
+  # -----------------------------------------------------------------------
+  # Padding / gap fluid source values (mobile baseline -> desktop baseline)
+  # -----------------------------------------------------------------------
+  assign padding_block_min = block.settings.padding_vertical
+  assign padding_inline_min = block.settings.padding_horizontal
+  if block.settings.enable_padding_mobile
+    assign padding_block_min = block.settings.padding_vertical_mobile
+    assign padding_inline_min = block.settings.padding_horizontal_mobile
+  endif
+
+  assign gap_min = block.settings.gap
+  if block.settings.enable_gap_mobile
+    assign gap_min = block.settings.gap_mobile
+  endif
+
+  # -----------------------------------------------------------------------
+  # Position / alignment -> flex keywords (text-align keeps the raw value)
+  # -----------------------------------------------------------------------
+  case block.settings.position
+    when 'top'
+      assign justify = 'flex-start'
+    when 'middle'
+      assign justify = 'center'
+    when 'between'
+      assign justify = 'space-between'
+    else
+      assign justify = 'flex-end'
+  endcase
+
+  case block.settings.alignment
+    when 'center'
+      assign align = 'center'
+      assign align_margin = 'auto'
+    when 'right'
+      assign align = 'flex-end'
+      assign align_margin = 'auto 0'
+    else
+      assign align = 'flex-start'
+      assign align_margin = '0 auto'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Overlay: solid tint, or a gradient that fades out from one edge
+  # -----------------------------------------------------------------------
+  case block.settings.gradient_direction
+    when 'top'
+      assign gradient_angle = 'to bottom'
+    when 'left'
+      assign gradient_angle = 'to right'
+    when 'right'
+      assign gradient_angle = 'to left'
+    else
+      assign gradient_angle = 'to top'
+  endcase
+
+  # -----------------------------------------------------------------------
+  # Image loading: the first section is usually above the fold, so its image
+  # loads right away and doesn't hold back Largest Contentful Paint.
+  # -----------------------------------------------------------------------
+  assign image_loading = 'lazy'
+  assign image_priority = 'auto'
+  if section.index == 1 and section.location == 'template'
+    assign image_loading = 'eager'
+    assign image_priority = 'high'
+  endif
+
+  # sizes="auto" (lazy images only) asks the browser for the card's real width.
+  # An image wider than the card is cropped by object-fit and needs more pixels
+  # than that, so it keeps the estimate.
+  assign desktop_auto = ''
+  if image_loading == 'lazy' and image.aspect_ratio <= frame_ratio
+    assign desktop_auto = 'auto, '
+  endif
+
+  assign mobile_auto = ''
+  if image_loading == 'lazy' and image_mobile.aspect_ratio <= frame_ratio_mobile
+    assign mobile_auto = 'auto, '
+  endif
+
+  assign widths = '360, 535, 750, 940, 1080, 1296, 1512, 1728, 1950, 2100' | split: ', '
+
+  # -----------------------------------------------------------------------
+  # Animation (skipped in the editor's visual preview so presets show fully)
+  # -----------------------------------------------------------------------
+  case block.settings.animation_easing
+    when 'linear'
+      assign easing = 'linear'
+    when 'ease-in-sine'
+      assign easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+    when 'ease-in-out-sine'
+      assign easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+    when 'ease-in-cubic'
+      assign easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+    when 'ease-out-cubic'
+      assign easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+    when 'ease-in-out-cubic'
+      assign easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+    else
+      assign easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+  endcase
+
+  assign card_class = 'vt-image-card'
+  if block.settings.overlay_style != 'none'
+    assign card_class = card_class | append: ' vt-image-card--overlay-' | append: block.settings.overlay_style
+  endif
+  if block.settings.animation_type != 'none' and request.visual_preview_mode != true and section.index != 1 or section.location != 'template'
+    assign card_class = card_class | append: ' vt-animate vt-animate--' | append: block.settings.animation_type
+    if block.settings.animation_type == 'slide'
+      assign card_class = card_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+  endif
+-%}
+
+<div
+  class="{{ card_class }}"
+  style="
+    --vt-image-card-ratio: {{ ratio }};
+    --vt-image-card-ratio-mobile: {{ ratio_mobile }};
+    --vt-heading-color: {{ block.settings.heading_color | default: 'var(--vt-background-color)' }};
+    --vt-text-color: {{ block.settings.text_color | default: 'var(--vt-background-color)' }};
+    --vt-justify: {{ justify }};
+    --vt-align: {{ align }};
+    --vt-text-align: {{ block.settings.alignment }};
+    --vt-align-justify: {{ align }};
+    --vt-align-margin: {{ align_margin }};
+    --vt-padding-block: {% render 'fluid-clamp', min_px: padding_block_min, max_px: block.settings.padding_vertical %};
+    --vt-padding-inline: {% render 'fluid-clamp', min_px: padding_inline_min, max_px: block.settings.padding_horizontal %};
+    --vt-gap: {% render 'fluid-clamp', min_px: gap_min, max_px: block.settings.gap %};
+    --vt-border-radius: {{ block.settings.border_radius | divided_by: 16.0 }}rem;
+    {%- if block.settings.overlay_style != 'none' %}
+    --vt-overlay-color: {{ block.settings.overlay_color | default: 'var(--vt-color-primary)' }};
+    --vt-overlay-opacity: {{ block.settings.overlay_opacity }}%;
+    {%- endif %}
+    {%- if block.settings.overlay_style == 'gradient' %}
+    --vt-overlay-angle: {{ gradient_angle }};
+    --vt-overlay-size: {{ block.settings.gradient_size }}%;
+    {%- endif %}
+    {%- if image != blank %}
+    --vt-image-focal: {{ image.presentation.focal_point }};
+    --vt-image-focal-mobile: {{ image_mobile.presentation.focal_point | default: image.presentation.focal_point }};
+    {%- endif %}
+    {%- if block.settings.animation_type != 'none' %}
+    --vt-duration: {{ block.settings.animation_duration }}s;
+    --vt-delay: {{ block.settings.animation_delay }}s;
+    --vt-easing: {{ easing }};
+    --vt-blur: {{ block.settings.animation_blur_intensity }}px;
+    {%- endif %}
+  "
+  {{ block.shopify_attributes }}  
+>
+  <div class="vt-image-card__media">
+    {%- if image != blank -%}
+      <picture>
+        {%- if image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="{% for w in widths %}{{ image_mobile | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+            sizes="{{ mobile_auto }}100vw"
+            width="{{ image_mobile.width }}"
+            height="{{ image_mobile.height }}"
+          >
+        {%- endif -%}
+        <img
+          src="{{ image | image_url: width: 1080 }}"
+          srcset="{% for w in widths %}{{ image | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}{% endfor %}"
+          sizes="{{ desktop_auto }}(min-width: 990px) 50vw, 100vw"
+          width="{{ image.width }}"
+          height="{{ image.height }}"
+          alt="{{ image.alt | escape }}"
+          loading="{{ image_loading }}"
+          fetchpriority="{{ image_priority }}"
+          class="vt-image-card__img"
+        >
+      </picture>
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag: 'vt-image-card__img vt-image-card__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  <div class="vt-image-card__content">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-image-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    aspect-ratio: var(--vt-image-card-ratio-mobile, 4 / 5);
+    overflow: hidden;
+    border-radius: var(--vt-border-radius, 0);
+    color: var(--vt-text-color);
+    text-align: var(--vt-text-align, left);
+    /* The overlay and image only stack with this card, never with the page behind it */
+    isolation: isolate;
+    contain: layout paint style;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-image-card {
+      aspect-ratio: var(--vt-image-card-ratio, 4 / 5);
+    }
+  }
+
+  .vt-image-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* Tint shown while the image loads, and behind the placeholder art */
+    color: var(--vt-foreground-color);
+    background-color: color-mix(in srgb, var(--vt-foreground-color) 12%, var(--vt-background-color));
+  }
+
+  .vt-image-card__media picture {
+    display: contents;
+  }
+
+  .vt-image-card__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--vt-image-focal-mobile, center);
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-image-card__img {
+      object-position: var(--vt-image-focal, center);
+    }
+  }
+
+  .vt-image-card__placeholder {
+    opacity: 0.6;
+  }
+
+  /* Overlay sits between the image and the content, so it never covers text or links */
+  :is(.vt-image-card--overlay-solid, .vt-image-card--overlay-gradient) .vt-image-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .vt-image-card--overlay-solid .vt-image-card__media::after {
+    background-color: color-mix(in srgb, var(--vt-overlay-color) var(--vt-overlay-opacity, 40%), transparent);
+  }
+
+  .vt-image-card--overlay-gradient .vt-image-card__media::after {
+    background-image: linear-gradient(
+      var(--vt-overlay-angle, to top),
+      color-mix(in srgb, var(--vt-overlay-color) var(--vt-overlay-opacity, 90%), transparent) 0%,
+      transparent var(--vt-overlay-size, 60%)
+    );
+  }
+
+  .vt-image-card__content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: var(--vt-justify, flex-end);
+    align-items: var(--vt-align, flex-start);
+    gap: var(--vt-gap, 1rem);
+    padding-block: var(--vt-padding-block, 2rem);
+    padding-inline: var(--vt-padding-inline, 2rem);
+  }
+
+  .vt-image-card .vt-heading {
+    color: var(--vt-heading-color);
+  }
+
+  .vt-image-card .vt-paragraph {
+    color: var(--vt-text-color);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Image card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image (optional)"
+    },
+    {
+      "type": "header",
+      "content": "Aspect ratio"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait_4_5", "label": "Portrait (4:5)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "classic_portrait", "label": "Portrait (2:3)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" }
+      ],
+      "default": "portrait_4_5",
+      "info": "The card grows taller when its content needs more room."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_aspect_ratio_mobile",
+      "label": "Custom for mobile",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio_mobile",
+      "label": "Aspect ratio (mobile)",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait_4_5", "label": "Portrait (4:5)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "classic_portrait", "label": "Portrait (2:3)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" }
+      ],
+      "default": "portrait_4_5",
+      "visible_if": "{{ block.settings.enable_aspect_ratio_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "gradient",
+      "info": "Keeps text readable on busy images."
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ block.settings.overlay_style != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacity",
+      "default": 90,
+      "visible_if": "{{ block.settings.overlay_style != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient starts from",
+      "options": [
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "top", "label": "Top" },
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "bottom",
+      "visible_if": "{{ block.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "range",
+      "id": "gradient_size",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Gradient size",
+      "default": 60,
+      "visible_if": "{{ block.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "middle", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "between", "label": "Between" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 12,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical (desktop)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 12,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal (desktop)",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_padding_mobile",
+      "label": "Custom for mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_mobile",
+      "min": 12,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Vertical (mobile)",
+      "default": 24,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "min": 12,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Horizontal (mobile)",
+      "default": 24,
+      "visible_if": "{{ block.settings.enable_padding_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 4,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Desktop",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_gap_mobile",
+      "label": "Custom for mobile",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 4,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile",
+      "default": 12,
+      "visible_if": "{{ block.settings.enable_gap_mobile == true }}"
+    },
+    {
+      "type": "header",
+      "content": "Corner"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Corner radius",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
+      "options": [
+        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
+        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
+        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
+        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
+        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
+        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
+        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.1,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
+        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
+        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
+        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
+        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
+        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
+        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 2,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
+    }
+  ],
+  "blocks": [
+    { "type": "badge" },
+    { "type": "heading" },
+    { "type": "sub-heading" },
+    { "type": "heading-group" },
+    { "type": "paragraph" },
+    { "type": "button" },
+    { "type": "icons" },
+    { "type": "stack" }
+  ],
+  "presets": [
+    {
+      "name": "Image card",
+      "category": "t:general.categories.basic",
+      "settings": {
+        "aspect_ratio": "portrait_4_5",
+        "position": "between",
+        "alignment": "left",
+        "overlay_style": "gradient",
+        "overlay_opacity": 90,
+        "gradient_direction": "bottom",
+        "gradient_size": 60,
+        "padding_vertical": 40,
+        "padding_horizontal": 40,
+        "padding_vertical_mobile": 24,
+        "padding_horizontal_mobile": 24
+      },
+      "blocks": [
+        {
+          "type": "badge",
+          "settings": {
+            "color_style": "light",
+            "text": "Quality Checked",
+            "badge_size": "vt-paragraph-medium",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "width": "fill",
+            "height": "fit",
+            "gap_desktop": 20,
+            "gap_mobile": 12,
+            "enable_padding": false
+          },
+          "blocks": [
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Cut, sew and make",
+                "heading_size": "vt-heading-h3",
+                "heading_tag": "h3",
+                "heading_alignment": "text-inherit",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Cut, sew, and create garments with care.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "animation_type": "none"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Image card with button",
+      "category": "t:general.categories.basic",
+      "settings": {
+        "aspect_ratio": "square",
+        "enable_aspect_ratio_mobile": true,
+        "aspect_ratio_mobile": "portrait_4_5",
+        "position": "bottom",
+        "alignment": "left",
+        "overlay_style": "gradient",
+        "overlay_opacity": 90,
+        "gradient_direction": "bottom",
+        "gradient_size": 70,
+        "padding_vertical": 80,
+        "padding_horizontal": 80,
+        "padding_vertical_mobile": 32,
+        "padding_horizontal_mobile": 24,        
+        "gap": 20,
+        "gap_mobile": 12
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Supply Chain",
+            "heading_size": "vt-heading-h2",
+            "heading_tag": "h3",
+            "heading_alignment": "text-inherit",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Ethical Manufacturing: Seen from within our atelier.</p>",
+            "paragraph_size": "vt-paragraph-large",
+            "paragraph_alignment": "text-inherit",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "button",
+          "settings": {
+            "button_label": "View our production",
+            "button_style": "link-light",
+            "animation_type": "none"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

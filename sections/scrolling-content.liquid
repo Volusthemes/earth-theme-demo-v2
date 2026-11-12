@@ -1,0 +1,312 @@
+{%- comment -%}
+  Section: Scrolling content
+  - One static Scrolling content block (blocks/scrolling-content.liquid) holds the
+    motion, separator and item settings, so the same marquee also works inside
+    other sections (for example a Stack beside an Image)
+  - The section adds colors, padding and an optional top/bottom border
+  - Full width by default (no side padding); "Apply max width" keeps it in the page
+{%- endcomment -%}
+
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  assign border_width = section.settings.border_width | append: 'px'
+  assign border_top = '0'
+  assign border_bottom = '0'
+  if section.settings.border == 'top' or section.settings.border == 'both'
+    assign border_top = border_width
+  endif
+  if section.settings.border == 'bottom' or section.settings.border == 'both'
+    assign border_bottom = border_width
+  endif
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  class="vt-section vt-scrolling-content"
+  style="
+    --vt-scrolling-border-top: {{ border_top }};
+    --vt-scrolling-border-bottom: {{ border_bottom }};
+    --vt-scrolling-border-color: {{ section.settings.border_color | default: 'var(--vt-foreground-color)' }};
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">
+    {% content_for 'block', type: 'scrolling-content', id: 'scrolling-content' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-scrolling-content {
+    border-block-start: var(--vt-scrolling-border-top, 0) solid var(--vt-scrolling-border-color);
+    border-block-end: var(--vt-scrolling-border-bottom, 0) solid var(--vt-scrolling-border-color);
+    overflow: hidden;
+  }
+
+  /* Heading blocks in the row follow the section text color */
+  .vt-scrolling-content .vt-heading {
+    color: var(--vt-section-color, var(--vt-foreground-color));
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Scrolling content",
+  "tag": "section",
+  "class": "scrolling-content-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Text",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Border"
+    },
+    {
+      "type": "select",
+      "id": "border",
+      "label": "Border",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "both",
+          "label": "Top and bottom"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border thickness",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ section.settings.border != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "Apply max width"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling content",
+      "blocks": [
+        {
+          "type": "scrolling-content",
+          "id": "scrolling-content",
+          "static": true,
+          "blocks": [
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Sustainable fabrics",
+                "heading_size": "vt-heading-h4",
+                "heading_tag": "p",
+                "uppercase": true,
+                "heading_alignment": "text-inherit",
+                "heading_width": "fit",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Feel good clothes",
+                "heading_size": "vt-heading-h4",
+                "heading_tag": "p",
+                "uppercase": true,
+                "heading_alignment": "text-inherit",
+                "heading_width": "fit",
+                "animation_type": "none"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

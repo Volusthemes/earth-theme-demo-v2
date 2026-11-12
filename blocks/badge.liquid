@@ -19,13 +19,21 @@
 
   {%- assign vt_style = '' -%}
 
-  {%- if block.settings.bg_color != blank -%}
-    {%- assign vt_style = vt_style | append: ' --vt-badge-bg: ' | append: block.settings.bg_color | append: ';' -%}
-  {%- endif -%}
-
-  {%- if block.settings.text_color != blank -%}
-    {%- assign vt_style = vt_style | append: ' --vt-badge-color: ' | append: block.settings.text_color | append: ';' -%}
-  {%- endif -%}
+  {%- comment -%} Empty color settings follow the chosen palette style {%- endcomment -%}
+  {%- case block.settings.color_style -%}
+    {%- when 'dark' -%}
+      {%- assign badge_bg = 'var(--vt-foreground-color)' -%}
+      {%- assign badge_color = 'var(--vt-color-accent)' -%}
+    {%- when 'light' -%}
+      {%- assign badge_bg = 'var(--vt-background-color)' -%}
+      {%- assign badge_color = 'var(--vt-foreground-color)' -%}
+    {%- else -%}
+      {%- assign badge_bg = 'var(--vt-color-accent)' -%}
+      {%- assign badge_color = 'var(--vt-foreground-color)' -%}
+  {%- endcase -%}
+  {%- assign badge_bg = block.settings.bg_color | default: badge_bg -%}
+  {%- assign badge_color = block.settings.text_color | default: badge_color -%}
+  {%- assign vt_style = vt_style | append: ' --vt-badge-bg: ' | append: badge_bg | append: '; --vt-badge-color: ' | append: badge_color | append: ';' -%}
 
   {%- if block.settings.radius != blank -%}
     {%- assign vt_style = vt_style | append: ' --vt-badge-radius: ' | append: block.settings.radius | append: ';' -%}
@@ -44,9 +52,8 @@
       {%- assign vt_style = vt_style | append: ' --vt-badge-border-width: ' | append: block.settings.border_size | append: 'px;' -%}
     {%- endif -%}
 
-    {%- if block.settings.border_color != blank -%}
-      {%- assign vt_style = vt_style | append: ' --vt-badge-border-color: ' | append: block.settings.border_color | append: ';' -%}
-    {%- endif -%}
+    {%- assign badge_border = block.settings.border_color | default: badge_color -%}
+    {%- assign vt_style = vt_style | append: ' --vt-badge-border-color: ' | append: badge_border | append: ';' -%}
   {%- endif -%}
 
   {%- comment -%}
@@ -56,7 +63,7 @@
   {%- assign vt_animation_type = block.settings.animation_type -%}
   {%- assign vt_anim_classes = '' -%}
 
-  {%- unless vt_animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless vt_animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type -%}
 
     {%- if vt_animation_type == 'slide' or vt_animation_type == 'reveal' -%}
@@ -71,7 +78,7 @@
     Build animation CSS custom properties
   {%- endcomment -%}
 
-  {%- unless vt_animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless vt_animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
 
     {%- assign vt_style = vt_style | append: ' --vt-duration: ' | append: block.settings.animation_duration | append: 's;' -%}
 
@@ -249,22 +256,40 @@
       "content": "Color"
     },
     {
+      "type": "select",
+      "id": "color_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        }
+      ],
+      "default": "accent",
+      "info": "Empty colors below follow this style."
+    },
+    {
       "type": "color",
       "id": "bg_color",
-      "label": "Background",
-      "default": "{{ settings.color_palette.accent }}"
+      "label": "Background"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Text",
-      "default": "{{ settings.color_palette.foreground }}"
+      "label": "Text"
     },
     {
       "type": "color",
       "id": "border_color",
       "label": "Outline",
-      "default": "{{ settings.color_palette.foreground }}",
       "visible_if": "{{ block.settings.show_border }}"
     },
     {
@@ -274,6 +299,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },

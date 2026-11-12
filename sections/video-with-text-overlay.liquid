@@ -52,7 +52,7 @@
   # The first section on the page is usually the largest paint: don't lazy load it
   assign poster_loading = 'lazy'
   assign poster_priority = 'auto'
-  if section.index == 1
+  if section.index == 1 and section.location == 'template'
     assign poster_loading = 'eager'
     assign poster_priority = 'high'
   endif
@@ -85,7 +85,7 @@
     --vt-video-overlay-focal-y-mobile: {{ section.settings.focal_y_mobile }}%;
     --vt-video-overlay-position: {{ section.settings.content_position }};
     --vt-video-overlay-text-align: {{ section.settings.text_alignment }};
-    --vt-video-overlay-color: {{ section.settings.overlay_color | default: 'var(--vt-color-primary)' }};
+    --vt-video-overlay-color: {{ section.settings.overlay_color | default: 'var(--vt-foreground-color)' }};
     --vt-video-overlay-opacity: {{ overlay_opacity }};
     --vt-section-color: {{ section.settings.heading_color | default: 'var(--vt-background-color)' }};
     --vt-section-paragraph-color: {{ section.settings.paragraph_color | default: 'var(--vt-background-color)' }};
@@ -547,8 +547,7 @@
       "type": "color",
       "id": "overlay_color",
       "label": "Overlay color",
-      "default": "#000000",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "range",
@@ -636,13 +635,13 @@
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -769,7 +768,6 @@
         "focal_y_desktop": 50,
         "focal_x_mobile": 50,
         "focal_y_mobile": 50,
-        "overlay_color": "#000000",
         "overlay_opacity": 55,
         "content_position": "center",
         "desktop_content_alignment": "justify-center",

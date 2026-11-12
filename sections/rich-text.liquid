@@ -18,17 +18,20 @@
   endif
 -%}
 
-{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
-{% render 'section-styles', section: section %}
+{%- comment -%} Without blocks the storefront shows nothing, so no empty space. The theme editor keeps it visible to add blocks. {%- endcomment -%}
+{%- if section.blocks.size > 0 or request.design_mode -%}
+  {%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+  {% render 'section-styles', section: section %}
 
-<div
-  class="{{ section_classes }}"
-  {{ section.shopify_attributes }}
->
-  <div class="{{ inner_classes }}">
-    {% content_for 'blocks' %}
+  <div
+    class="{{ section_classes }}"
+    {{ section.shopify_attributes }}
+  >
+    <div class="{{ inner_classes }}">
+      {% content_for 'blocks' %}
+    </div>
   </div>
-</div>
+{%- endif -%}
 
 {% schema %}
 {
@@ -36,6 +39,10 @@
   "tag": "section",
   "class": "rich-text-section",
   "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
     {
       "type": "select",
       "id": "desktop_content_alignment",
@@ -88,6 +95,23 @@
     },
     {
       "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
       "id": "background_style",
       "label": "Background",
       "options": [
@@ -100,27 +124,27 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "t:sections.rich_text.settings.text_color.label",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -252,15 +276,15 @@
         {
           "type": "heading",
           "settings": {
-            "heading": "Heading",
-            "heading_size": "vt-hero-heading",
+            "heading": "Talk about your brand",
+            "heading_size": "vt-heading-h3",
             "heading_alignment": "text-inherit",
-            "heading_tag": "h1",
+            "heading_tag": "h2",
             "heading_width": "fit",
             "width_custom": 100,
             "enable_max_width": true,
             "heading_max_width": 1100,
-            "animation_type": "slide",
+            "animation_type": "none",
             "animation_direction": "from-bottom",
             "animation_duration": 1,
             "animation_delay": 0.2,
@@ -289,7 +313,7 @@
         {
           "type": "button",
           "settings": {
-            "button_label": "Button label",
+            "button_label": "Shop now",
             "button_link": "shopify://collections/all",
             "open_in_new_tab": false,
             "button_style": "primary",

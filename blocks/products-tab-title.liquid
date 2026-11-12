@@ -35,7 +35,7 @@
   assign animation_type = block.settings.animation_type | default: 'none'
   assign vt_anim_classes = ''
   assign vt_anim_style = ''
-  unless animation_type == 'none' or request.visual_preview_mode
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign vt_anim_classes = ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide' or animation_type == 'reveal'
       assign vt_anim_classes = vt_anim_classes | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -285,13 +285,13 @@
       "type": "color",
       "id": "text_color",
       "label": "Text color",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "active_color",
       "label": "Active text color",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -300,6 +300,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options":
       [
           {

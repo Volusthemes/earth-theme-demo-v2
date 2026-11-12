@@ -891,6 +891,44 @@ body {
 }
 
 /* ============================================================
+  ALIGN WITH PAGE (Slide style, desktop)
+  Carousels with data-slide-style="page" run to both screen edges, while the first
+  and last slides line up with the page content (a left-aligned heading above, for
+  example). theme-slider.js measures the exact edges; these values hold until it runs.
+  Each section sets --vt-carousel-slide-width: a slide's share of the page width (%).
+  ============================================================ */
+
+@media screen and (min-width: 990px) {
+  .swiper[data-slide-style='page'] {
+    --vt-carousel-bleed-start: var(--vt-section-padding-inline-start, 0px);
+    --vt-carousel-bleed-end: var(--vt-section-padding-inline-end, 0px);
+    width: auto;
+    margin-inline: calc(var(--vt-carousel-bleed-start) * -1) calc(var(--vt-carousel-bleed-end) * -1);
+  }
+
+  .vt-page-width > .swiper[data-slide-style='page'] {
+    --vt-carousel-bleed-start: max(var(--vt-page-padding, 0px), (100vw - var(--vt-page-width)) / 2);
+    --vt-carousel-bleed-end: max(var(--vt-page-padding, 0px), (100vw - var(--vt-page-width)) / 2);
+  }
+
+  /* Slides: a share of the page width, so they keep their size however wide the screen is */
+  .swiper[data-slide-style='page'][data-swiper] > .swiper-wrapper > * {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    max-width: none;
+    width: calc(
+      (100% - var(--vt-carousel-bleed-start) - var(--vt-carousel-bleed-end)) * var(--vt-carousel-slide-width, 100) / 100
+    );
+  }
+
+  /* Before Swiper starts: the first slide already sits on the page content edge */
+  .swiper[data-slide-style='page']:not(.swiper-initialized) > .swiper-wrapper {
+    box-sizing: content-box;
+    padding-inline-start: var(--vt-carousel-bleed-start);
+  }
+}
+
+/* ============================================================
   RICH TEXT
   ============================================================ */
 

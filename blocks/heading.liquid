@@ -10,7 +10,7 @@
   {%- assign animation_type = block.settings.animation_type -%}
 
   {%- assign vt_anim_classes = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_anim_classes = 'vt-animate vt-animate--' | append: animation_type -%}
     {%- if animation_type == 'slide' or animation_type == 'reveal' -%}
       {%- assign vt_anim_classes = vt_anim_classes
@@ -20,16 +20,16 @@
     {%- endif -%}
   {%- endunless -%}
 
-  {%- capture heading_class -%}
-    vt-heading
-    {{ block.settings.heading_size }}
-    {% if block.settings.uppercase %}uppercase!{% endif %}
-    {{ vt_anim_classes }}
-  {%- endcapture -%}
-  {%- assign heading_class = heading_class | strip -%}
+  {%- assign heading_class = 'vt-heading ' | append: block.settings.heading_size -%}
+  {%- if block.settings.uppercase -%}
+    {%- assign heading_class = heading_class | append: ' uppercase!' -%}
+  {%- endif -%}
+  {%- if vt_anim_classes != blank -%}
+    {%- assign heading_class = heading_class | append: ' ' | append: vt_anim_classes -%}
+  {%- endif -%}
 
   {%- assign vt_style = '' -%}
-  {%- unless animation_type == 'none' or request.visual_preview_mode -%}
+  {%- unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template' -%}
     {%- assign vt_style = vt_style
       | append: '--vt-duration: '
       | append: block.settings.animation_duration
@@ -81,69 +81,16 @@
       {%- if block.settings.heading_width == 'custom' %}--vt-heading-width: {{ block.settings.width_custom }}%;{% endif -%}
       {%- if block.settings.enable_max_width %}--vt-heading-max-width: {% render 'fluid-clamp', min_px: block.settings.heading_max_width, max_px: block.settings.heading_max_width %};{% endif -%}
     "
+    {{ block.shopify_attributes }}
   >
-    {%- case heading_tag -%}
-      {%- when 'h1' -%}
-        <h1
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h1>
-      {%- when 'h2' -%}
-        <h2
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h2>
-      {%- when 'h3' -%}
-        <h3
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h3>
-      {%- when 'h4' -%}
-        <h4
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h4>
-      {%- when 'h5' -%}        
-        <h5
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h5>
-      {%- when 'h6' -%}
-        <h6
-          class="{{ heading_class }}"
-          {% if vt_style != '' %}
-            style="{{ vt_style | strip }}"
-          {% endif %}
-          {{ block.shopify_attributes }}
-        >
-          {{ block.settings.heading }}
-        </h6>
-    {%- endcase -%}
+    <{{ heading_tag }}
+      class="{{ heading_class }}"
+      {% if vt_style != '' %}
+        style="{{ vt_style | strip }}"
+      {% endif %}
+    >
+      {{ block.settings.heading }}
+    </{{ heading_tag }}>
   </div>
 {%- endif -%}
 
@@ -209,7 +156,8 @@
         { "value": "h3", "label": "H3" },
         { "value": "h4", "label": "H4" },
         { "value": "h5", "label": "H5" },
-        { "value": "h6", "label": "H6" }
+        { "value": "h6", "label": "H6" },
+        { "value": "p", "label": "Paragraph (not a heading)" }
       ],
       "default": "h2",
       "label": "t:blocks.heading.settings.heading_tag.label",
@@ -263,6 +211,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
         { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },

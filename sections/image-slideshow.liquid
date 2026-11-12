@@ -1,8 +1,9 @@
 {%- comment -%}
   Section: Image slideshow
   - Image blocks in a Swiper carousel (assets/theme-slider.js), one image per slide
-  - Slide position: Offset (current slides start a % from the left) or Center
-    (current slide in the middle, both sides show equally)
+  - Slide style: Offset (current slides start a % from the left), Center (current
+    slide in the middle, both sides show equally) or Align with page (runs to the
+    screen edges, first and last slides on the page content; assets/theme.css)
   - One image ratio for every slide, so the row stays even
 {%- endcomment -%}
 
@@ -77,8 +78,10 @@
   <div class="{{ inner_classes }}">
     <div
       class="swiper vt-image-slideshow__swiper"
+      style="--vt-carousel-slide-width: {{ slide_width }};"
       data-swiper
       data-swiper-auto
+      data-swiper-block-select
       data-slide-children="true"
       data-loop-fill="true"
       data-slides-desktop="{{ slides_desktop }}"
@@ -189,47 +192,20 @@
       padding-inline-start: calc(var(--vt-image-slideshow-offset, 0) * 1%);
     }
 
-    /* Arrows in the middle of the part-shown slides on either side */
-    .vt-image-slideshow .vt-swiper-btn--prev {
+    /* Arrows in the middle of the part-shown slides on either side
+       (Align with page keeps the shared arrow position, on the page content) */
+    .vt-image-slideshow:not(.vt-image-slideshow--page) .vt-swiper-btn--prev {
       left: calc(var(--vt-image-slideshow-peek, 0%) / 2);
       transform: translate(-50%, -50%);
     }
 
-    .vt-image-slideshow .vt-swiper-btn--next {
+    .vt-image-slideshow:not(.vt-image-slideshow--page) .vt-swiper-btn--next {
       right: calc(var(--vt-image-slideshow-peek, 0%) / 2);
       transform: translate(50%, -50%);
     }
   }
 {% endstylesheet %}
 
-{% javascript %}
-  (function () {
-    if (window.vtImageSlideshowInit) return;
-    window.vtImageSlideshowInit = true;
-
-    // Theme editor: show an image when its block is selected, and hold it there
-    document.addEventListener('shopify:block:select', (event) => {
-      const slide = event.target.closest?.('.vt-image-slideshow .swiper-slide');
-      const swiper = slide?.closest('[data-swiper]')?._swiperInstance;
-      if (!swiper) return;
-      const index = Number(slide.dataset.swiperSlideIndex ?? swiper.slides.indexOf(slide));
-      if (Number.isNaN(index) || index < 0) return;
-      swiper.autoplay?.stop();
-      if (swiper.params.loop) swiper.slideToLoop(index);
-      else swiper.slideTo(index);
-    });
-
-    document.addEventListener('shopify:block:deselect', (event) => {
-      const swiper = event.target.closest?.('.vt-image-slideshow')?.querySelector('[data-swiper]')?._swiperInstance;
-      if (swiper?.params.autoplay?.enabled) swiper.autoplay.start();
-    });
-
-    document.addEventListener('shopify:section:unload', (event) => {
-      const swiperEl = event.target.querySelector?.('.vt-image-slideshow [data-swiper]');
-      if (swiperEl) window.vtSlider?.destroy(swiperEl);
-    });
-  })();
-{% endjavascript %}
 
 {% schema %}
 {
@@ -244,7 +220,7 @@
     {
       "type": "select",
       "id": "slide_position",
-      "label": "Slide position",
+      "label": "Slide style",
       "options": [
         {
           "value": "offset",
@@ -253,10 +229,14 @@
         {
           "value": "center",
           "label": "Center"
+        },
+        {
+          "value": "page",
+          "label": "Align with page"
         }
       ],
       "default": "offset",
-      "info": "Offset: slides start a set distance from the left. Center: the current image sits in the middle, both sides show equally."
+      "info": "Offset: slides start a set distance from the left. Center: the current image sits in the middle. Align with page: the row runs to the screen edges, with the first image in line with the page content."
     },
     {
       "type": "range",
@@ -279,7 +259,7 @@
       "unit": "%",
       "default": 38,
       "label": "Slide width (desktop)",
-      "info": "Below 100%, part of the next slides shows."
+      "info": "Below 100%, part of the next slides shows. With Align with page, a share of the page width."
     },
     {
       "type": "range",
@@ -338,17 +318,17 @@
       "step": 2,
       "unit": "px",
       "default": 0,
-      "label": "Space between slides (desktop)"
+      "label": "Slide gap (desktop)"
     },
     {
-      "type": "range",
+      "type": "range",      
       "id": "slide_gap_mobile",
       "min": 0,
       "max": 40,
       "step": 1,
       "unit": "px",
       "default": 0,
-      "label": "Space between slides (mobile)"
+      "label": "Slide gap (mobile)"
     },
     {
       "type": "checkbox",
@@ -376,7 +356,7 @@
     },
     {
       "type": "checkbox",
-      "id": "arrows_on_hover",      
+      "id": "arrows_on_hover",
       "default": true,
       "label": "Show arrows on hover only",
       "visible_if": "{{ section.settings.show_arrows }}"
@@ -429,14 +409,14 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
@@ -576,11 +556,41 @@
         "make_section_page_width": false
       },
       "blocks": [
-        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
-        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
-        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
-        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } },
-        { "type": "image", "settings": { "image_aspect_ratio": "square", "animation_type": "none" } }
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "square",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "square",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "square",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "square",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "square",
+            "animation_type": "none"
+          }
+        }
       ]
     }
   ]

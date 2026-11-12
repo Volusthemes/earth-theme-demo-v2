@@ -3,10 +3,18 @@
   - Static intro stack (heading, paragraph...)
   - Slide blocks (_slideshow-slide)
   - Tabs under the carousel, one per slide, built from each slide's "Tab label"
+  - Slide style: Standard, Offset (a % from the edges) or Align with page (runs to the
+    screen edges, first and last slides on the page content; assets/theme.css)
 {%- endcomment -%}
 
 {%- liquid
   assign make_section_page_width = section.settings.make_section_page_width
+
+  # Tabs: muted text on the page background, accent on a Primary (dark) section
+  assign tab_color_default = 'color-mix(in srgb, var(--vt-foreground-color) 70%, transparent)'
+  if section.settings.color_style == 'primary'
+    assign tab_color_default = 'var(--vt-color-accent)'
+  endif
 
   # Outer class list
   assign section_classes = 'vt-section vt-slideshow'
@@ -42,7 +50,7 @@
   
   assign animation_type = section.settings.animation_type | default: 'none'
   assign animate_classes = ''
-  if animation_type != 'none' and request.visual_preview_mode != true
+  if animation_type != 'none' and request.visual_preview_mode != true and section.index != 1 or section.location != 'template'
     assign animate_classes = ' vt-animate vt-animate--' | append: animation_type
     if animation_type == 'slide'
       assign animate_classes = animate_classes | append: ' vt-animate--dir-' | append: section.settings.animation_direction
@@ -88,7 +96,7 @@
     --vt-slideshow-slides-tablet: {{ slides_tablet }};
     --vt-slideshow-slides-mobile: {{ slides_mobile }};
     --vt-slideshow-offset: {{ section.settings.slide_offset | default: 0 }};
-    --vt-slideshow-tab-color: {{ section.settings.tab_color | default: 'color-mix(in srgb, var(--vt-foreground-color) 70%, transparent)' }};
+    --vt-slideshow-tab-color: {{ section.settings.tab_color | default: tab_color_default }};
     --vt-slideshow-tab-active-color: {{ section.settings.tab_active_color | default: 'var(--vt-section-color, var(--vt-foreground-color))' }};
   "
   {{ section.shopify_attributes }}
@@ -98,9 +106,7 @@
 
     <div
       class="swiper vt-slideshow__swiper{% if section.settings.slide_style == 'offset' %} vt-slideshow__swiper--offset{% endif %}{{ animate_classes }}"
-      {% if animate_classes != blank %}
-        style="{{ animate_style }} --vt-delay: {{ animate_delay }}s;"
-      {% endif %}
+      style="--vt-carousel-slide-width: {{ section.settings.slide_width_desktop }};{% if animate_classes != blank %} {{ animate_style }} --vt-delay: {{ animate_delay }}s;{% endif %}"
       data-swiper
       data-slideshow-swiper
       data-slides-desktop="{{ slides_desktop }}"
@@ -624,7 +630,7 @@
 
 {% schema %}
 {
-  "name": "Slideshow",  
+  "name": "Slideshow",
   "tag": "section",
   "class": "slideshow-section",
   "settings": [
@@ -665,7 +671,7 @@
       "unit": "%",
       "default": 55,
       "label": "Slide width (desktop)",
-      "info": "60% or more keeps the image beside the text."
+      "info": "60% or more keeps the image beside the text. With Align with page, a share of the page width."
     },
     {
       "type": "range",
@@ -692,11 +698,21 @@
       "id": "slide_style",
       "label": "Slide style",
       "options": [
-        { "value": "standard", "label": "Standard" },
-        { "value": "offset", "label": "Offset" }
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "offset",
+          "label": "Offset"
+        },
+        {
+          "value": "page",
+          "label": "Align with page"
+        }
       ],
       "default": "offset",
-      "info": "Offset keeps the current slide a set distance from the left edge, with part of the previous slide showing"
+      "info": "Offset: the current slide sits a set distance from the edge. Align with page: the row runs to the screen edges, with the first slide in line with a left-aligned intro."
     },
     {
       "type": "range",
@@ -717,18 +733,18 @@
       "max": 80,
       "step": 2,
       "unit": "px",
-      "default": 30,
-      "label": "Space between slides (desktop)"
+      "default": 32,
+      "label": "Slide gap (desktop)"
     },
-    {    
+    {
       "type": "range",
       "id": "slide_gap_mobile",
       "min": 0,
       "max": 80,
       "step": 1,
       "unit": "px",
-      "default": 15,
-      "label": "Space between slides (mobile)"
+      "default": 16,
+      "label": "Slide gap (mobile)"
     },
     {
       "type": "checkbox",
@@ -813,7 +829,7 @@
       "type": "color",
       "id": "tab_color",
       "label": "Tab color",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
@@ -829,11 +845,24 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
-        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
       ],
       "default": "slide",
       "label": "t:blocks.heading.settings.animation_type.label"
@@ -842,10 +871,22 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.heading.settings.animation_direction.label",
@@ -878,13 +919,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.heading.settings.animation_easing.label",
@@ -903,7 +965,24 @@
     },
     {
       "type": "header",
-      "content": "Color"      
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
     },
     {
       "type": "select",
@@ -925,27 +1004,27 @@
       "type": "color",
       "id": "background_color",
       "label": "Background color",
-      "info": "Leave blank to inherit from color palette",
+      "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
     },
     {
       "type": "color_background",
       "id": "background_gradient",
       "label": "Background gradient",
-      "info": "Leave blank to use colors from the color palette",
+      "info": "Leave empty to use colors from the color palette.",
       "visible_if": "{{ section.settings.background_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
       "id": "paragraph_color",
       "label": "Paragraph",
-      "info": "Leave blank to inherit from color palette"
+      "info": "Leave empty to use the color palette."
     },
     {
       "type": "header",
@@ -1060,9 +1139,6 @@
         "gap": 64,
         "gap_mobile": 40,
         "background_style": "solid",
-        "background_color": "#224E09",
-        "heading_color": "#F8F9DC",
-        "paragraph_color": "#F8F9DC",
         "padding_top_desktop": 110,
         "padding_bottom_desktop": 110,
         "padding_left_desktop": 0,
@@ -1078,8 +1154,8 @@
         "slide_width_mobile": 90,
         "slide_style": "offset",
         "slide_offset": 15,
-        "slide_gap_desktop": 30,
-        "slide_gap_mobile": 15,
+        "slide_gap_desktop": 32,
+        "slide_gap_mobile": 16,
         "show_arrows": true,
         "arrows_style": "secondary",
         "arrows_on_hover": true,
@@ -1087,14 +1163,13 @@
         "autoplay": false,
         "autoplay_delay": 3,
         "tab_font_size": "vt-heading-h6",
-        "tab_color": "#EAE060",
-        "tab_active_color": "#F8F9DC",
         "animation_type": "slide",
         "animation_direction": "from-bottom",
         "animation_duration": 1,
         "animation_delay": 0.6,
         "animation_easing": "ease-out-sine",
-        "animation_blur_intensity": 5
+        "animation_blur_intensity": 5,
+        "color_style": "primary"
       },
       "blocks": [
         {
@@ -1131,9 +1206,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#EAE060",
                     "icon_size_desktop": 36,
-                    "icon_size_mobile": 28
+                    "icon_size_mobile": 28,
+                    "color_style": "accent"
                   }
                 },
                 {
@@ -1155,9 +1230,9 @@
                   "type": "icons",
                   "settings": {
                     "icon": "leaf",
-                    "icon_color": "#EAE060",
                     "icon_size_desktop": 36,
-                    "icon_size_mobile": 28
+                    "icon_size_mobile": 28,
+                    "color_style": "accent"
                   }
                 }
               ]
@@ -1217,9 +1292,6 @@
                 {
                   "type": "card",
                   "settings": {
-                    "background_color": "#F8F9DC",
-                    "heading_color": "#003225",
-                    "text_color": "#224E09",
                     "position": "middle",
                     "alignment": "left",
                     "enable_decorative_icon": false,
@@ -1235,7 +1307,8 @@
                     "gap_mobile": 14,
                     "border": "none",
                     "border_radius": 0,
-                    "animation_type": "none"
+                    "animation_type": "none",
+                    "color_style": "light"
                   },
                   "blocks": [
                     {
@@ -1244,7 +1317,7 @@
                         "heading": "Add a slide heading",
                         "heading_size": "vt-heading-h3",
                         "heading_alignment": "text-inherit",
-                        "heading_tag": "h3",                        
+                        "heading_tag": "h3",
                         "animation_type": "none"
                       }
                     },
@@ -1255,9 +1328,8 @@
                         "badge_size": "vt-paragraph-extra-small",
                         "radius": "3.125rem",
                         "width": "fit",
-                        "bg_color": "#003225",
-                        "text_color": "#EAE060",
-                        "animation_type": "none"
+                        "animation_type": "none",
+                        "color_style": "dark"
                       }
                     },
                     {
@@ -1281,11 +1353,11 @@
                           "type": "icons",
                           "settings": {
                             "icon": "organic-cotton",
-                            "icon_color": "#224E09",
                             "icon_size_desktop": 20,
                             "icon_size_mobile": 18,
                             "show_box": false,
-                            "animation_type": "none"
+                            "animation_type": "none",
+                            "color_style": "primary"
                           }
                         },
                         {
@@ -1359,9 +1431,6 @@
                 {
                   "type": "card",
                   "settings": {
-                    "background_color": "#F8F9DC",
-                    "heading_color": "#003225",
-                    "text_color": "#224E09",
                     "position": "middle",
                     "alignment": "left",
                     "enable_decorative_icon": false,
@@ -1377,7 +1446,8 @@
                     "gap_mobile": 14,
                     "border": "none",
                     "border_radius": 0,
-                    "animation_type": "none"
+                    "animation_type": "none",
+                    "color_style": "light"
                   },
                   "blocks": [
                     {
@@ -1397,9 +1467,8 @@
                         "badge_size": "vt-paragraph-extra-small",
                         "radius": "3.125rem",
                         "width": "fit",
-                        "bg_color": "#003225",
-                        "text_color": "#EAE060",
-                        "animation_type": "none"
+                        "animation_type": "none",
+                        "color_style": "dark"
                       }
                     },
                     {
@@ -1423,11 +1492,11 @@
                           "type": "icons",
                           "settings": {
                             "icon": "recycled-materials",
-                            "icon_color": "#224E09",
                             "icon_size_desktop": 20,
                             "icon_size_mobile": 18,
                             "show_box": false,
-                            "animation_type": "none"
+                            "animation_type": "none",
+                            "color_style": "primary"
                           }
                         },
                         {
@@ -1501,9 +1570,6 @@
                 {
                   "type": "card",
                   "settings": {
-                    "background_color": "#F8F9DC",
-                    "heading_color": "#003225",
-                    "text_color": "#224E09",
                     "position": "middle",
                     "alignment": "left",
                     "enable_decorative_icon": false,
@@ -1519,7 +1585,8 @@
                     "gap_mobile": 14,
                     "border": "none",
                     "border_radius": 0,
-                    "animation_type": "none"
+                    "animation_type": "none",
+                    "color_style": "light"
                   },
                   "blocks": [
                     {
@@ -1539,9 +1606,8 @@
                         "badge_size": "vt-paragraph-extra-small",
                         "radius": "3.125rem",
                         "width": "fit",
-                        "bg_color": "#003225",
-                        "text_color": "#EAE060",
-                        "animation_type": "none"
+                        "animation_type": "none",
+                        "color_style": "dark"
                       }
                     },
                     {
@@ -1565,11 +1631,11 @@
                           "type": "icons",
                           "settings": {
                             "icon": "handshake",
-                            "icon_color": "#224E09",
                             "icon_size_desktop": 20,
                             "icon_size_mobile": 18,
                             "show_box": false,
-                            "animation_type": "none"
+                            "animation_type": "none",
+                            "color_style": "primary"
                           }
                         },
                         {

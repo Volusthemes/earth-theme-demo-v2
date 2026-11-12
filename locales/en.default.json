@@ -51,7 +51,9 @@
     "social_link": "{{ network }} (opens in a new window)",
     "new_window": "(opens in a new window)",
     "payment_methods": "Payment methods",
-    "policies": "Policies"
+    "policies": "Policies",
+    "carousel_slides": "Slides",
+    "image_link": "Open link"
   },
   "404": {
     "title": "404",

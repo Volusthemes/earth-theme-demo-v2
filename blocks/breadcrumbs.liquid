@@ -101,7 +101,7 @@
   assign vt_animation_type = block.settings.animation_type
   assign vt_anim_classes = ''
 
-  unless vt_animation_type == 'none' or request.visual_preview_mode
+  unless vt_animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
     assign vt_anim_classes = 'vt-animate vt-animate--' | append: vt_animation_type
 
     if vt_animation_type == 'slide' or vt_animation_type == 'reveal'
@@ -465,6 +465,7 @@
     {
       "type": "select",
       "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
         {
           "value": "none",

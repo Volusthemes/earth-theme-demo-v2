@@ -2250,7 +2250,7 @@
 				"type": "text",
 				"id": "tags_hidden",
 				"label": "Tags to hide",
-				"info": "Comma-separated, e.g. internal, sale-2025. Tags used for the Best seller and New badges are hidden automatically.",
+				"info": "Comma-separated, e.g. internal, sale-2025. Tags used for the Best seller and New badges, and tags starting with badge: (collection card badges), are hidden automatically.",
 				"visible_if": "{{ settings.show_tags }}"
 			},
 			{

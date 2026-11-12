@@ -1,0 +1,1340 @@
+{%- comment -%}
+  Section: Carousel
+  - Static intro stack (heading, paragraph...)
+  - Card or Image card blocks as the slides of a Swiper carousel (assets/theme-slider.js),
+    like the Slideshow section but without tabs. Presets: Testimonials, Image carousel
+  - Card width is a share of the page width (slidesPerView 'auto'), so the cards keep
+    their size whichever Slide style is chosen; arrows from 990px, swipe below
+  - Slide style: Standard (inside the page), Offset (a % from the edges, like
+    Slideshow) or Align with page (runs to the screen edges, first and last cards on
+    the page content; shared CSS in assets/theme.css)
+{%- endcomment -%}
+
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  assign autoplay_delay = section.settings.autoplay_delay | default: 5 | times: 1000
+-%}
+
+{%- comment -%} Reusable section CSS variables (padding, gap, colors) {%- endcomment -%}
+{% render 'section-styles', section: section %}
+
+<div
+  class="vt-section vt-carousel"
+  style="
+    --vt-carousel-gap: {% render 'fluid-clamp', min_px: section.settings.slide_gap_mobile, max_px: section.settings.slide_gap_desktop %};
+    --vt-carousel-width-desktop: {{ section.settings.slide_width_desktop }};
+    --vt-carousel-width-tablet: {{ section.settings.slide_width_tablet }};
+    --vt-carousel-width-mobile: {{ section.settings.slide_width_mobile }};
+  "
+  {{ section.shopify_attributes }}
+>
+  <div class="{{ inner_classes }}">
+    {% content_for 'block', type: 'stack', id: 'carousel-intro' %}
+
+    <div
+      class="swiper vt-carousel__swiper"
+      style="--vt-carousel-slide-width: {{ section.settings.slide_width_desktop }};"
+      role="region"
+      aria-roledescription="{{ 'accessibility.column_layout.carousel_role_description' | t }}"
+      aria-label="{{ 'accessibility.carousel_slides' | t }}"
+      data-swiper
+      data-swiper-auto
+      data-swiper-block-select
+      data-slide-children="true"
+      data-slides-auto="true"
+      data-slide-style="{{ section.settings.slide_style }}"
+      data-slide-offset="{{ section.settings.slide_offset }}"
+      data-loop="{{ section.settings.loop }}"
+      data-loop-fill="true"
+      data-autoplay="{{ section.settings.autoplay }}"
+      data-autoplay-delay="{{ autoplay_delay }}"
+    >
+      <div class="swiper-wrapper">
+        {% content_for 'blocks' %}
+      </div>
+
+      {%- if section.settings.show_arrows and section.blocks.size > 1 -%}
+        {%- liquid
+          assign vt_arrow_class = 'vt-arrow vt-arrow--' | append: section.settings.arrows_style
+          if settings.arrows_hover_effect == 'standard'
+            assign vt_arrow_class = vt_arrow_class | append: ' vt-arrow--hover-standard'
+          endif
+          assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn'
+          if section.settings.arrows_on_hover
+            assign vt_arrow_class = vt_arrow_class | append: ' vt-swiper-btn--hover-only'
+          endif
+        -%}
+        <button
+          type="button"
+          class="{{ vt_arrow_class }} vt-swiper-btn--prev"
+          aria-label="{{ 'content.pagination.previous' | t }}"
+          data-swiper-prev
+        >
+          <span class="vt-arrow__icon vt-arrow__icon--previous" aria-hidden="true">{% render 'icons', icon: 'arrow-previous' %}</span>
+        </button>
+        <button
+          type="button"
+          class="{{ vt_arrow_class }} vt-swiper-btn--next"
+          aria-label="{{ 'content.pagination.next' | t }}"
+          data-swiper-next
+        >
+          <span class="vt-arrow__icon vt-arrow__icon--next" aria-hidden="true">{% render 'icons', icon: 'arrow-next' %}</span>
+        </button>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  /* Carousel: Swiper and arrows come from theme-slider.js and theme.css (SLIDER ARROWS,
+     ALIGN WITH PAGE). --vt-carousel-bleed-*: how far the carousel runs past the content
+     on each side. Card width = (carousel width - both bleeds) x Card width %, a share
+     of the page. */
+  .vt-carousel {
+    --vt-carousel-width: var(--vt-carousel-width-mobile, 80);
+    --vt-carousel-bleed-start: var(--vt-section-padding-inline-start, 0px);
+    --vt-carousel-bleed-end: var(--vt-section-padding-inline-end, 0px);
+  }
+
+  .vt-carousel .vt-page-width {
+    --vt-carousel-bleed-start: var(--vt-page-padding, 0px);
+    --vt-carousel-bleed-end: var(--vt-page-padding, 0px);
+  }
+
+  .vt-carousel__swiper {
+    position: relative;
+    overflow: hidden;
+    /* No layout effect on a block box; theme-slider.js reads it as the resolved px gap */
+    column-gap: var(--vt-carousel-gap);
+    width: auto;
+    margin-inline: calc(var(--vt-carousel-bleed-start) * -1) calc(var(--vt-carousel-bleed-end) * -1);
+  }
+
+  .vt-carousel__swiper .swiper-wrapper {
+    display: flex;
+  }
+
+  /* Card and Image card blocks are the slides: same height in a row, width from the section setting */
+  .vt-carousel__swiper .swiper-wrapper > :is(.vt-card, .vt-image-card) {
+    flex-shrink: 0;
+    box-sizing: border-box;
+    height: auto;
+    width: calc(
+      (100% - var(--vt-carousel-bleed-start) - var(--vt-carousel-bleed-end)) * var(--vt-carousel-width) / 100
+    );
+    max-width: none;
+  }
+
+  /* Before Swiper starts: the first card already sits on the page margin, so nothing jumps */
+  .vt-carousel__swiper:not(.swiper-initialized) .swiper-wrapper {
+    gap: var(--vt-carousel-gap);
+    box-sizing: content-box;
+    padding-inline-start: var(--vt-carousel-bleed-start);
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 989px) {
+    .vt-carousel {
+      --vt-carousel-width: var(--vt-carousel-width-tablet, 60);
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    /* Swipe only: no arrows on touch-sized screens */
+    .vt-carousel__swiper .vt-swiper-btn {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-carousel {
+      --vt-carousel-width: var(--vt-carousel-width-desktop, 41);
+    }
+
+    /* Standard and Offset stay inside the content; Align with page bleeds (theme.css) */
+    .vt-carousel__swiper:not([data-slide-style='page']) {
+      --vt-carousel-bleed-start: 0px;
+      --vt-carousel-bleed-end: 0px;
+      margin-inline: 0;
+    }
+
+    .vt-carousel__swiper:not(.swiper-initialized):not([data-slide-style='page']) .swiper-wrapper {
+      padding-inline-start: 0;
+    }
+
+    .vt-carousel .vt-swiper-btn {
+      --vt-swiper-btn-inset: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Carousel",
+  "tag": "section",
+  "class": "carousel-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gap"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Gap (desktop)",
+      "info": "Space between the intro and the cards."
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Gap (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "range",
+      "id": "slide_width_desktop",
+      "min": 25,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 33,
+      "label": "Card width (desktop)",
+      "info": "A share of the page width. Below 100%, part of the next cards shows."
+    },
+    {
+      "type": "range",
+      "id": "slide_width_tablet",
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 60,
+      "label": "Card width (tablet)"
+    },
+    {
+      "type": "range",
+      "id": "slide_width_mobile",
+      "min": 60,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 80,
+      "label": "Card width (mobile)"
+    },
+    {
+      "type": "select",
+      "id": "slide_style",
+      "label": "Slide style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "offset",
+          "label": "Offset"
+        },
+        {
+          "value": "page",
+          "label": "Align with page"
+        }
+      ],
+      "default": "page",
+      "info": "Offset: cards start a set distance from the edge. Align with page: the row runs to the screen edges, with the first card in line with the intro."
+    },
+    {
+      "type": "range",
+      "id": "slide_offset",
+      "label": "Offset from edge",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "unit": "%",
+      "default": 15,
+      "info": "Percentage of the carousel width, on desktop.",
+      "visible_if": "{{ section.settings.slide_style == 'offset' }}"
+    },
+    {
+      "type": "range",
+      "id": "slide_gap_desktop",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Card gap (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "slide_gap_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "label": "Card gap (mobile)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "default": true,
+      "label": "Show arrows",
+      "info": "Arrows show from 990px wide. Smaller screens swipe."
+    },
+    {
+      "type": "select",
+      "id": "arrows_style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        }
+      ],
+      "default": "secondary",
+      "label": "Arrows style",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "arrows_on_hover",
+      "default": false,
+      "label": "Show arrows on hover only",
+      "visible_if": "{{ section.settings.show_arrows }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "default": false,
+      "label": "Loop cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "default": false,
+      "label": "Autoplay"
+    },
+    {
+      "type": "range",
+      "id": "autoplay_delay",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 3,
+      "label": "Change slides every",
+      "visible_if": "{{ section.settings.autoplay }}"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": false,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card"
+    },
+    {
+      "type": "image-card"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "gap_desktop": 24,
+            "gap_mobile": 20,
+            "enable_padding": false
+          },
+          "blocks": [
+            {
+              "type": "heading-group",
+              "settings": {
+                "direction": "vertical",
+                "alignment": "left",
+                "vertical_alignment": "top",
+                "gap_desktop": 24,
+                "gap_mobile": 16,
+                "width": "fill",
+                "hide_icon_mobile": true
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_size_desktop": 48,
+                    "icon_size_mobile": 40,
+                    "show_box": false,
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Testimonials",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Share what customers, makers and partners say about your brand.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-left",
+                "paragraph_width": "fill",
+                "enable_max_width": true,
+                "paragraph_max_width": 760,
+                "animation_type": "none"
+              }
+            }
+          ],
+          "id": "carousel-intro",
+          "static": true
+        },
+        {
+          "type": "card",
+          "settings": {
+            "position": "top",
+            "alignment": "left",
+            "padding_vertical": 36,
+            "padding_horizontal": 36,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 20,
+            "padding_horizontal_mobile": 20,
+            "width": "fill",
+            "height": "fill",
+            "gap": 32,
+            "enable_gap_mobile": true,
+            "gap_mobile": 24,
+            "border": "none",
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "portrait",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Add a quote from a customer or partner.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-left",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 8,
+                "gap_mobile": 8,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Author name",
+                    "heading_size": "vt-heading-h5",
+                    "heading_tag": "h3",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "space-between",
+                    "position": "center",
+                    "position_type": "default",
+                    "wrap_content": "wrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 12,
+                    "gap_mobile": 12,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Role or location</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-left",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "Badge",
+                        "badge_size": "vt-paragraph-small",
+                        "radius": "3.125rem",
+                        "show_border": false,
+                        "width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "settings": {
+            "position": "top",
+            "alignment": "left",
+            "padding_vertical": 36,
+            "padding_horizontal": 36,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 20,
+            "padding_horizontal_mobile": 20,
+            "width": "fill",
+            "height": "fill",
+            "gap": 32,
+            "enable_gap_mobile": true,
+            "gap_mobile": 24,
+            "border": "none",
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "portrait",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Add a quote from a customer or partner.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-left",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 8,
+                "gap_mobile": 8,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Author name",
+                    "heading_size": "vt-heading-h5",
+                    "heading_tag": "h3",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "space-between",
+                    "position": "center",
+                    "position_type": "default",
+                    "wrap_content": "wrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 12,
+                    "gap_mobile": 12,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Role or location</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-left",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "Badge",
+                        "badge_size": "vt-paragraph-small",
+                        "radius": "3.125rem",
+                        "show_border": false,
+                        "width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "card",
+          "settings": {
+            "position": "top",
+            "alignment": "left",
+            "padding_vertical": 36,
+            "padding_horizontal": 36,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 20,
+            "padding_horizontal_mobile": 20,
+            "width": "fill",
+            "height": "fill",
+            "gap": 32,
+            "enable_gap_mobile": true,
+            "gap_mobile": 24,
+            "border": "none",
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "portrait",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Add a quote from a customer or partner.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-left",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 8,
+                "gap_mobile": 8,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Author name",
+                    "heading_size": "vt-heading-h5",
+                    "heading_tag": "h3",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "space-between",
+                    "position": "center",
+                    "position_type": "default",
+                    "wrap_content": "wrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 12,
+                    "gap_mobile": 12,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Role or location</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-left",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "Badge",
+                        "badge_size": "vt-paragraph-small",
+                        "radius": "3.125rem",
+                        "show_border": false,
+                        "width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Image carousel",
+      "settings": {
+        "slide_width_desktop": 38,
+        "slide_width_tablet": 60,
+        "slide_width_mobile": 85,
+        "slide_style": "page",
+        "slide_gap_desktop": 32,
+        "slide_gap_mobile": 16
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "gap_desktop": 24,
+            "gap_mobile": 20,
+            "enable_padding": false
+          },
+          "blocks": [
+            {
+              "type": "heading-group",
+              "settings": {
+                "direction": "vertical",
+                "alignment": "left",
+                "vertical_alignment": "top",
+                "gap_desktop": 24,
+                "gap_mobile": 16,
+                "width": "fill",
+                "hide_icon_mobile": true
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_size_desktop": 48,
+                    "icon_size_mobile": 40,
+                    "show_box": false,
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "How we make our clothes",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Building responsible fashion takes time. We’re taking practical steps, tracking progress and improving continuously.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-left",
+                "paragraph_width": "fill",
+                "enable_max_width": true,
+                "paragraph_max_width": 760,
+                "animation_type": "none"
+              }
+            }
+          ],
+          "id": "carousel-intro",
+          "static": true
+        },
+        {
+          "type": "image-card",
+          "settings": {
+            "aspect_ratio": "portrait_4_5",
+            "position": "between",
+            "alignment": "left",
+            "overlay_style": "gradient",
+            "overlay_opacity": 90,
+            "gradient_direction": "bottom",
+            "gradient_size": 55,
+            "padding_vertical": 40,
+            "padding_horizontal": 40,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 24,
+            "padding_horizontal_mobile": 24,
+            "gap": 16,
+            "gap_mobile": 12,
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "badge",
+              "settings": {
+                "color_style": "light",
+                "text": "Better materials",
+                "badge_size": "vt-paragraph-medium",
+                "radius": "3.125rem",
+                "width": "fit",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 24,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 8,
+                    "gap_mobile": 4,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>01</p>",
+                        "paragraph_size": "vt-paragraph-large",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Start with fibers",
+                        "heading_size": "vt-heading-h3",
+                        "heading_tag": "h3",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Begin with responsibly sourced natural fibres.</p>",
+                    "paragraph_size": "vt-paragraph-large",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "image-card",
+          "settings": {
+            "aspect_ratio": "portrait_4_5",
+            "position": "between",
+            "alignment": "left",
+            "overlay_style": "gradient",
+            "overlay_opacity": 90,
+            "gradient_direction": "bottom",
+            "gradient_size": 55,
+            "padding_vertical": 40,
+            "padding_horizontal": 40,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 24,
+            "padding_horizontal_mobile": 24,
+            "gap": 16,
+            "gap_mobile": 12,
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "badge",
+              "settings": {
+                "color_style": "light",
+                "text": "Traceable material flow",
+                "badge_size": "vt-paragraph-medium",
+                "radius": "3.125rem",
+                "width": "fit",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 24,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 8,
+                    "gap_mobile": 4,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>02</p>",
+                        "paragraph_size": "vt-paragraph-large",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Turn fibers into fabric",
+                        "heading_size": "vt-heading-h3",
+                        "heading_tag": "h3",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Weave fibres into soft, durable fabric.</p>",
+                    "paragraph_size": "vt-paragraph-large",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "image-card",
+          "settings": {
+            "aspect_ratio": "portrait_4_5",
+            "position": "between",
+            "alignment": "left",
+            "overlay_style": "gradient",
+            "overlay_opacity": 90,
+            "gradient_direction": "bottom",
+            "gradient_size": 55,
+            "padding_vertical": 40,
+            "padding_horizontal": 40,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 24,
+            "padding_horizontal_mobile": 24,
+            "gap": 16,
+            "gap_mobile": 12,
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "badge",
+              "settings": {
+                "color_style": "light",
+                "text": "Responsible processing",
+                "badge_size": "vt-paragraph-medium",
+                "radius": "3.125rem",
+                "width": "fit",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 24,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "gap_desktop": 8,
+                    "gap_mobile": 4,
+                    "enable_padding": false
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>03</p>",
+                        "paragraph_size": "vt-paragraph-large",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Dye and finish",
+                        "heading_size": "vt-heading-h3",
+                        "heading_tag": "h3",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Dye and finish with care.</p>",
+                    "paragraph_size": "vt-paragraph-large",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
