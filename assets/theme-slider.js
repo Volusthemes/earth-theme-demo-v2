@@ -58,6 +58,15 @@
     if (container.dataset.swiperReady === 'true') return container._swiperInstance || null;
     if (typeof Swiper === 'undefined') return null;
 
+    // Swiper's destroy() removes the whole style attribute of the container, wrapper
+    // and slides; slides are often blocks with inline CSS variables, so keep a copy
+    const wrapperEl = container.querySelector('.swiper-wrapper');
+    container._vtSavedStyles = new Map(
+      [container, wrapperEl, ...(wrapperEl ? wrapperEl.children : [])]
+        .filter(Boolean)
+        .map((element) => [element, element.getAttribute('style')])
+    );
+
     const data = container.dataset;
 
     // Blocks that can't carry Swiper's class themselves (e.g. image blocks as slides):
@@ -190,7 +199,12 @@
   const destroy = (container) => {
     if (!container?._swiperInstance) return;
     container._swiperInstance.destroy(true, true);
-    ['margin-inline', '--vt-carousel-bleed-start', '--vt-carousel-bleed-end'].forEach((prop) => container.style.removeProperty(prop));
+    // Back to each element's own inline style (also drops the bleed margins)
+    container._vtSavedStyles?.forEach((style, element) => {
+      if (style === null) element.removeAttribute('style');
+      else element.setAttribute('style', style);
+    });
+    container._vtSavedStyles = null;
     container.querySelectorAll('[data-vt-loop-copy]').forEach((copy) => copy.remove());
     container._swiperInstance = null;
     container.dataset.swiperReady = 'false';

@@ -8,6 +8,9 @@ if (!customElements.get('vt-column-layout')) {
   class VtColumnLayout extends HTMLElement {
     #swiper = null;
     #autoplayHeld = false;
+    // Swiper's destroy() removes the whole style attribute; the slides are child
+    // blocks whose inline CSS variables (padding, colors, alignment) must survive
+    #savedStyles = new Map();
     #mediaQuery = window.matchMedia('(max-width: 1023.98px)');
 
     connectedCallback() {
@@ -74,6 +77,10 @@ if (!customElements.get('vt-column-layout')) {
       const mobileShares = this.#toShares(this.dataset.mobileShares);
       const tabletShares = this.#toShares(this.dataset.tabletShares);
 
+      this.#savedStyles = new Map(
+        [viewport, list, ...slides].map((element) => [element, element.getAttribute('style')])
+      );
+
       viewport.classList.add('swiper');
       list.classList.add('swiper-wrapper');
       slides.forEach((slide, index) => {
@@ -117,7 +124,7 @@ if (!customElements.get('vt-column-layout')) {
             .replace('__total__', '{{slidesLength}}'),
         },
       });
-    }      
+    }
 
     #destroy() {
       if (!this.#swiper) return;
@@ -127,10 +134,6 @@ if (!customElements.get('vt-column-layout')) {
       this.#swiper.destroy(true, true);
       this.#swiper = null;
 
-      el.style.removeProperty('margin-left');
-      el.style.removeProperty('margin-right');
-      el.style.removeProperty('padding-left');
-      el.style.removeProperty('padding-right');
       el.classList.remove('swiper');
       ['role', 'aria-label', 'aria-roledescription'].forEach((name) => el.removeAttribute(name));
 
@@ -142,9 +145,14 @@ if (!customElements.get('vt-column-layout')) {
         ['role', 'aria-label', 'aria-roledescription', 'aria-hidden'].forEach((name) =>
           slide.removeAttribute(name)
         );
-        slide.style.removeProperty('--vt-slide-share-mobile');
-        slide.style.removeProperty('--vt-slide-share-tablet');
       });
+
+      // Put back each element's own inline style (also drops the bleed margins and slide shares)
+      this.#savedStyles.forEach((style, element) => {
+        if (style === null) element.removeAttribute('style');
+        else element.setAttribute('style', style);
+      });
+      this.#savedStyles.clear();
     }
 
     /*
