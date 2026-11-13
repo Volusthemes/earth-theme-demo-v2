@@ -360,9 +360,6 @@
   .gap-3 {
     gap: calc(var(--spacing) * 3);
   }
-  .gap-\[0\.5em\] {
-    gap: 0.5em;
-  }
   .gap-x-0 {
     column-gap: 0px;
   }
@@ -405,9 +402,6 @@
   .gap-x-24 {
     column-gap: calc(var(--spacing) * 24);
   }
-  .gap-x-\[0\.9375rem\] {
-    column-gap: 0.9375rem;
-  }
   .gap-y-0 {
     row-gap: 0px;
   }
@@ -446,15 +440,6 @@
   }
   .gap-y-24 {
     row-gap: calc(var(--spacing) * 24);
-  }
-  :where(.divide-x > :not(:last-child)) {
-    --tw-divide-x-reverse: 0;
-    border-inline-style: var(--tw-border-style);
-    border-inline-start-width: calc(1px * var(--tw-divide-x-reverse));
-    border-inline-end-width: calc(1px * calc(1 - var(--tw-divide-x-reverse)));
-  }
-  :where(.divide-gray-200 > :not(:last-child)) {
-    border-color: var(--color-gray-200);
   }
   .self-stretch {
     align-self: stretch;
@@ -773,11 +758,6 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-divide-x-reverse {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0;
-}
 @property --tw-border-style {
   syntax: "*";
   inherits: false;
@@ -914,7 +894,6 @@
       --tw-rotate-z: initial;
       --tw-skew-x: initial;
       --tw-skew-y: initial;
-      --tw-divide-x-reverse: 0;
       --tw-border-style: solid;
       --tw-shadow: 0 0 #0000;
       --tw-shadow-color: initial;

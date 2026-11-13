@@ -3291,7 +3291,7 @@
             "type": "custom-section",
             "settings": {
                 "gap": 56,
-                "gap_mobile": 32,
+                "gap_mobile": 40,
                 "background_style": "solid",
                 "background_color": "{{ settings.color_palette.primary }}",
                 "heading_color": "{{ settings.color_palette.background }}",
@@ -3494,7 +3494,11 @@
                         "border_opacity": 100,
                         "border_color": "{{ settings.color_palette.accent }}",
                         "border_radius": 0,
-                        "animation_type": "none",
+                        "animation_type": "slide",
+                        "animation_delay": 0.4,
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_easing": "ease-out-sine",
                         "hover_highlight": "background",
                         "hover_background": "{{ settings.color_palette.cactus_green }}",
                         "open_highlight": "background",
@@ -4160,12 +4164,141 @@
                             "block_order": [
                                 "paragraph_block"
                             ]
+                        },
+                        "item_care_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Care Instructions",
+                                "description": "Extend garment life by 3x with proper care",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Wash cold, line dry and mend small tears early. Gentle care keeps fibres strong, colours fresh and your clothes in rotation for years.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "washing",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
+                        },
+                        "item_circular_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Circular Fashion 101",
+                                "description": "From your closet back to ours—zero waste",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>When a piece reaches the end of its life, send it back. We repair, resell or recycle every returned garment, so nothing ends up in landfill.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "recycle",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
+                        },
+                        "item_myth_block": {
+                            "type": "_accordion-item",
+                            "settings": {
+                                "heading": "Myth Busting",
+                                "description": "Debunking common sustainable fashion misconceptions",
+                                "description_visibility": "always",
+                                "description_size": "vt-paragraph-medium",
+                                "show_icon": true,
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3"
+                            },
+                            "blocks": {
+                                "paragraph_block": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Sustainable doesn’t have to mean expensive, plain or fragile. We look at the facts behind the most common myths and what really makes a difference.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "accordion-item-icon": {
+                                    "type": "icons",
+                                    "static": true,
+                                    "settings": {
+                                        "icon": "hands-light",
+                                        "icon_color": "{{ settings.color_palette.foreground }}",
+                                        "icon_size_desktop": 26,
+                                        "icon_size_mobile": 22,
+                                        "show_box": true,
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "box_size_desktop": 52,
+                                        "box_size_mobile": 44,
+                                        "box_radius": "50%",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "paragraph_block"
+                            ]
                         }
                     },
                     "block_order": [
                         "item_why_block",
                         "item_material_block",
-                        "item_calculator_block"
+                        "item_calculator_block",
+                        "item_care_block",
+                        "item_circular_block",
+                        "item_myth_block"
                     ]
                 }
             },
@@ -5124,7 +5257,7 @@
                         "separator_color": "{{ settings.color_palette.secondary }}",
                         "image_height_desktop": 48,
                         "image_height_mobile": 32
-                    },                    
+                    },
                     "blocks": {
                         "fabrics_text": {
                             "type": "heading",
@@ -5157,6 +5290,994 @@
                     ]
                 }
             }
+        },
+        "impact_stats_section": {
+            "type": "multicolumn",
+            "settings": {
+                "gap": 0,
+                "gap_mobile": 0,
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 60,
+                "padding_bottom_mobile": 60,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "stats_columns_block": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 4,
+                        "tablet_column_count": 4,
+                        "mobile_column_count": 4,
+                        "desktop_column_1_width": "lg:w-1/4|25",
+                        "desktop_column_2_width": "lg:w-1/4|25",
+                        "desktop_column_3_width": "lg:w-1/4|25",
+                        "desktop_column_4_width": "lg:w-1/4|25",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "tablet_column_3_width": "md:w-1/2|50",
+                        "tablet_column_4_width": "md:w-1/2|50",
+                        "mobile_column_1_width": "w-2/3|66.6667",
+                        "mobile_column_2_width": "w-2/3|66.6667",
+                        "mobile_column_3_width": "w-2/3|66.6667",
+                        "mobile_column_4_width": "w-2/3|66.6667",
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-4",
+                        "swipe_columns_mobile": true,
+                        "autoplay": "5"
+                    },
+                    "blocks": {
+                        "traceable_card": {
+                            "type": "card",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "top",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 16,
+                                "padding_horizontal": 16,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 16,
+                                "padding_horizontal_mobile": 12,
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 6,
+                                "border": "none",
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.1,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 1
+                            },
+                            "blocks": {
+                                "traceable_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "94%",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "traceable_label": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Traceable Origin</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "traceable_number",
+                                "traceable_label"
+                            ]
+                        },
+                        "plastic_card": {
+                            "type": "card",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "top",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 16,
+                                "padding_horizontal": 16,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 16,
+                                "padding_horizontal_mobile": 12,
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 6,
+                                "border": "none",
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 1
+                            },
+                            "blocks": {
+                                "plastic_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "0%",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "plastic_label": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Plastic Packaging</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "plastic_number",
+                                "plastic_label"
+                            ]
+                        },
+                        "artisans_card": {
+                            "type": "card",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "top",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 16,
+                                "padding_horizontal": 16,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 16,
+                                "padding_horizontal_mobile": 12,
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 6,
+                                "border": "none",
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 1
+                            },
+                            "blocks": {
+                                "artisans_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "100+",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "artisans_label": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Fair Wage Artisans</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "artisans_number",
+                                "artisans_label"
+                            ]
+                        },
+                        "bcorp_card": {
+                            "type": "card",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "top",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 16,
+                                "padding_horizontal": 16,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 16,
+                                "padding_horizontal_mobile": 12,
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 6,
+                                "border": "none",
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.4,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 1
+                            },
+                            "blocks": {
+                                "bcorp_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "B-Corp",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "bcorp_label": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Pending Status</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "bcorp_number",
+                                "bcorp_label"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "traceable_card",
+                        "plastic_card",
+                        "artisans_card",
+                        "bcorp_card"
+                    ]
+                }
+            },
+            "block_order": [
+                "stats_columns_block"
+            ]
+        },
+        "transparency_spotlight_section": {
+            "type": "custom-section",
+            "settings": {
+                "gap": 48,
+                "gap_mobile": 40,
+                "background_style": "solid",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 30,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 20,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "spotlight_intro": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 2,
+                        "tablet_column_count": 2,
+                        "mobile_column_count": 1,
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": false,
+                        "desktop_gap_y": "lg:gap-y-5",
+                        "tablet_gap_y": "md:gap-y-5",
+                        "mobile_gap_y": "gap-y-5",
+                        "vertical_alignment": "flex-start",
+                        "alignment": "stretch",
+                        "desktop_column_1_width": "lg:w-7/12|58.3333",
+                        "desktop_column_2_width": "lg:w-5/12|41.6667",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "mobile_gap_x": "gap-x-4"
+                    },
+                    "blocks": {
+                        "spotlight_title_group": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "enable_padding": false,
+                                "gap_desktop": 12,
+                                "gap_mobile": 8
+                            },
+                            "blocks": {
+                                "spotlight_eyebrow": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "flex-start",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fit",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "enable_padding": false,
+                                        "gap_desktop": 4,
+                                        "gap_mobile": 4
+                                    },
+                                    "blocks": {
+                                        "spotlight_eyebrow_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "sparkle",
+                                                "color_style": "accent",
+                                                "icon_size_desktop": 16,
+                                                "icon_size_mobile": 16,
+                                                "show_box": false,
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "spotlight_label": {
+                                            "type": "sub-heading",
+                                            "settings": {
+                                                "sub_heading": "Our Commitment",
+                                                "subheading_tag": "p",
+                                                "subheading_alignment": "text-left",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "spotlight_eyebrow_icon",
+                                        "spotlight_label"
+                                    ]
+                                },
+                                "spotlight_heading_group": {
+                                    "type": "heading-group",
+                                    "settings": {
+                                        "direction": "horizontal",
+                                        "alignment": "left",
+                                        "vertical_alignment": "center",
+                                        "gap_desktop": 24,
+                                        "gap_mobile": 12,
+                                        "width": "fit",
+                                        "hide_icon_mobile": true
+                                    },
+                                    "blocks": {
+                                        "spotlight_leaf": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "leaf",
+                                                "color_style": "secondary",
+                                                "icon_size_desktop": 56,
+                                                "icon_size_mobile": 36,
+                                                "show_box": false,
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "spotlight_heading": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "Transparency Spotlight",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "h2",
+                                                "heading_alignment": "text-inherit",
+                                                "heading_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "spotlight_leaf",
+                                        "spotlight_heading"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "spotlight_eyebrow",
+                                "spotlight_heading_group"
+                            ]
+                        },
+                        "spotlight_text_column": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "enable_padding": false,
+                                "gap_desktop": 0,
+                                "gap_mobile": 0
+                            },
+                            "blocks": {
+                                "spotlight_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>We believe you deserve to know where your clothes come from—materials, people, and areas we’re improving.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fill",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "spotlight_text"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "spotlight_title_group",
+                        "spotlight_text_column"
+                    ]
+                },
+                "spotlight_columns": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 2,
+                        "tablet_column_count": 2,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-7/12|58.3333",
+                        "desktop_column_2_width": "lg:w-5/12|41.6667",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": false,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-12",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-5",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-5",
+                        "vertical_alignment": "stretch",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "material_card": {
+                            "type": "card",
+                            "settings": {
+                                "color_style": "accent",
+                                "position": "between",
+                                "alignment": "left",
+                                "enable_decorative_icon": true,
+                                "decorative_icon": "leaf",
+                                "decorative_icon_position": "right",
+                                "decorative_icon_alignment": "bottom",
+                                "decorative_icon_size_desktop": 200,
+                                "decorative_icon_size_mobile": 140,
+                                "decorative_icon_opacity": 25,
+                                "decorative_icon_blend_mode": "multiply",
+                                "padding_vertical": 40,
+                                "padding_horizontal": 40,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 30,
+                                "padding_horizontal_mobile": 20,
+                                "width": "fill",
+                                "height": "fill",
+                                "gap": 32,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 24,
+                                "border": "none",
+                                "animation_type": "none",
+                                "decorative_icon_color": "{{ settings.color_palette.accent }}"
+                            },
+                            "blocks": {
+                                "material_content": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "flex-start",
+                                        "position": "flex-start",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "enable_padding": false,
+                                        "gap_desktop": 16,
+                                        "gap_mobile": 12
+                                    },
+                                    "blocks": {
+                                        "material_title": {
+                                            "type": "stack",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "center",
+                                                "position_type": "default",
+                                                "wrap_content": "nowrap",
+                                                "width": "fit",
+                                                "width_custom": 100,
+                                                "height": "fit",
+                                                "min_height": 400,
+                                                "enable_padding": false,
+                                                "gap_desktop": 12,
+                                                "gap_mobile": 8
+                                            },
+                                            "blocks": {
+                                                "material_icon": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "eco",
+                                                        "color_style": "text",
+                                                        "icon_size_desktop": 28,
+                                                        "icon_size_mobile": 24,
+                                                        "show_box": false,
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "material_heading": {
+                                                    "type": "heading",
+                                                    "settings": {
+                                                        "heading": "Material Sourcing",
+                                                        "heading_size": "vt-heading-h3",
+                                                        "heading_tag": "h3",
+                                                        "heading_alignment": "text-inherit",
+                                                        "heading_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "material_icon",
+                                                "material_heading"
+                                            ]
+                                        },
+                                        "material_subtitle": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>\"Organic &amp; Recycled\"</p>",
+                                                "paragraph_size": "vt-paragraph-large",
+                                                "paragraph_alignment": "text-inherit",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "material_text": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>We prioritize regenerative fibers that restore soil health and recycled synthetics that divert waste from our oceans. Every thread has a purpose.</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-inherit",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "material_badges": {
+                                            "type": "stack",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "flex-start",
+                                                "position_type": "default",
+                                                "wrap_content": "wrap",
+                                                "width": "fit",
+                                                "width_custom": 100,
+                                                "height": "fit",
+                                                "min_height": 400,
+                                                "enable_padding": false,
+                                                "gap_desktop": 12,
+                                                "gap_mobile": 8
+                                            },
+                                            "blocks": {
+                                                "badge_gots": {
+                                                    "type": "badge",
+                                                    "settings": {
+                                                        "text": "GOTS Certified",
+                                                        "color_style": "dark",
+                                                        "badge_size": "vt-paragraph-small",
+                                                        "radius": "3.125rem",
+                                                        "width": "fit",
+                                                        "animation_type": "none"
+                                                    },
+                                                    "blocks": {
+                                                        "badge_gots_icon": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "certificate-regulation",
+                                                                "color_style": "text",
+                                                                "icon_size_desktop": 16,
+                                                                "icon_size_mobile": 16,
+                                                                "show_box": false,
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "badge_gots_icon"
+                                                    ]
+                                                },
+                                                "badge_fair_trade": {
+                                                    "type": "badge",
+                                                    "settings": {
+                                                        "text": "Fair Trade",
+                                                        "color_style": "dark",
+                                                        "badge_size": "vt-paragraph-small",
+                                                        "radius": "3.125rem",
+                                                        "width": "fit",
+                                                        "animation_type": "none"
+                                                    },
+                                                    "blocks": {
+                                                        "badge_fair_trade_icon": {
+                                                            "type": "icons",
+                                                            "settings": {
+                                                                "icon": "handshake",
+                                                                "color_style": "text",
+                                                                "icon_size_desktop": 16,
+                                                                "icon_size_mobile": 16,
+                                                                "show_box": false,
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "badge_fair_trade_icon"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "badge_gots",
+                                                "badge_fair_trade"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "material_title",
+                                        "material_subtitle",
+                                        "material_text",
+                                        "material_badges"
+                                    ]
+                                },
+                                "material_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "Learn our materials",
+                                        "button_link": "/collections/all",
+                                        "button_style": "link",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "material_content",
+                                "material_button"
+                            ]
+                        },
+                        "supply_card": {
+                            "type": "image-card",
+                            "settings": {
+                                "aspect_ratio": "square",
+                                "enable_aspect_ratio_mobile": true,
+                                "aspect_ratio_mobile": "portrait_4_5",                                
+                                "position": "bottom",
+                                "alignment": "left",
+                                "overlay_style": "gradient",
+                                "overlay_opacity": 90,
+                                "gradient_direction": "bottom",
+                                "gradient_size": 70,
+                                "padding_vertical": 40,
+                                "padding_horizontal": 40,
+                                "padding_vertical_mobile": 30,
+                                "padding_horizontal_mobile": 20,
+                                "gap": 16,
+                                "gap_mobile": 12
+                            },
+                            "blocks": {
+                                "supply_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Supply Chain",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "supply_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Ethical Manufacturing: Seen from within our atelier.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "supply_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "View our production",
+                                        "button_style": "link-light",
+                                        "animation_type": "none",
+                                        "button_link": "/blogs/news"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "supply_heading",
+                                "supply_text",
+                                "supply_button"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "material_card",
+                        "supply_card"
+                    ]
+                }
+            },
+            "block_order": [
+                "spotlight_intro",
+                "spotlight_columns"
+            ]
+        },
+        "truth_banner_section": {
+            "type": "custom-section",
+            "settings": {
+                "gap": 48,
+                "gap_mobile": 40,
+                "background_style": "solid",
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 0,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 0,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "truth_banner": {
+                    "type": "card",
+                    "settings": {
+                        "color_style": "gradient",
+                        "position": "middle",
+                        "alignment": "left",
+                        "enable_decorative_icon": false,
+                        "padding_vertical": 64,
+                        "padding_horizontal": 48,
+                        "enable_padding_mobile": true,
+                        "padding_vertical_mobile": 40,
+                        "padding_horizontal_mobile": 24,
+                        "width": "fill",
+                        "height": "custom",
+                        "min_height": 400,
+                        "min_height_mobile": 300,
+                        "gap": 16,
+                        "enable_gap_mobile": true,
+                        "gap_mobile": 12,
+                        "border": "none",
+                        "animation_type": "none"
+                    },
+                    "blocks": {
+                        "truth_row": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--horizontal",
+                                "layout_direction_tablet": "vt-stack--horizontal",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "space-between",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "enable_padding": false,
+                                "gap_desktop": 64,
+                                "gap_mobile": 32
+                            },
+                            "blocks": {
+                                "truth_title_group": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "flex-start",
+                                        "position": "flex-start",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "enable_padding": false,
+                                        "gap_desktop": 16,
+                                        "gap_mobile": 12
+                                    },
+                                    "blocks": {
+                                        "truth_eyebrow": {
+                                            "type": "stack",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "center",
+                                                "position_type": "default",
+                                                "wrap_content": "nowrap",
+                                                "width": "fit",
+                                                "width_custom": 100,
+                                                "height": "fit",
+                                                "min_height": 400,
+                                                "enable_padding": false,
+                                                "gap_desktop": 4,
+                                                "gap_mobile": 4
+                                            },
+                                            "blocks": {
+                                                "truth_eyebrow_icon": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "sparkle",
+                                                        "color_style": "accent",
+                                                        "icon_size_desktop": 16,
+                                                        "icon_size_mobile": 16,
+                                                        "show_box": false,
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "truth_label": {
+                                                    "type": "sub-heading",
+                                                    "settings": {
+                                                        "sub_heading": "The Unfiltered Truth",
+                                                        "subheading_tag": "p",
+                                                        "subheading_alignment": "text-left",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "truth_eyebrow_icon",
+                                                "truth_label"
+                                            ]
+                                        },
+                                        "truth_heading": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "Real Growth, Real Challenges",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "h2",
+                                                "heading_alignment": "text-inherit",
+                                                "heading_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "truth_eyebrow",
+                                        "truth_heading"
+                                    ]
+                                },
+                                "truth_content": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "flex-start",
+                                        "position": "flex-start",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "width_custom": 100,
+                                        "height": "fit",
+                                        "min_height": 400,
+                                        "enable_padding": false,
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24
+                                    },
+                                    "blocks": {
+                                        "truth_text": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>\"True sustainability is hard. We aren't 100% there yet, but we refuse to hide our hurdles. From logistics carbon footprints to dye-house water usage, we are iterating every day.\"</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-inherit",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "truth_button": {
+                                            "type": "button",
+                                            "settings": {
+                                                "button_label": "Our Promise",
+                                                "button_link": "/blogs/news",
+                                                "button_style": "secondary",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "truth_text",
+                                        "truth_button"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "truth_title_group",
+                                "truth_content"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "truth_row"
+                    ]
+                }
+            },
+            "block_order": [
+                "truth_banner"
+            ]
         }
     },
     "order": [
@@ -5172,6 +6293,9 @@
         "slideshow_section",
         "video_with_text_overlay_section",
         "testimonials_section",
-        "knowledge_accordion_section"
+        "knowledge_accordion_section",
+        "transparency_spotlight_section",
+        "truth_banner_section",
+        "impact_stats_section"
     ]
 }

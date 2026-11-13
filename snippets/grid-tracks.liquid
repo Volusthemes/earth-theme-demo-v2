@@ -3,7 +3,8 @@
   every multi-column layout in the theme shares the same column math.
 
   Width settings are named "{device}_column_{n}_width" and hold values like
-  "lg:w-1/2|50": the number after "|" is the column's share of the row. Pair the
+  "lg:w-1/2|50": the number after "|" is the column's share of the row, or "auto"
+  for a column that fits its content (the track is printed as "auto", not "fr"). Pair the
   output with the "vt-grid-tracks" class (assets/theme.css), which reads
   --vt-grid-mobile, --vt-grid-tablet and --vt-grid-desktop.
 
@@ -24,7 +25,7 @@
       echo ' '
     endunless
     echo share
-    unless shares
+    unless shares or share == 'auto'
       echo 'fr'
     endunless
   endfor

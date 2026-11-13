@@ -35,7 +35,15 @@
 
       const observer = new IntersectionObserver(
         (entries) => {
-          const targets = entries.filter((entry) => entry.isIntersecting).map((entry) => entry.target);
+          /* A watched box can stand for several animated elements (see watchTarget) */
+          const targets = entries
+            .filter((entry) => entry.isIntersecting)
+            .flatMap((entry) => {
+              observer.unobserve(entry.target);
+              const elements = watched.get(entry.target) || [];
+              watched.delete(entry.target);
+              return elements;
+            });
 
           /* Read every timing first, then write, to avoid recalculating styles per element */
           const timings = targets.map((target) => {
@@ -46,7 +54,6 @@
           });
 
           targets.forEach((target, index) => {
-            observer.unobserve(target);
             target.classList.add('vt-in-view');
             setTimeout(() => finish(target), timings[index] + 100);
           });
@@ -54,8 +61,34 @@
         { threshold: 0.15 }
       );
 
+      /*
+        Animations start offset (Slide moves the element 40px), and a box that clips
+        its content (a sideways scroller, a card) can hide the offset element
+        completely, so it would never count as visible and never appear. Such
+        elements are watched through the nearest clipping box no taller than the
+        screen, which is not offset. Elsewhere the element itself is watched.
+      */
+      const watched = new Map();
+      const watchTarget = (element) => {
+        for (let box = element.parentElement; box && box !== document.body; box = box.parentElement) {
+          /* Page-size boxes (e.g. <main>, which clips sideways overflow) can't reach the
+             visibility threshold and only clip at their far edges: skip them */
+          if (box.offsetHeight > window.innerHeight) continue;
+          const { overflowX, overflowY } = getComputedStyle(box);
+          if (overflowY !== 'visible' || overflowX === 'auto' || overflowX === 'scroll') return box;
+        }
+        return element;
+      };
+
       const observe = (root) => {
-        root.querySelectorAll('.vt-animate:not(.vt-in-view)').forEach((element) => observer.observe(element));
+        root.querySelectorAll('.vt-animate:not(.vt-in-view)').forEach((element) => {
+          const target = watchTarget(element);
+          if (!watched.has(target)) {
+            watched.set(target, []);
+            observer.observe(target);
+          }
+          watched.get(target).push(element);
+        });
       };
 
       document.addEventListener('DOMContentLoaded', () => observe(document));

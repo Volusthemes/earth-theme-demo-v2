@@ -75,11 +75,21 @@
   # -----------------------------------------------------------------------
   # Colors: empty color settings follow the chosen palette style
   # -----------------------------------------------------------------------
+  # Background (setting id: color_style) picks a palette pair: the card fill and
+  # the text color that stays readable on it. Empty color settings follow it.
   case block.settings.color_style
     when 'light'
       assign vt_bg_default = 'var(--vt-background-color)'
       assign vt_heading_default = 'var(--vt-foreground-color)'
       assign vt_text_default = 'var(--vt-color-primary)'
+    when 'accent'
+      assign vt_bg_default = 'var(--vt-color-accent)'
+      assign vt_heading_default = 'var(--vt-foreground-color)'
+      assign vt_text_default = 'var(--vt-color-primary)'
+    when 'gradient'
+      assign vt_bg_default = block.settings.background_gradient | default: 'radial-gradient(60% 90% at 85% 30%, color-mix(in srgb, var(--vt-color-secondary) 60%, var(--vt-color-primary)) 0%, var(--vt-color-primary) 100%)'
+      assign vt_heading_default = 'var(--vt-background-color)'
+      assign vt_text_default = 'var(--vt-background-color)'
     when 'transparent'
       assign vt_bg_default = 'transparent'
       assign vt_heading_default = 'var(--vt-foreground-color)'
@@ -89,6 +99,32 @@
       assign vt_heading_default = 'var(--vt-background-color)'
       assign vt_text_default = 'var(--vt-background-color)'
   endcase
+
+  # Decorative icon: on Accent it repeats the fill (tone on tone, e.g. with Multiply);
+  # on the other backgrounds it uses the heading color
+  assign vt_decorative_default = vt_heading_default
+  if block.settings.color_style == 'accent'
+    assign vt_decorative_default = 'var(--vt-color-accent)'
+  endif
+
+  # Color drawn on top of the heading color, e.g. the arrow inside a Link button's circle
+  # It contrasts with the heading color actually used: a picked Heading color is measured,
+  # otherwise the Background style tells whether the heading is light or dark.
+  assign vt_on_heading = 'var(--vt-background-color)'
+  if block.settings.heading_color != blank
+    assign vt_heading_brightness = block.settings.heading_color | color_brightness
+    if vt_heading_brightness > 140
+      assign vt_on_heading = 'var(--vt-foreground-color)'
+    endif
+  elsif block.settings.color_style == 'primary' or block.settings.color_style == 'gradient'
+    assign vt_on_heading = 'var(--vt-foreground-color)'
+  endif
+
+  # The gradient fills the card, so the solid Background color only applies to the other styles
+  assign vt_bg = block.settings.background_color | default: vt_bg_default
+  if block.settings.color_style == 'gradient'
+    assign vt_bg = vt_bg_default
+  endif
 
   # -----------------------------------------------------------------------
   # Animation easing keyword -> real CSS timing function
@@ -142,9 +178,10 @@
 <div  
   class="{{ vt_class_list }}"
   style="
-    --vt-bg: {{ block.settings.background_color | default: vt_bg_default }};
+    --vt-bg: {{ vt_bg }};
     --vt-heading-color: {{ block.settings.heading_color | default: vt_heading_default }};
     --vt-text-color: {{ block.settings.text_color | default: vt_text_default }};
+    --vt-on-heading-color: {{ vt_on_heading }};
     --vt-justify: {{ vt_justify }};
     --vt-align: {{ vt_align }};
     --vt-text-align: {{ block.settings.alignment }};
@@ -186,7 +223,7 @@
         --vt-icon-justify: {{ vt_icon_justify }};
         --vt-icon-align: {{ vt_icon_align }};
         --vt-decorative-icon-size: {% render 'fluid-clamp', min_px: block.settings.decorative_icon_size_mobile, max_px: block.settings.decorative_icon_size_desktop %};
-        --vt-decorative-icon-color: {{ block.settings.decorative_icon_color | default: vt_heading_default }};
+        --vt-decorative-icon-color: {{ block.settings.decorative_icon_color | default: vt_decorative_default }};
         --vt-decorative-icon-opacity: {{ block.settings.decorative_icon_opacity | times: 1.0 | divided_by: 100 }};
         --vt-decorative-icon-blend: {{ block.settings.decorative_icon_blend_mode }};
       "
@@ -215,7 +252,10 @@
     padding-inline: var(--vt-padding-inline, 1rem);
     text-align: var(--vt-text-align, center);
     color: var(--vt-text-color, inherit);
-    background-color: var(--vt-bg, transparent);
+    background: var(--vt-bg, transparent);
+    /* Text-color links inside follow the card, so they stay readable on any background */
+    --vt-button-link-text: var(--vt-heading-color);
+    --vt-button-icon-link-dark: var(--vt-on-heading-color);
     border-style: none;
     border-radius: calc(var(--vt-border-radius, 0) / 16 * 1rem);
     contain: layout style;
@@ -331,7 +371,7 @@
 {% schema %}
 {
   "name": "Card",
-  "tag": null,  
+  "tag": null,
   "settings": [
     {
       "type": "header",
@@ -340,42 +380,58 @@
     {
       "type": "select",
       "id": "color_style",
-      "label": "Style",
+      "label": "Background",
       "options": [
-        {
-          "value": "primary",
-          "label": "Primary"
-        },
         {
           "value": "light",
           "label": "Light"
         },
         {
+          "value": "accent",
+          "label": "Accent"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        },
+        {
           "value": "transparent",
-          "label": "Transparent"
+          "label": "None"
         }
       ],
       "default": "primary",
-      "info": "Empty colors below follow this style."
+      "info": "Text, icons and links inside follow it. Colors picked below override it."
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ block.settings.color_style == 'gradient' }}"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background",
-      "info": "Leave empty to use the color palette."
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ block.settings.color_style != 'gradient' }}"
     },
     {
       "type": "color",
       "id": "heading_color",
       "label": "Heading",
       "info": "Leave empty to use the color palette."
-    }, 
+    },
     {
       "type": "color",
       "id": "text_color",
       "label": "Paragraph",
       "info": "Leave empty to use the color palette."
-    },    
+    },
     {
       "type": "header",
       "content": "Content"
@@ -414,14 +470,14 @@
           "label": "Left"
         },
         {
-          "value": "center",          
+          "value": "center",
           "label": "Center"
         },
         {
           "value": "right",
           "label": "Right"
         }
-      ],      
+      ],
       "default": "center"
     },
     {
@@ -438,22 +494,70 @@
       "type": "select",
       "id": "decorative_icon",
       "options": [
-        { "value": "leaf", "label": "t:blocks.icon.settings.icon.options__1.label" },
-        { "value": "carbon", "label": "t:blocks.icon.settings.icon.options__2.label" },
-        { "value": "cotton-plant", "label": "t:blocks.icon.settings.icon.options__20.label" },
-        { "value": "tree", "label": "t:blocks.icon.settings.icon.options__3.label" },
-        { "value": "zero-emissions", "label": "t:blocks.icon.settings.icon.options__4.label" },
-        { "value": "quality", "label": "t:blocks.icon.settings.icon.options__5.label" },
-        { "value": "drop", "label": "t:blocks.icon.settings.icon.options__6.label" },
-        { "value": "ecology", "label": "t:blocks.icon.settings.icon.options__7.label" },
-        { "value": "flower", "label": "t:blocks.icon.settings.icon.options__11.label" },
-        { "value": "sparkle", "label": "t:blocks.icon.settings.icon.options__12.label" },
-        { "value": "organic-cotton", "label": "t:blocks.icon.settings.icon.options__14.label" },
-        { "value": "recycled-materials", "label": "t:blocks.icon.settings.icon.options__15.label" },
-        { "value": "vegan-cruelty-free", "label": "t:blocks.icon.settings.icon.options__16.label" },
-        { "value": "eco", "label": "t:blocks.icon.settings.icon.options__17.label" },
-        { "value": "certificate-regulation", "label": "t:blocks.icon.settings.icon.options__18.label" },
-        { "value": "shake-hand-cooperate", "label": "t:blocks.icon.settings.icon.options__19.label" }
+        {
+          "value": "leaf",
+          "label": "t:blocks.icon.settings.icon.options__1.label"
+        },
+        {
+          "value": "carbon",
+          "label": "t:blocks.icon.settings.icon.options__2.label"
+        },
+        {
+          "value": "cotton-plant",
+          "label": "t:blocks.icon.settings.icon.options__20.label"
+        },
+        {
+          "value": "tree",
+          "label": "t:blocks.icon.settings.icon.options__3.label"
+        },
+        {
+          "value": "zero-emissions",
+          "label": "t:blocks.icon.settings.icon.options__4.label"
+        },
+        {
+          "value": "quality",
+          "label": "t:blocks.icon.settings.icon.options__5.label"
+        },
+        {
+          "value": "drop",
+          "label": "t:blocks.icon.settings.icon.options__6.label"
+        },
+        {
+          "value": "ecology",
+          "label": "t:blocks.icon.settings.icon.options__7.label"
+        },
+        {
+          "value": "flower",
+          "label": "t:blocks.icon.settings.icon.options__11.label"
+        },
+        {
+          "value": "sparkle",
+          "label": "t:blocks.icon.settings.icon.options__12.label"
+        },
+        {
+          "value": "organic-cotton",
+          "label": "t:blocks.icon.settings.icon.options__14.label"
+        },
+        {
+          "value": "recycled-materials",
+          "label": "t:blocks.icon.settings.icon.options__15.label"
+        },
+        {
+          "value": "vegan-cruelty-free",
+          "label": "t:blocks.icon.settings.icon.options__16.label"
+        },
+        {
+          "value": "eco",
+          "label": "t:blocks.icon.settings.icon.options__17.label"
+        },
+        {
+          "value": "certificate-regulation",
+          "label": "t:blocks.icon.settings.icon.options__18.label"
+        },
+        {
+          "value": "shake-hand-cooperate",
+          "label": "t:blocks.icon.settings.icon.options__19.label"
+        }
       ],
       "default": "cotton-plant",
       "label": "t:blocks.icon.settings.icon.label",
@@ -496,7 +600,7 @@
       "step": 1,
       "unit": "%",
       "label": "Opacity",
-      "default": 5,     
+      "default": 5,
       "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
     },
     {
@@ -504,11 +608,26 @@
       "id": "decorative_icon_blend_mode",
       "label": "Blend mode",
       "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "multiply", "label": "Multiply" },
-        { "value": "screen", "label": "Screen" },
-        { "value": "overlay", "label": "Overlay" },
-        { "value": "soft-light", "label": "Soft light" }
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "multiply",
+          "label": "Multiply"
+        },
+        {
+          "value": "screen",
+          "label": "Screen"
+        },
+        {
+          "value": "overlay",
+          "label": "Overlay"
+        },
+        {
+          "value": "soft-light",
+          "label": "Soft light"
+        }
       ],
       "default": "normal",
       "visible_if": "{{ block.settings.enable_decorative_icon == true }}"
@@ -558,7 +677,7 @@
     {
       "type": "header",
       "content": "Padding"
-    },    
+    },
     {
       "type": "range",
       "id": "padding_vertical",
@@ -616,9 +735,18 @@
       "id": "width",
       "label": "Width",
       "options": [
-        { "value": "fit", "label": "Fit" },
-        { "value": "fill", "label": "Fill" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "fit"
     },
@@ -638,9 +766,18 @@
       "id": "height",
       "label": "Height",
       "options": [
-        { "value": "fit", "label": "Fit" },
-        { "value": "fill", "label": "Fill" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "fit"
     },
@@ -665,12 +802,12 @@
       "unit": "px",
       "default": 250,
       "visible_if": "{{ block.settings.height == 'custom' }}"
-    },    
+    },
     {
       "type": "header",
       "content": "Gap"
     },
-    {      
+    {
       "type": "range",
       "id": "gap",
       "min": 4,
@@ -759,7 +896,7 @@
       "step": 1,
       "unit": "%",
       "label": "Border opacity",
-      "default": 100,          
+      "default": 100,
       "visible_if": "{{ block.settings.border != 'none' }}"
     },
     {
@@ -770,7 +907,7 @@
       "step": 1,
       "unit": "px",
       "label": "Corner radius",
-      "default": 0      
+      "default": 0
     },
     {
       "type": "header",
@@ -781,10 +918,22 @@
       "id": "animation_type",
       "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },        
-        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
       ],
       "default": "none",
       "label": "t:blocks.heading.settings.animation_type.label"
@@ -793,10 +942,22 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.heading.settings.animation_direction.label",
@@ -828,13 +989,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.heading.settings.animation_easing.label",
@@ -850,14 +1032,41 @@
       "default": 2,
       "label": "t:blocks.heading.settings.animation_blur_intensity.label",
       "visible_if": "{{ block.settings.animation_type == 'blur' }}"
-    }   
+    }
   ],
-  "blocks": [ { "type": "image" },
-    { "type": "icons" }, { "type": "heading" }, {"type": "paragraph"}, {"type": "heading-group"}, {"type": "stack"}, {"type": "sub-heading"}, {"type": "badge"}, {"type": "button"}],       
+  "blocks": [
+    {
+      "type": "image"
+    },
+    {
+      "type": "icons"
+    },
+    {
+      "type": "heading"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "heading-group"
+    },
+    {
+      "type": "stack"
+    },
+    {
+      "type": "sub-heading"
+    },
+    {
+      "type": "badge"
+    },
+    {
+      "type": "button"
+    }
+  ],
   "presets": [
     {
       "name": "Card",
-      "category": "t:general.categories.basic",   
+      "category": "t:general.categories.basic",
       "settings": {
         "position": "top",
         "alignment": "center",

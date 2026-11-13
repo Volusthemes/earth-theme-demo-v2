@@ -25,6 +25,7 @@
     vt-stack--desktop-{{ dir_desktop }}
     vt-stack--tablet-{{ dir_tablet }}
     vt-stack--mobile-{{ dir_mobile }}
+    {% if block.settings.reverse_mobile %}vt-stack--reverse-mobile{% endif %}
     vt-stack--align-{{ block.settings.alignment }}
     vt-stack--position-{{ block.settings.position }}
     vt-stack--wrap-{{ block.settings.wrap_content }}
@@ -91,6 +92,17 @@
 
   .vt-stack--mobile-vertical {
     flex-direction: column;
+  }
+
+  /* Reverse order on mobile: visual order only, so the DOM (and reading order) stays as set */
+  @media screen and (max-width: 749px) {
+    .vt-stack--reverse-mobile.vt-stack--mobile-horizontal {
+      flex-direction: row-reverse;
+    }
+
+    .vt-stack--reverse-mobile.vt-stack--mobile-vertical {
+      flex-direction: column-reverse;
+    }
   }
 
   @media screen and (min-width: 750px) {
@@ -232,6 +244,38 @@
     width: var(--vt-stack-width);
   }
 
+  /*
+    Fill inside a row: take the space the other items leave, instead of shrinking
+    side by side with them (an image set to 48% keeps 48%). In a column, Fill
+    stays full width. Per breakpoint, because the row can turn into a column.
+  */
+  .vt-stack--mobile-horizontal > .vt-stack--width-fill {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-stack--tablet-vertical > .vt-stack--width-fill {
+      flex: 0 1 auto;
+    }
+
+    .vt-stack--tablet-horizontal > .vt-stack--width-fill {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-stack--desktop-vertical > .vt-stack--width-fill {
+      flex: 0 1 auto;
+    }
+
+    .vt-stack--desktop-horizontal > .vt-stack--width-fill {
+      flex: 1 1 0%;
+      min-width: 0;
+    }
+  }
+
   /* Height variants */
   .vt-stack--height-fit {
     height: fit-content;
@@ -336,6 +380,13 @@
         { "value": "vt-stack--horizontal", "label": "t:options.direction.horizontal" },
         { "value": "vt-stack--vertical", "label": "t:options.direction.vertical" }
       ]
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse_mobile",
+      "label": "Reverse order on mobile",
+      "default": false,
+      "info": "Shows the last block first on mobile, for example text above an image."
     },
     {
       "type": "select",

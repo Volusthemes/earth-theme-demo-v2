@@ -18,10 +18,15 @@
   # Empty colors follow Color style and Box style (palette only)
   assign vt_box_bg = 'var(--vt-background-color)'
   assign vt_icon_on_box = 'var(--vt-foreground-color)'
-  if block.settings.box_style == 'dark'
-    assign vt_box_bg = 'var(--vt-foreground-color)'
-    assign vt_icon_on_box = 'var(--vt-background-color)'
-  endif
+  case block.settings.box_style
+    when 'dark'
+      assign vt_box_bg = 'var(--vt-foreground-color)'
+      assign vt_icon_on_box = 'var(--vt-background-color)'
+    when 'secondary'
+      assign vt_box_bg = 'var(--vt-color-secondary)'
+    when 'accent'
+      assign vt_box_bg = 'var(--vt-color-accent)'
+  endcase
 
   case block.settings.color_style
     when 'primary'
@@ -146,7 +151,8 @@
   }
 {% endstylesheet %}
 
-{% schema %}{
+{% schema %}
+{
   "name": "t:blocks.icon.name",
   "tag": null,
   "settings": [
@@ -271,6 +277,18 @@
           "label": "t:blocks.icon.settings.icon.options__32.label"
         },
         {
+          "value": "sprout",
+          "label": "t:blocks.icon.settings.icon.options__37.label"
+        },
+        {
+          "value": "cloud-leaf",
+          "label": "t:blocks.icon.settings.icon.options__38.label"
+        },
+        {
+          "value": "money-plant",
+          "label": "t:blocks.icon.settings.icon.options__39.label"
+        },
+        {
           "value": "mail",
           "label": "t:blocks.icon.settings.icon.options__33.label"
         },
@@ -363,6 +381,14 @@
         {
           "value": "dark",
           "label": "Dark"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
         }
       ],
       "default": "light",
@@ -568,4 +594,5 @@
       }
     }
   ]
-}{% endschema %}
+}
+{% endschema %}

@@ -36,6 +36,18 @@
   assign padding_desktop_inline_px = block.settings.padding_inline
 
   assign is_swipeable = block.settings.swipe_columns_mobile
+
+  # Horizontal alignment: justify-items moves content inside an fr column;
+  # justify-content moves "Fit content" columns along the row (desktop only,
+  # see the stylesheet). Each one has no effect where the other applies.
+  assign columns_justify = block.settings.alignment | default: 'stretch'
+  assign columns_justify_row = columns_justify
+  case columns_justify
+    when 'stretch'
+      assign columns_justify_row = 'normal'
+    when 'space-between', 'space-evenly'
+      assign columns_justify = 'stretch'
+  endcase
   assign is_editor = false
   if request.design_mode or request.visual_preview_mode
     assign is_editor = true
@@ -46,6 +58,7 @@
   id="vt-column-layout-{{ block.id }}"
   class="vt-column-layout"
   data-swipe="{{ is_swipeable }}"
+  data-bleed="{{ block.settings.swipe_bleed }}"
   data-autoplay="{% if block.settings.autoplay != 'off' %}true{% else %}false{% endif %}"
   data-autoplay-delay="{% if block.settings.autoplay != 'off' %}{{ block.settings.autoplay | times: 1000 }}{% endif %}"
   data-editor="{{ is_editor }}"
@@ -69,7 +82,7 @@
     overrides it.
   {%- endcomment -%}
   <div class="vt-column-layout__viewport">
-    <div class="vt-column-layout__list vt-grid-tracks {{ gap_classes }}" style="--vt-columns-position: {{ block.settings.vertical_alignment }};">
+    <div class="vt-column-layout__list vt-grid-tracks {{ gap_classes }}" style="--vt-columns-position: {{ block.settings.vertical_alignment }}; --vt-columns-justify: {{ columns_justify }}; --vt-columns-justify-row: {{ columns_justify_row }};">
       {%- if block.blocks.size > 0 -%}
         {% content_for "blocks" %}
       {%- elsif is_editor -%}
@@ -104,8 +117,22 @@
   }
 
   /* Columns: shared .vt-grid-tracks (assets/theme.css) */
+  /*
+    Width columns are fr tracks, so they fill the row: alignment places the content
+    inside each column (vertical: align-items, horizontal: justify-items). Desktop
+    "Fit content" columns are auto tracks, placed along the row by justify-content.
+    Swipe mode is a flex row, where neither applies.
+  */
   .vt-column-layout__list {
     align-items: var(--vt-columns-position);
+    justify-items: var(--vt-columns-justify, stretch);
+  }
+
+  /* Desktop grid: "Fit content" columns leave free space for the row alignment */
+  @media (min-width: 1024px) {
+    .vt-column-layout__list {
+      justify-content: var(--vt-columns-justify-row, normal);
+    }
   }
 
   .vt-column-layout__list > * {
@@ -132,8 +159,15 @@
     50% columns fit exactly and an 83% column leaves a peek of the next one.
   */
   @media (max-width: 1023.98px) {
+    /*
+      Clip the sides only. Clipping above and below too would hide content that a
+      Slide animation starts below its place, and the animation would never start
+      (it waits for the content to be visible).
+    */
     .vt-column-layout[data-swipe='true'] .vt-column-layout__viewport {
       overflow: hidden;
+      overflow-x: clip;
+      overflow-y: visible;
     }
 
     .vt-column-layout[data-swipe='true'] .vt-column-layout__list {
@@ -188,7 +222,7 @@
       "type": "range",
       "id": "tablet_column_count",
       "min": 1,
-      "max": 8,
+      "max": 6,
       "step": 1,
       "default": 2,
       "label": "Columns (tablet)"
@@ -274,7 +308,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/4|25"
     },
@@ -346,7 +381,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/4|25",
       "visible_if": "{{ block.settings.desktop_column_count >= 2 }}"
@@ -419,7 +455,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/4|25",
       "visible_if": "{{ block.settings.desktop_column_count >= 3 }}"
@@ -492,7 +529,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/4|25",
       "visible_if": "{{ block.settings.desktop_column_count >= 4 }}"
@@ -565,7 +603,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 5 }}"
@@ -638,7 +677,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 6 }}"
@@ -711,7 +751,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 7 }}"
@@ -784,7 +825,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 8 }}"
@@ -857,7 +899,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 9 }}"
@@ -930,7 +973,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 10 }}"
@@ -1003,7 +1047,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 11 }}"
@@ -1076,7 +1121,8 @@
         {
           "value": "lg:w-full|100",
           "label": "Full (100%)"
-        }
+        },
+        { "value": "lg:w-auto|auto", "label": "Fit content" }
       ],
       "default": "lg:w-1/3|33.3333",
       "visible_if": "{{ block.settings.desktop_column_count >= 12 }}"
@@ -1523,152 +1569,6 @@
       "visible_if": "{{ block.settings.tablet_column_count >= 6 }}"
     },
     {
-      "type": "select",
-      "id": "tablet_column_7_width",
-      "label": "Column 7",
-      "options": [
-        {
-          "value": "md:w-1/12|8.3333",
-          "label": "1/12 (8.3333%)"
-        },
-        {
-          "value": "md:w-1/6|16.6667",
-          "label": "1/6 (16.6667%)"
-        },
-        {
-          "value": "md:w-1/5|20",
-          "label": "1/5 (20%)"
-        },
-        {
-          "value": "md:w-1/4|25",
-          "label": "1/4 (25%)"
-        },
-        {
-          "value": "md:w-1/3|33.3333",
-          "label": "1/3 (33.3333%)"
-        },
-        {
-          "value": "md:w-5/12|41.6667",
-          "label": "5/12 (41.6667%)"
-        },
-        {
-          "value": "md:w-2/5|40",
-          "label": "2/5 (40%)"
-        },
-        {
-          "value": "md:w-1/2|50",
-          "label": "1/2 (50%)"
-        },
-        {
-          "value": "md:w-7/12|58.3333",
-          "label": "7/12 (58.3333%)"
-        },
-        {
-          "value": "md:w-3/5|60",
-          "label": "3/5 (60%)"
-        },
-        {
-          "value": "md:w-2/3|66.6667",
-          "label": "2/3 (66.6667%)"
-        },
-        {
-          "value": "md:w-3/4|75",
-          "label": "3/4 (75%)"
-        },
-        {
-          "value": "md:w-4/5|80",
-          "label": "4/5 (80%)"
-        },
-        {
-          "value": "md:w-5/6|83.3333",
-          "label": "5/6 (83.3333%)"
-        },
-        {
-          "value": "md:w-11/12|91.6667",
-          "label": "11/12 (91.6667%)"
-        },
-        {
-          "value": "md:w-full|100",
-          "label": "Full (100%)"
-        }
-      ],
-      "default": "md:w-1/2|50",
-      "visible_if": "{{ block.settings.tablet_column_count >= 7 }}"
-    },
-    {
-      "type": "select",
-      "id": "tablet_column_8_width",
-      "label": "Column 8",
-      "options": [
-        {
-          "value": "md:w-1/12|8.3333",
-          "label": "1/12 (8.3333%)"
-        },
-        {
-          "value": "md:w-1/6|16.6667",
-          "label": "1/6 (16.6667%)"
-        },
-        {
-          "value": "md:w-1/5|20",
-          "label": "1/5 (20%)"
-        },
-        {
-          "value": "md:w-1/4|25",
-          "label": "1/4 (25%)"
-        },
-        {
-          "value": "md:w-1/3|33.3333",
-          "label": "1/3 (33.3333%)"
-        },
-        {
-          "value": "md:w-5/12|41.6667",
-          "label": "5/12 (41.6667%)"
-        },
-        {
-          "value": "md:w-2/5|40",
-          "label": "2/5 (40%)"
-        },
-        {
-          "value": "md:w-1/2|50",
-          "label": "1/2 (50%)"
-        },
-        {
-          "value": "md:w-7/12|58.3333",
-          "label": "7/12 (58.3333%)"
-        },
-        {
-          "value": "md:w-3/5|60",
-          "label": "3/5 (60%)"
-        },
-        {
-          "value": "md:w-2/3|66.6667",
-          "label": "2/3 (66.6667%)"
-        },
-        {
-          "value": "md:w-3/4|75",
-          "label": "3/4 (75%)"
-        },
-        {
-          "value": "md:w-4/5|80",
-          "label": "4/5 (80%)"
-        },
-        {
-          "value": "md:w-5/6|83.3333",
-          "label": "5/6 (83.3333%)"
-        },
-        {
-          "value": "md:w-11/12|91.6667",
-          "label": "11/12 (91.6667%)"
-        },
-        {
-          "value": "md:w-full|100",
-          "label": "Full (100%)"
-        }
-      ],
-      "default": "md:w-1/2|50",
-      "visible_if": "{{ block.settings.tablet_column_count >= 8 }}"
-    },
-    {
       "type": "header",
       "content": "Column width (mobile)"
     },
@@ -1983,6 +1883,14 @@
         { "value": "10", "label": "Every 10 seconds" }
       ],
       "default": "off",
+      "visible_if": "{{ block.settings.swipe_columns_mobile }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_bleed",
+      "label": "Run to section edges",
+      "default": true,
+      "info": "Slides scroll to the edges of the section. Turn off to keep them inside the section padding.",
       "visible_if": "{{ block.settings.swipe_columns_mobile }}"
     },
     {
@@ -2395,32 +2303,35 @@
     },
     {
       "type": "header",
-      "content": "Align columns",
-      "info": "Choose how columns align vertically"
+      "content": "Column content",
+      "info": "Where the content sits inside each column."
     },
     {
       "type": "select",
       "id": "vertical_alignment",
-      "label": "Vertical alignment",      
+      "label": "Vertical alignment",
       "options": [
-        {
-          "value": "stretch",
-          "label": "Stretch (equal height)"
-        },
-        {
-          "value": "flex-start",
-          "label": "Top (natural height)"
-        },
-        {
-          "value": "center",
-          "label": "Middle"
-        },
-        {
-          "value": "flex-end",
-          "label": "Bottom"
-        }
+        { "value": "stretch", "label": "Stretch (equal height)" },
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "flex-end", "label": "Bottom" }
       ],
       "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "stretch", "label": "Stretch (full width)" },
+        { "value": "start", "label": "t:options.alignment.left" },
+        { "value": "center", "label": "t:options.alignment.center" },
+        { "value": "end", "label": "t:options.alignment.right" },
+        { "value": "space-between", "label": "Space between" },
+        { "value": "space-evenly", "label": "Space evenly" }
+      ],
+      "default": "stretch",
+      "info": "Moves content narrower than its column. On desktop, columns set to Fit content move as a group, and the Space options spread them out."
     }    
   ],
   "blocks": [{ "type": "card" }, { "type": "image-card" }, { "type": "heading-group" }, { "type": "stack" }],

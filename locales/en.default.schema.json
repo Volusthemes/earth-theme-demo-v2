@@ -571,7 +571,8 @@
 		"alignment": {
 			"left": "Left",
 			"center": "Center",
-			"right": "Right"			
+			"right": "Right",
+			"normal": "Normal"			
 		},
 		"direction": {
 			"horizontal": "Horizontal",
@@ -1307,6 +1308,15 @@
 					},
 					"options__36": {
 						"label": "Arrow"
+					},
+					"options__37": {
+						"label": "Sprout"
+					},
+					"options__38": {
+						"label": "Cloud and leaf"
+					},
+					"options__39": {
+						"label": "Plant with dollar sign"
 					}
 				},
 				"icon_size_desktop": {

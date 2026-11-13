@@ -1,18 +1,5 @@
 /**
- * <vt-marquee>: seamless scrolling row for the Scrolling content block.
- *
- * The motion itself is a CSS animation on transform (compositor only, no work on
- * the main thread per frame). This script only:
- * - copies the content group as many times as needed to cover the row, so the
- *   loop never shows an empty gap. Copies are aria-hidden and inert, so screen
- *   readers and keyboard users meet the content once, and search engines see the
- *   original text only once.
- * - turns the Speed setting (px per second) into a duration, so the speed stays
- *   the same however long the content is.
- * - pauses the animation while the row is off screen.
- *
- * Without JavaScript, or with reduced motion, the row stays still and can be
- * scrolled sideways (CSS in blocks/scrolling-content.liquid).
+ * <vt-marquee>: seamless scrolling row for the Scrolling content block. 
  */
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');

@@ -74,10 +74,18 @@
     }
   }
 
-  /* Still row (no JavaScript yet, or reduced motion): scrolls sideways, no scrollbar */
+  /*
+    Still row (no JavaScript yet, or reduced motion): scrolls sideways, no scrollbar.
+    A scrolling box also clips vertically, so the padding gives focus rings, link
+    underlines and entrance animations room above and below; the negative margin
+    keeps the row's height unchanged.
+  */
   .vt-marquee__viewport {
+    --vt-marquee-bleed: 0.75rem;
     overflow-x: auto;
     overflow-y: hidden;
+    padding-block: var(--vt-marquee-bleed);
+    margin-block: calc(var(--vt-marquee-bleed) * -1);
     scrollbar-width: none;
     overscroll-behavior-x: contain;
   }
@@ -153,8 +161,10 @@
 
   /* Moving row */
   @media (prefers-reduced-motion: no-preference) {
+    /* Moving row: clip only the sides, nothing is cut above or below */
     .vt-marquee[data-ready] .vt-marquee__viewport {
-      overflow: hidden;
+      overflow-x: clip;
+      overflow-y: visible;
     }
 
     .vt-marquee[data-ready] .vt-marquee__track {
@@ -413,6 +423,18 @@
         {
           "value": "honest-progress",
           "label": "t:blocks.icon.settings.icon.options__32.label"
+        },
+        {
+          "value": "sprout",
+          "label": "t:blocks.icon.settings.icon.options__37.label"
+        },
+        {
+          "value": "cloud-leaf",
+          "label": "t:blocks.icon.settings.icon.options__38.label"
+        },
+        {
+          "value": "money-plant",
+          "label": "t:blocks.icon.settings.icon.options__39.label"
         },
         {
           "value": "mail",

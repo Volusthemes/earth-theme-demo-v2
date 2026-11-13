@@ -105,7 +105,7 @@
               "type": "_header-localization",
               "settings": {
                 "show_country": true,
-                "show_language": true
+                "show_language": false
               }
             },
             "search": {

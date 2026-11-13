@@ -25,8 +25,7 @@
   </div>
 {%- endif -%}
 
-{% schema %}
-{
+{% schema %}{
   "name": "Multicolumn",
   "tag": "section",
   "class": "multicolumn-section",
@@ -1202,6 +1201,259 @@
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Multicolumn minimal",
+      "settings": {
+        "gap": 0,
+        "gap_mobile": 0,
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 60,
+        "padding_bottom_mobile": 60,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "column-layout",
+          "settings": {
+            "desktop_column_count": 4,
+            "tablet_column_count": 4,
+            "mobile_column_count": 4,
+            "desktop_column_1_width": "lg:w-1/4|25",
+            "desktop_column_2_width": "lg:w-1/4|25",
+            "desktop_column_3_width": "lg:w-1/4|25",
+            "desktop_column_4_width": "lg:w-1/4|25",
+            "tablet_column_1_width": "md:w-1/2|50",
+            "tablet_column_2_width": "md:w-1/2|50",
+            "tablet_column_3_width": "md:w-1/2|50",
+            "tablet_column_4_width": "md:w-1/2|50",
+            "mobile_column_1_width": "w-full|100",
+            "mobile_column_2_width": "w-full|100",
+            "mobile_column_3_width": "w-full|100",
+            "mobile_column_4_width": "w-full|100",
+            "desktop_gap_x": "lg:gap-x-8",
+            "desktop_gap_y": "lg:gap-y-8",
+            "tablet_gap_x": "md:gap-x-6",
+            "tablet_gap_y": "md:gap-y-6",
+            "mobile_gap_x": "gap-x-4",
+            "mobile_gap_y": "gap-y-4",
+            "swipe_columns_mobile": true,
+            "autoplay": "5"
+          },
+          "blocks": [
+            {
+              "type": "card",
+              "settings": {
+                "color_style": "transparent",
+                "position": "top",
+                "alignment": "center",
+                "enable_decorative_icon": false,
+                "padding_vertical": 16,
+                "padding_horizontal": 16,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 16,
+                "padding_horizontal_mobile": 12,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "gap": 8,
+                "enable_gap_mobile": true,
+                "gap_mobile": 6,
+                "border": "none",
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.1,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 1
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "100%",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "p",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Responsibly sourced</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "color_style": "transparent",
+                "position": "top",
+                "alignment": "center",
+                "enable_decorative_icon": false,
+                "padding_vertical": 16,
+                "padding_horizontal": 16,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 16,
+                "padding_horizontal_mobile": 12,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "gap": 8,
+                "enable_gap_mobile": true,
+                "gap_mobile": 6,
+                "border": "none",
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 1
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "0%",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "p",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Plastic packaging</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "color_style": "transparent",
+                "position": "top",
+                "alignment": "center",
+                "enable_decorative_icon": false,
+                "padding_vertical": 16,
+                "padding_horizontal": 16,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 16,
+                "padding_horizontal_mobile": 12,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "gap": 8,
+                "enable_gap_mobile": true,
+                "gap_mobile": 6,
+                "border": "none",
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.3,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 1
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "50+",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "p",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Partner makers</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "color_style": "transparent",
+                "position": "top",
+                "alignment": "center",
+                "enable_decorative_icon": false,
+                "padding_vertical": 16,
+                "padding_horizontal": 16,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 16,
+                "padding_horizontal_mobile": 12,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "gap": 8,
+                "enable_gap_mobile": true,
+                "gap_mobile": 6,
+                "border": "none",
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.4,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 1
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "4.9",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "p",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Average rating</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "animation_type": "none"
                   }
                 }
               ]

@@ -82,6 +82,8 @@ if (!customElements.get('vt-column-layout')) {
         slide.style.setProperty('--vt-slide-share-tablet', tabletShares[index % tabletShares.length]);
       });
 
+      this.#applyBleed(viewport);
+
       const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const autoplay = this.dataset.autoplay === 'true' && !prefersReducedMotion;
 
@@ -100,6 +102,10 @@ if (!customElements.get('vt-column-layout')) {
               pauseOnMouseEnter: true,
             }
           : false,
+        on: {
+          // Section padding can change with the screen width: measure again first
+          beforeResize: () => this.#applyBleed(viewport),
+        },
         a11y: {
           enabled: true,
           containerRole: 'group',
@@ -121,6 +127,10 @@ if (!customElements.get('vt-column-layout')) {
       this.#swiper.destroy(true, true);
       this.#swiper = null;
 
+      el.style.removeProperty('margin-left');
+      el.style.removeProperty('margin-right');
+      el.style.removeProperty('padding-left');
+      el.style.removeProperty('padding-right');
       el.classList.remove('swiper');
       ['role', 'aria-label', 'aria-roledescription'].forEach((name) => el.removeAttribute(name));
 
@@ -135,6 +145,30 @@ if (!customElements.get('vt-column-layout')) {
         slide.style.removeProperty('--vt-slide-share-mobile');
         slide.style.removeProperty('--vt-slide-share-tablet');
       });
+    }
+
+    /*
+      "Run to section edges" (on by default): let the slides run to the section's edges instead of being cut at the content
+      edge (section padding, page width padding). The viewport grows by the distance
+      to each edge with a negative margin, and the same padding keeps the first slide
+      on the content edge. Swiper sizes slides from the padded box, so their width
+      stays a share of the content. Measured from this element's content box, so the
+      result does not depend on a previous measurement.
+    */
+    #applyBleed(viewport) {
+      if (this.dataset.bleed === 'false') return;
+
+      const section = this.closest('.vt-section') || document.documentElement;
+      const sectionBox = section.getBoundingClientRect();
+      const box = this.getBoundingClientRect();
+      const styles = getComputedStyle(this);
+      const start = Math.max(0, Math.round(box.left + parseFloat(styles.paddingLeft) - sectionBox.left));
+      const end = Math.max(0, Math.round(sectionBox.right - (box.right - parseFloat(styles.paddingRight))));
+
+      viewport.style.marginLeft = `${-start}px`;
+      viewport.style.marginRight = `${-end}px`;
+      viewport.style.paddingLeft = `${start}px`;
+      viewport.style.paddingRight = `${end}px`;
     }
 
     // stop()/start() rather than pause(): Swiper resumes a paused autoplay on its own after a slide change

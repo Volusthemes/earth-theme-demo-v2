@@ -116,7 +116,7 @@
     },
     {
       "type": "header",
-      "content": "Padding"      
+      "content": "Padding"
     },
     {
       "type": "range",
@@ -215,7 +215,11 @@
       "label": "Apply max width"
     }
   ],
-  "blocks": [{ "type": "@theme" }],
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
   "presets": [
     {
       "name": "t:general.custom_section",
@@ -255,6 +259,1030 @@
           "settings": {
             "button_label": "Add a button label"
           }
+        }
+      ]
+    },
+    {
+      "name": "Highlights with call to action",
+      "settings": {
+        "gap": 64,
+        "gap_mobile": 40,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "center",
+            "position": "center",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "gap_desktop": 24,
+            "gap_mobile": 16,
+            "enable_padding": false
+          },
+          "blocks": [
+            {
+              "type": "heading-group",
+              "settings": {
+                "direction": "horizontal",
+                "alignment": "center",
+                "vertical_alignment": "center",
+                "gap_desktop": 24,
+                "gap_mobile": 12,
+                "width": "fit",
+                "hide_icon_mobile": true
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_size_desktop": 48,
+                    "icon_size_mobile": 36,
+                    "show_box": false,
+                    "color_style": "secondary",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Share what you stand for",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "h2",
+                    "heading_alignment": "text-center",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_size_desktop": 48,
+                    "icon_size_mobile": 36,
+                    "show_box": false,
+                    "color_style": "secondary",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Tell customers what makes your brand different, then point them to where they can learn more.</p>",
+                "paragraph_size": "vt-paragraph-large",
+                "paragraph_alignment": "text-center",
+                "paragraph_width": "fit",
+                "enable_max_width": true,
+                "paragraph_max_width": 720,
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "button",
+              "settings": {
+                "button_label": "Learn more",
+                "button_link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "button_style": "outline",
+                "animation_type": "none"
+              }
+            }
+          ]
+        },
+        {
+          "type": "column-layout",
+          "settings": {
+            "desktop_column_count": 3,
+            "tablet_column_count": 3,
+            "mobile_column_count": 1,
+            "desktop_column_1_width": "lg:w-auto|auto",
+            "desktop_column_2_width": "lg:w-auto|auto",
+            "desktop_column_3_width": "lg:w-auto|auto",
+            "tablet_column_1_width": "md:w-1/3|33.3333",
+            "tablet_column_2_width": "md:w-1/3|33.3333",
+            "tablet_column_3_width": "md:w-1/3|33.3333",
+            "mobile_column_1_width": "w-full|100",
+            "swipe_columns_mobile": true,
+            "autoplay": "5",
+            "desktop_gap_x": "lg:gap-x-24",
+            "desktop_gap_y": "lg:gap-y-8",
+            "tablet_gap_x": "md:gap-x-6",
+            "tablet_gap_y": "md:gap-y-6",
+            "mobile_gap_x": "gap-x-4",
+            "mobile_gap_y": "gap-y-4",
+            "vertical_alignment": "flex-start",
+            "alignment": "center"
+          },
+          "blocks": [
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "center",
+                "position": "center",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fit",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 16,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "sprout",
+                    "color_style": "text",
+                    "icon_size_desktop": 32,
+                    "icon_size_mobile": 28,
+                    "show_box": true,
+                    "box_style": "secondary",
+                    "box_size_desktop": 64,
+                    "box_size_mobile": 56,
+                    "box_radius": "50%",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Carefully selected",
+                    "heading_size": "vt-heading-h6",
+                    "heading_tag": "p",
+                    "uppercase": true,
+                    "heading_alignment": "text-center",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "center",
+                "position": "center",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fit",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 16,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "money-plant",
+                    "color_style": "text",
+                    "icon_size_desktop": 32,
+                    "icon_size_mobile": 28,
+                    "show_box": true,
+                    "box_style": "secondary",
+                    "box_size_desktop": 64,
+                    "box_size_mobile": 56,
+                    "box_radius": "50%",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Fair pay",
+                    "heading_size": "vt-heading-h6",
+                    "heading_tag": "p",
+                    "uppercase": true,
+                    "heading_alignment": "text-center",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "center",
+                "position": "center",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fit",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "gap_desktop": 16,
+                "gap_mobile": 12,
+                "enable_padding": false
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "cloud-leaf",
+                    "color_style": "text",
+                    "icon_size_desktop": 32,
+                    "icon_size_mobile": 28,
+                    "show_box": true,
+                    "box_style": "secondary",
+                    "box_size_desktop": 64,
+                    "box_size_mobile": 56,
+                    "box_radius": "50%",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Climate conscious",
+                    "heading_size": "vt-heading-h6",
+                    "heading_tag": "p",
+                    "uppercase": true,
+                    "heading_alignment": "text-center",
+                    "heading_width": "fit",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Image with quote",
+      "settings": {
+        "gap": 30,
+        "gap_mobile": 20,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--horizontal",
+            "layout_direction_tablet": "vt-stack--horizontal",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "center",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "enable_padding": false,
+            "reverse_mobile": true,
+            "gap_desktop": 80,
+            "gap_mobile": 40
+          },
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "square",
+                "image_desktop_width": "custom",
+                "image_desktop_width_custom": 48,
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "enable_padding": false,
+                "gap_desktop": 24,
+                "gap_mobile": 20
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "“Share a quote that captures what your brand stands for and why it matters.”",
+                    "heading_size": "vt-heading-h3",
+                    "heading_tag": "p",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fill",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "enable_padding": false,
+                    "gap_desktop": 6,
+                    "gap_mobile": 4
+                  },
+                  "blocks": [
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Name",
+                        "heading_size": "vt-heading-h6",
+                        "heading_tag": "p",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Title or role</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Intro with cards",
+      "settings": {
+        "gap": 48,
+        "gap_mobile": 40,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "column-layout",
+          "settings": {
+            "desktop_column_count": 2,
+            "tablet_column_count": 2,
+            "mobile_column_count": 1,
+            "mobile_column_1_width": "w-full|100",
+            "swipe_columns_mobile": false,
+            "desktop_gap_y": "lg:gap-y-5",
+            "tablet_gap_y": "md:gap-y-5",
+            "mobile_gap_y": "gap-y-5",
+            "vertical_alignment": "flex-start",
+            "alignment": "stretch",
+            "desktop_column_1_width": "lg:w-7/12|58.3333",
+            "desktop_column_2_width": "lg:w-5/12|41.6667",
+            "tablet_column_1_width": "md:w-1/2|50",
+            "tablet_column_2_width": "md:w-1/2|50",
+            "desktop_gap_x": "lg:gap-x-8",
+            "tablet_gap_x": "md:gap-x-6",
+            "mobile_gap_x": "gap-x-4"
+          },
+          "blocks": [
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "enable_padding": false,
+                "gap_desktop": 12,
+                "gap_mobile": 8
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "flex-start",
+                    "position": "center",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fit",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "enable_padding": false,
+                    "gap_desktop": 4,
+                    "gap_mobile": 4
+                  },
+                  "blocks": [
+                    {
+                      "type": "icons",
+                      "settings": {
+                        "icon": "sparkle",
+                        "color_style": "accent",
+                        "icon_size_desktop": 16,
+                        "icon_size_mobile": 16,
+                        "show_box": false,
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "sub-heading",
+                      "settings": {
+                        "sub_heading": "Section label",
+                        "subheading_tag": "p",
+                        "subheading_alignment": "text-left",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading-group",
+                  "settings": {
+                    "direction": "horizontal",
+                    "alignment": "left",
+                    "vertical_alignment": "center",
+                    "gap_desktop": 24,
+                    "gap_mobile": 12,
+                    "width": "fit",
+                    "hide_icon_mobile": true
+                  },
+                  "blocks": [
+                    {
+                      "type": "icons",
+                      "settings": {
+                        "icon": "leaf",
+                        "color_style": "secondary",
+                        "icon_size_desktop": 56,
+                        "icon_size_mobile": 36,
+                        "show_box": false,
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Introduce this section",
+                        "heading_size": "vt-heading-h2",
+                        "heading_tag": "h2",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--vertical",
+                "layout_direction_tablet": "vt-stack--vertical",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "flex-start",
+                "position": "flex-start",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "enable_padding": false,
+                "gap_desktop": 0,
+                "gap_mobile": 0
+              },
+              "blocks": [
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Add a short introduction that explains what the cards below are about.</p>",
+                    "paragraph_size": "vt-paragraph-large",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fill",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "column-layout",
+          "settings": {
+            "desktop_column_count": 2,
+            "tablet_column_count": 2,
+            "mobile_column_count": 1,
+            "desktop_column_1_width": "lg:w-7/12|58.3333",
+            "desktop_column_2_width": "lg:w-5/12|41.6667",
+            "tablet_column_1_width": "md:w-1/2|50",
+            "tablet_column_2_width": "md:w-1/2|50",
+            "mobile_column_1_width": "w-full|100",
+            "swipe_columns_mobile": false,
+            "desktop_gap_x": "lg:gap-x-8",
+            "desktop_gap_y": "lg:gap-y-12",
+            "tablet_gap_x": "md:gap-x-6",
+            "tablet_gap_y": "md:gap-y-5",
+            "mobile_gap_x": "gap-x-4",
+            "mobile_gap_y": "gap-y-5",
+            "vertical_alignment": "stretch",
+            "alignment": "stretch"
+          },
+          "blocks": [
+            {
+              "type": "card",
+              "settings": {
+                "color_style": "accent",
+                "position": "between",
+                "alignment": "left",
+                "enable_decorative_icon": true,
+                "decorative_icon": "leaf",
+                "decorative_icon_position": "right",
+                "decorative_icon_alignment": "bottom",
+                "decorative_icon_size_desktop": 200,
+                "decorative_icon_size_mobile": 140,
+                "decorative_icon_opacity": 25,
+                "decorative_icon_blend_mode": "multiply",
+                "padding_vertical": 40,
+                "padding_horizontal": 40,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 20,
+                "width": "fill",
+                "height": "fill",
+                "gap": 32,
+                "enable_gap_mobile": true,
+                "gap_mobile": 24,
+                "border": "none",
+                "animation_type": "none"
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "enable_padding": false,
+                    "gap_desktop": 16,
+                    "gap_mobile": 12
+                  },
+                  "blocks": [
+                    {
+                      "type": "stack",
+                      "settings": {
+                        "layout_direction_desktop": "vt-stack--horizontal",
+                        "layout_direction_tablet": "vt-stack--horizontal",
+                        "layout_direction_mobile": "vt-stack--horizontal",
+                        "alignment": "flex-start",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fit",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 12,
+                        "gap_mobile": 8
+                      },
+                      "blocks": [
+                        {
+                          "type": "icons",
+                          "settings": {
+                            "icon": "eco",
+                            "color_style": "text",
+                            "icon_size_desktop": 28,
+                            "icon_size_mobile": 24,
+                            "show_box": false,
+                            "animation_type": "none"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "settings": {
+                            "heading": "Card heading",
+                            "heading_size": "vt-heading-h3",
+                            "heading_tag": "h3",
+                            "heading_alignment": "text-inherit",
+                            "heading_width": "fit",
+                            "animation_type": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Short highlight</p>",
+                        "paragraph_size": "vt-paragraph-large",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Describe what this card is about. Keep it to a few lines so the card stays easy to scan.</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "stack",
+                      "settings": {
+                        "layout_direction_desktop": "vt-stack--horizontal",
+                        "layout_direction_tablet": "vt-stack--horizontal",
+                        "layout_direction_mobile": "vt-stack--horizontal",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "wrap",
+                        "width": "fit",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 12,
+                        "gap_mobile": 8
+                      },
+                      "blocks": [
+                        {
+                          "type": "badge",
+                          "settings": {
+                            "text": "Badge",
+                            "color_style": "dark",
+                            "badge_size": "vt-paragraph-small",
+                            "radius": "3.125rem",
+                            "width": "fit",
+                            "animation_type": "none"
+                          },
+                          "blocks": [
+                            {
+                              "type": "icons",
+                              "settings": {
+                                "icon": "certificate-regulation",
+                                "color_style": "text",
+                                "icon_size_desktop": 16,
+                                "icon_size_mobile": 16,
+                                "show_box": false,
+                                "animation_type": "none"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "badge",
+                          "settings": {
+                            "text": "Badge",
+                            "color_style": "dark",
+                            "badge_size": "vt-paragraph-small",
+                            "radius": "3.125rem",
+                            "width": "fit",
+                            "animation_type": "none"
+                          },
+                          "blocks": [
+                            {
+                              "type": "icons",
+                              "settings": {
+                                "icon": "handshake",
+                                "color_style": "text",
+                                "icon_size_desktop": 16,
+                                "icon_size_mobile": 16,
+                                "show_box": false,
+                                "animation_type": "none"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "settings": {
+                    "button_label": "Learn more",
+                    "button_link": "shopify://collections/all",
+                    "button_style": "link",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "image-card",
+              "settings": {
+                "aspect_ratio": "square",
+                "enable_aspect_ratio_mobile": true,
+                "aspect_ratio_mobile": "portrait_4_5",
+                "position": "bottom",
+                "alignment": "left",
+                "overlay_style": "gradient",
+                "overlay_opacity": 90,
+                "gradient_direction": "bottom",
+                "gradient_size": 70,
+                "padding_vertical": 40,
+                "padding_horizontal": 40,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 20,
+                "gap": 16,
+                "gap_mobile": 12
+              },
+              "blocks": [
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Image card heading",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "h3",
+                    "heading_alignment": "text-inherit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Pair a photo with a short message and a link.</p>",
+                    "paragraph_size": "vt-paragraph-large",
+                    "paragraph_alignment": "text-inherit",
+                    "animation_type": "none"
+                  }
+                },
+                {
+                  "type": "button",
+                  "settings": {
+                    "button_label": "Learn more",
+                    "button_style": "link-light",
+                    "animation_type": "none"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Call to action banner",
+      "settings": {
+        "gap": 48,
+        "gap_mobile": 40,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "color_style": "gradient",
+            "position": "middle",
+            "alignment": "left",
+            "enable_decorative_icon": false,
+            "padding_vertical": 64,
+            "padding_horizontal": 48,
+            "enable_padding_mobile": true,
+            "padding_vertical_mobile": 40,
+            "padding_horizontal_mobile": 24,
+            "width": "fill",
+            "height": "custom",
+            "min_height": 400,
+            "min_height_mobile": 300,
+            "gap": 16,
+            "enable_gap_mobile": true,
+            "gap_mobile": 12,
+            "border": "none",
+            "animation_type": "none"
+          },
+          "blocks": [
+            {
+              "type": "stack",
+              "settings": {
+                "layout_direction_desktop": "vt-stack--horizontal",
+                "layout_direction_tablet": "vt-stack--horizontal",
+                "layout_direction_mobile": "vt-stack--vertical",
+                "alignment": "space-between",
+                "position": "center",
+                "position_type": "default",
+                "wrap_content": "nowrap",
+                "width": "fill",
+                "width_custom": 100,
+                "height": "fit",
+                "min_height": 400,
+                "enable_padding": false,
+                "gap_desktop": 64,
+                "gap_mobile": 32
+              },
+              "blocks": [
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "enable_padding": false,
+                    "gap_desktop": 16,
+                    "gap_mobile": 12
+                  },
+                  "blocks": [
+                    {
+                      "type": "stack",
+                      "settings": {
+                        "layout_direction_desktop": "vt-stack--horizontal",
+                        "layout_direction_tablet": "vt-stack--horizontal",
+                        "layout_direction_mobile": "vt-stack--horizontal",
+                        "alignment": "flex-start",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fit",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 4,
+                        "gap_mobile": 4
+                      },
+                      "blocks": [
+                        {
+                          "type": "icons",
+                          "settings": {
+                            "icon": "sparkle",
+                            "color_style": "accent",
+                            "icon_size_desktop": 16,
+                            "icon_size_mobile": 16,
+                            "show_box": false,
+                            "animation_type": "none"
+                          }
+                        },
+                        {
+                          "type": "sub-heading",
+                          "settings": {
+                            "sub_heading": "Section label",
+                            "subheading_tag": "p",
+                            "subheading_alignment": "text-left",
+                            "animation_type": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading",
+                      "settings": {
+                        "heading": "Invite customers to take the next step",
+                        "heading_size": "vt-heading-h2",
+                        "heading_tag": "h2",
+                        "heading_alignment": "text-inherit",
+                        "heading_width": "fit",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "stack",
+                  "settings": {
+                    "layout_direction_desktop": "vt-stack--vertical",
+                    "layout_direction_tablet": "vt-stack--vertical",
+                    "layout_direction_mobile": "vt-stack--vertical",
+                    "alignment": "flex-start",
+                    "position": "flex-start",
+                    "position_type": "default",
+                    "wrap_content": "nowrap",
+                    "width": "fill",
+                    "width_custom": 100,
+                    "height": "fit",
+                    "min_height": 400,
+                    "enable_padding": false,
+                    "gap_desktop": 32,
+                    "gap_mobile": 24
+                  },
+                  "blocks": [
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Share a short message about why this matters, then point customers to where they can learn more.</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "settings": {
+                        "button_label": "Learn more",
+                        "button_link": "shopify://collections/all",
+                        "button_style": "secondary",
+                        "animation_type": "none"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }

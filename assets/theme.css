@@ -891,6 +891,19 @@ body {
 }
 
 /* ============================================================
+  CAROUSEL CLIPPING
+  Carousels clip their sides only. Clipping above and below too would hide
+  content that a Slide animation starts below its place (the animation waits
+  for the content to be visible, so it would never start), and would cut off
+  focus rings and hover effects. Same rule as Column layout's swipe mode.
+  ============================================================ */
+
+.swiper:is(.vt-carousel__swiper, .vt-slideshow__swiper, .vt-image-slideshow__swiper, .vt-products-swiper) {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+/* ============================================================
   ALIGN WITH PAGE (Slide style, desktop)
   Carousels with data-slide-style="page" run to both screen edges, while the first
   and last slides line up with the page content (a left-aligned heading above, for
