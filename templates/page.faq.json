@@ -1,0 +1,1882 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections": {
+        "main": {
+            "type": "page",
+            "disabled": true,
+            "settings": {
+                "show_title": true
+            }
+        },
+        "image_with_text_overlay_section": {
+            "type": "image-with-text-overlay",
+            "settings": {
+                "image_radius": 0,
+                "section_height": "scale",
+                "image_ratio_desktop": "wide",
+                "image_ratio_mobile": "classic_portrait",
+                "overlay_color": "{{ settings.color_palette.foreground }}",
+                "overlay_opacity": 10,
+                "content_position": "center",
+                "desktop_content_alignment": "justify-center",
+                "mobile_content_alignment": "justify-center",
+                "gap": 16,
+                "gap_mobile": 12,
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}"
+            },
+            "blocks": {
+                "stack_block": {
+                    "type": "stack",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--horizontal",
+                        "layout_direction_tablet": "vt-stack--horizontal",
+                        "layout_direction_mobile": "vt-stack--horizontal",
+                        "alignment": "center",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fit",
+                        "height": "fit",
+                        "gap_desktop": 8,
+                        "gap_mobile": 8,
+                        "enable_padding": false
+                    },
+                    "blocks": {
+                        "sparkle_icon": {
+                            "type": "icons",
+                            "settings": {
+                                "icon": "sparkle",
+                                "icon_color": "{{ settings.color_palette.accent }}",
+                                "icon_size_desktop": 16,
+                                "icon_size_mobile": 16,
+                                "show_box": false,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        },
+                        "eyebrow_text": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "Faq's",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-center",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "sparkle_icon",
+                        "eyebrow_text"
+                    ]
+                },
+                "heading_block": {
+                    "type": "heading",
+                    "settings": {
+                        "heading": "Answers & Support",
+                        "heading_size": "vt-heading-h1",
+                        "heading_alignment": "text-inherit",
+                        "heading_tag": "h1",
+                        "enable_max_width": true,
+                        "heading_max_width": 560,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_delay": 0.4,
+                        "animation_easing": "ease-out-sine"
+                    }
+                },
+                "faq_subtitle": {
+                    "type": "paragraph",
+                    "settings": {
+                        "text": "<p>Find quick answers about our products, materials, shipping, and care.</p>",
+                        "paragraph_size": "vt-paragraph-large",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fill",
+                        "enable_max_width": true,
+                        "paragraph_max_width": 600,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_delay": 0.3,
+                        "animation_easing": "ease-out-sine"
+                    }
+                }
+            },
+            "block_order": [
+                "stack_block",
+                "heading_block",
+                "faq_subtitle"
+            ]
+        },
+        "contact_options_section": {
+            "type": "custom-section",
+            "settings": {
+                "gap": 64,
+                "gap_mobile": 40,
+                "background_style": "solid",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "contact_intro": {
+                    "type": "stack",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "center",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "gap_desktop": 24,
+                        "gap_mobile": 16,
+                        "enable_padding": false
+                    },
+                    "blocks": {
+                        "contact_title_group": {
+                            "type": "heading-group",
+                            "settings": {
+                                "direction": "horizontal",
+                                "alignment": "center",
+                                "vertical_alignment": "center",
+                                "gap_desktop": 24,
+                                "gap_mobile": 12,
+                                "width": "fit",
+                                "hide_icon_mobile": true
+                            },
+                            "blocks": {
+                                "contact_icon_start": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_size_desktop": 48,
+                                        "icon_size_mobile": 36,
+                                        "show_box": false,
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "contact_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Still have a question",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "contact_icon_end": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_size_desktop": 48,
+                                        "icon_size_mobile": 36,
+                                        "show_box": false,
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "contact_icon_start",
+                                "contact_heading",
+                                "contact_icon_end"
+                            ]
+                        },
+                        "contact_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Our team is here to help with orders, products, materials, sizing, care, and any questions still unanswered.</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-center",
+                                "paragraph_width": "fit",
+                                "enable_max_width": true,
+                                "paragraph_max_width": 720,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "contact_title_group",
+                        "contact_text"
+                    ]
+                },
+                "contact_columns": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 3,
+                        "tablet_column_count": 2,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-1/3|33.3333",
+                        "desktop_column_2_width": "lg:w-1/3|33.3333",
+                        "desktop_column_3_width": "lg:w-1/3|33.3333",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": true,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-4",
+                        "vertical_alignment": "flex-start",
+                        "alignment": "center",
+                        "autoplay": "5"
+                    },
+                    "blocks": {
+                        "chat_option": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fit",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "chat_option_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "message",
+                                        "color_style": "text",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": true,
+                                        "box_style": "accent",
+                                        "box_size_desktop": 64,
+                                        "box_size_mobile": 56,
+                                        "box_radius": "50%",
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "chat_option_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Talk together",
+                                        "heading_size": "vt-heading-h4",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "chat_option_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Ask about orders, sizing, care, or anything Earth-related today.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-center",
+                                        "paragraph_width": "fit",
+                                        "enable_max_width": true,
+                                        "paragraph_max_width": 400,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "chat_option_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "Start conversation",
+                                        "open_in_new_tab": false,
+                                        "button_style": "link",
+                                        "button_link": "/pages/contact",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.4,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "chat_option_icon",
+                                "chat_option_title",
+                                "chat_option_text",
+                                "chat_option_button"
+                            ]
+                        },
+                        "email_option": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fit",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "email_option_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "mail",
+                                        "color_style": "text",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": true,
+                                        "box_style": "accent",
+                                        "box_size_desktop": 64,
+                                        "box_size_mobile": 56,
+                                        "box_radius": "50%",
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "email_option_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Email us",
+                                        "heading_size": "vt-heading-h4",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "email_option_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Send your questions anytime, and our team will reply soon.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-center",
+                                        "paragraph_width": "fit",
+                                        "enable_max_width": true,
+                                        "paragraph_max_width": 400,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "email_option_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "Send an email",
+                                        "open_in_new_tab": false,
+                                        "button_style": "link",
+                                        "button_link": "/pages/contact",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.4,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "email_option_icon",
+                                "email_option_title",
+                                "email_option_text",
+                                "email_option_button"
+                            ]
+                        },
+                        "call_option": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fit",
+                                "width_custom": 100,
+                                "height": "fit",
+                                "min_height": 400,
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "call_option_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "telephone-call",
+                                        "color_style": "text",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": true,
+                                        "box_style": "accent",
+                                        "box_size_desktop": 64,
+                                        "box_size_mobile": 56,
+                                        "box_radius": "50%",
+                                        "box_bg_color": "{{ settings.color_palette.accent }}",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "call_option_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Book a call",
+                                        "heading_size": "vt-heading-h4",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "call_option_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Choose a time to speak with our team personally.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-center",
+                                        "paragraph_width": "fit",
+                                        "enable_max_width": true,
+                                        "paragraph_max_width": 400,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "call_option_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "Schedule call",
+                                        "open_in_new_tab": false,
+                                        "button_style": "link",
+                                        "button_link": "/pages/contact",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.4,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "call_option_icon",
+                                "call_option_title",
+                                "call_option_text",
+                                "call_option_button"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "chat_option",
+                        "email_option",
+                        "call_option"
+                    ]
+                }
+            },
+            "block_order": [
+                "contact_intro",
+                "contact_columns"
+            ]
+        },
+        "faq_topics_section": {
+            "type": "custom-section",
+            "settings": {
+                "gap": 0,
+                "gap_mobile": 0,
+                "background_style": "solid",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 0,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 64,
+                "padding_bottom_mobile": 0,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "topics_columns": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 2,
+                        "tablet_column_count": 1,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-1/3|33.3333",
+                        "desktop_column_2_width": "lg:w-2/3|66.6667",
+                        "tablet_column_1_width": "md:w-full|100",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": false,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-10",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-16",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-12",
+                        "vertical_alignment": "flex-start",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "topics_sidebar": {
+                            "type": "stack",
+                            "name": "Sidebar",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "stretch",
+                                "position": "flex-start",
+                                "position_type": "sticky",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 24,
+                                "gap_mobile": 16,
+                                "enable_padding": false,
+                                "sticky_offset": 32,
+                                "last_when_stacked": true
+                            },
+                            "blocks": {
+                                "topic_menu": {
+                                    "type": "faq-topic-menu",
+                                    "settings": {
+                                        "show_icons": true,
+                                        "text_size": "vt-paragraph-medium",
+                                        "show_dividers": true,
+                                        "item_padding": 14,
+                                        "item_radius": 0,
+                                        "show_background": true,
+                                        "padding": 36,
+                                        "radius": 0
+                                    },
+                                    "blocks": {
+                                        "topic_menu_eyebrow": {
+                                            "type": "stack",
+                                            "name": "Menu heading",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "center",
+                                                "position_type": "default",
+                                                "wrap_content": "nowrap",
+                                                "width": "fill",
+                                                "height": "fit",
+                                                "gap_desktop": 8,
+                                                "gap_mobile": 8,
+                                                "enable_padding": false
+                                            },
+                                            "blocks": {
+                                                "topic_menu_icon": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "sparkle",
+                                                        "icon_size_desktop": 16,
+                                                        "icon_size_mobile": 16,
+                                                        "show_box": false,
+                                                        "animation_type": "none",
+                                                        "icon_color": "{{ settings.color_palette.accent }}"
+                                                    }
+                                                },
+                                                "topic_menu_label": {
+                                                    "type": "sub-heading",
+                                                    "settings": {
+                                                        "sub_heading": "Inquire archives",
+                                                        "subheading_tag": "p",
+                                                        "subheading_alignment": "text-left",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "topic_menu_icon",
+                                                "topic_menu_label"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "topic_menu_eyebrow"
+                                    ]
+                                },
+                                "help_card": {
+                                    "type": "card",
+                                    "name": "Help card",
+                                    "settings": {
+                                        "color_style": "accent",
+                                        "position": "top",
+                                        "alignment": "left",
+                                        "enable_decorative_icon": false,
+                                        "padding_vertical": 36,
+                                        "padding_horizontal": 36,
+                                        "enable_padding_mobile": true,
+                                        "padding_vertical_mobile": 28,
+                                        "padding_horizontal_mobile": 24,
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap": 20,
+                                        "enable_gap_mobile": true,
+                                        "gap_mobile": 16,
+                                        "border": "none",
+                                        "border_width": 0,
+                                        "border_radius": 0,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    },
+                                    "blocks": {
+                                        "help_title_group": {
+                                            "type": "heading-group",
+                                            "settings": {
+                                                "direction": "horizontal",
+                                                "alignment": "left",
+                                                "vertical_alignment": "center",
+                                                "gap_desktop": 12,
+                                                "gap_mobile": 10,
+                                                "width": "fit",
+                                                "hide_icon_mobile": false
+                                            },
+                                            "blocks": {
+                                                "help_icon": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "let-talk",
+                                                        "icon_size_desktop": 28,
+                                                        "icon_size_mobile": 24,
+                                                        "show_box": false,
+                                                        "color_style": "text",
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "help_heading": {
+                                                    "type": "heading",
+                                                    "settings": {
+                                                        "heading": "Let’s talk",
+                                                        "heading_size": "vt-heading-h4",
+                                                        "heading_tag": "h2",
+                                                        "heading_alignment": "text-left",
+                                                        "heading_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "help_icon",
+                                                "help_heading"
+                                            ]
+                                        },
+                                        "help_text": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Ask about orders, products, care, or anything else.</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-left",
+                                                "paragraph_width": "fill",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "help_button": {
+                                            "type": "button",
+                                            "settings": {
+                                                "button_label": "Start conversation",
+                                                "open_in_new_tab": false,
+                                                "button_style": "link",
+                                                "animation_type": "none",
+                                                "button_link": "/pages/contact"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "help_title_group",
+                                        "help_text",
+                                        "help_button"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "topic_menu",
+                                "help_card"
+                            ]
+                        },
+                        "topics_content": {
+                            "type": "stack",
+                            "name": "Topics",                            
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "stretch",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 80,
+                                "gap_mobile": 56,
+                                "enable_padding": false
+                            },                            
+                            "blocks": {
+                                "orders": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Orders & Tracking",
+                                        "menu_icon": "orders-tracking",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "orders_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "orders_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How do I know my order has been confirmed?",
+                                                        "heading_size": "vt-heading-h5",                                                        
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "orders_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Once your order is placed, you will receive a confirmation email with your order number and purchase details. If you do not see it within a few minutes, please check your spam or promotions folder. If it is still missing, contact us with the name and email used at checkout.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "orders_q1_answer"
+                                                    ]
+                                                },
+                                                "orders_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How can I track my order?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "orders_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>As soon as your order ships, we email you a tracking link. You can also follow every step from your account under Orders.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "orders_q2_answer"
+                                                    ]
+                                                },
+                                                "orders_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Can I change or cancel my order?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "orders_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We can change or cancel an order within 2 hours of purchase, before it is packed. Contact us with your order number as soon as possible.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "orders_q3_answer"
+                                                    ]
+                                                },
+                                                "orders_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What if my order is delayed or missing?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "orders_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Most delays clear within a couple of days. If your tracking has not moved for 5 business days, or the parcel shows as delivered but did not arrive, contact us and we will trace it with the carrier.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "orders_q4_answer"
+                                                    ]
+                                                },
+                                                "orders_q5": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What if I received the wrong item?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "orders_q5_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We are sorry for the mix-up. Send us a photo of the item and your order number, and we will ship the right piece and a prepaid label for the return.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "orders_q5_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "orders_q1",
+                                                "orders_q2",
+                                                "orders_q3",
+                                                "orders_q4",
+                                                "orders_q5"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "orders_questions"
+                                    ]
+                                },
+                                "shipping": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Shipping & Delivery",
+                                        "menu_icon": "shipping-delivery",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "shipping_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "shipping_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Where does Earth ship to?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Earth currently ships to selected domestic and international destinations. Available shipping options will appear at checkout once you enter your delivery address.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q1_answer"
+                                                    ]
+                                                },
+                                                "shipping_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How long will delivery take?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Domestic orders arrive in 2–5 business days. International orders usually take 7–14 business days, depending on the destination and customs.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q2_answer"
+                                                    ]
+                                                },
+                                                "shipping_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How much does shipping cost?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Shipping is calculated at checkout from the weight of your order and the delivery address. Domestic orders over $100 ship free.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q3_answer"
+                                                    ]
+                                                },
+                                                "shipping_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Do you offer international shipping?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Yes. Duties and taxes may apply on arrival, depending on your country. They are shown at checkout where we can include them.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q4_answer"
+                                                    ]
+                                                },
+                                                "shipping_q5": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Can I update my shipping address after ordering?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q5_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>If your order has not shipped yet, we can update the address. Reply to your order confirmation email with the new address.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q5_answer"
+                                                    ]
+                                                },
+                                                "shipping_q6": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Is Earth packaging plastic-free?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "shipping_q6_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Yes. Every order ships in recycled paper mailers or boxes, sealed with paper tape, so all of it can go in your recycling bin.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "shipping_q6_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "shipping_q1",
+                                                "shipping_q2",
+                                                "shipping_q3",
+                                                "shipping_q4",
+                                                "shipping_q5",
+                                                "shipping_q6"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "shipping_questions"
+                                    ]
+                                },
+                                "returns": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Returns & Exchange",
+                                        "menu_icon": "returns-exchange",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "returns_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "returns_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What is your return policy?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "returns_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>You can return unworn items with their tags within 30 days of delivery for a full refund to the original payment method.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "returns_q1_answer"
+                                                    ]
+                                                },
+                                                "returns_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How do I start a return or exchange?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "returns_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Visit our returns page, enter your order number and email, and choose the items to send back. We email you a prepaid return label.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "returns_q2_answer"
+                                                    ]
+                                                },
+                                                "returns_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "When will I receive my refund?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "returns_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Refunds are issued within 5 business days of your return reaching us. Your bank may take a few more days to show it.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "returns_q3_answer"
+                                                    ]
+                                                },
+                                                "returns_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Can I exchange an item for a different size?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "returns_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Yes. Choose Exchange when you start your return, and we ship the new size as soon as your return is scanned by the carrier.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "returns_q4_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "returns_q1",
+                                                "returns_q2",
+                                                "returns_q3",
+                                                "returns_q4"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "returns_questions"
+                                    ]
+                                },
+                                "payment": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Payment & Account",
+                                        "menu_icon": "payment-account",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "payment_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "payment_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Which payment methods do you accept?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "payment_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We accept major credit and debit cards, Shop Pay, PayPal, Apple Pay and Google Pay. Available options appear at checkout.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "payment_q1_answer"
+                                                    ]
+                                                },
+                                                "payment_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Is my payment information secure?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "payment_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Yes. Payments are processed over an encrypted connection by certified payment providers. We never store your full card details.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "payment_q2_answer"
+                                                    ]
+                                                },
+                                                "payment_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Do I need an account to place an order?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "payment_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>No, you can check out as a guest. An account lets you track orders, save addresses and start returns faster.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "payment_q3_answer"
+                                                    ]
+                                                },
+                                                "payment_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How do I reset my password?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "payment_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Select Forgot your password on the sign-in page, and we will email you a link to set a new one.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "payment_q4_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "payment_q1",
+                                                "payment_q2",
+                                                "payment_q3",
+                                                "payment_q4"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "payment_questions"
+                                    ]
+                                },
+                                "products": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Products & Care",
+                                        "menu_icon": "products-care",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "products_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "products_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How do I find my size?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "products_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Each product page has a size guide with body and garment measurements. If you are between sizes, the product notes tell you which way to go.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "products_q1_answer"
+                                                    ]
+                                                },
+                                                "products_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How should I wash my Earth pieces?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "products_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Wash cold on a gentle cycle with similar colors, and dry flat or line dry. Washing less and cooler keeps fibers soft and saves energy.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "products_q2_answer"
+                                                    ]
+                                                },
+                                                "products_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Will natural fabrics shrink?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "products_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Our fabrics are pre-washed to keep shrinking minimal. Avoid the tumble dryer and hot water to keep the original fit.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "products_q3_answer"
+                                                    ]
+                                                },
+                                                "products_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Do you restock sold-out items?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "products_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Most core pieces come back in small batches. Select Notify me on the product page and we will email you when your size returns.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "products_q4_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "products_q1",
+                                                "products_q2",
+                                                "products_q3",
+                                                "products_q4"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "products_questions"
+                                    ]
+                                },
+                                "materials": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Materials & Impact",
+                                        "menu_icon": "eco",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "materials_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "materials_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What materials do you use?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "materials_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We work with organic cotton, linen, hemp and recycled fibers, chosen for comfort, durability and a lower impact on land and water.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "materials_q1_answer"
+                                                    ]
+                                                },
+                                                "materials_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How do you choose your suppliers?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "materials_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We partner with certified mills and workshops that pay fair wages and share how and where every piece is made.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "materials_q2_answer"
+                                                    ]
+                                                },
+                                                "materials_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What is the carbon impact of my order?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "materials_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>We measure the emissions of making and shipping each order, and offset what we can't yet cut through verified climate projects.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "materials_q3_answer"
+                                                    ]
+                                                },
+                                                "materials_q4": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What can I do with clothes I no longer wear?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "materials_q4_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Send them back through our take-back program. We repair, resell or recycle them, and you receive store credit for your next order.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "materials_q4_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "materials_q1",
+                                                "materials_q2",
+                                                "materials_q3",
+                                                "materials_q4"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "materials_questions"
+                                    ]
+                                },
+                                "support": {
+                                    "type": "faq-topic",
+                                    "settings": {
+                                        "title": "Contact & Support",
+                                        "menu_icon": "heart",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h2",
+                                        "gap_desktop": 32,
+                                        "gap_mobile": 24,
+                                        "animation_type": "slide"
+                                    },
+                                    "blocks": {
+                                        "support_questions": {
+                                            "type": "accordion",
+                                            "name": "Questions",
+                                            "settings": {
+                                                "open_one_at_a_time": true,
+                                                "keep_first_open": true,
+                                                "expand_effect": "slide_fade",
+                                                "indicator": "arrow",
+                                                "indicator_size_desktop": 20,
+                                                "indicator_size_mobile": 18,
+                                                "gap": 16,
+                                                "padding_x_desktop": 28,
+                                                "padding_x_mobile": 20,
+                                                "padding_y_desktop": 24,
+                                                "padding_y_mobile": 20,
+                                                "content_gap_desktop": 16,
+                                                "content_gap_mobile": 12,
+                                                "border_style": "all",
+                                                "header_divider": true,
+                                                "border_thickness": 1,
+                                                "hover_highlight": "none",
+                                                "open_highlight": "none",
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "support_q1": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "How can I contact Earth?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "support_q1_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Send us a message through the contact page or chat with us during opening hours. We reply to every message within one business day.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "support_q1_answer"
+                                                    ]
+                                                },
+                                                "support_q2": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "What are your support hours?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "support_q2_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Our team is available Monday to Friday, 9am to 6pm. Messages sent outside these hours are answered the next business day.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "support_q2_answer"
+                                                    ]
+                                                },
+                                                "support_q3": {
+                                                    "type": "_accordion-item",
+                                                    "settings": {
+                                                        "heading": "Do you offer gift cards?",
+                                                        "heading_size": "vt-heading-h5",
+                                                        "heading_tag": "h3"
+                                                    },
+                                                    "blocks": {
+                                                        "support_q3_answer": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Yes. Digital gift cards are delivered by email and can be used on everything in the store.</p>",
+                                                                "paragraph_size": "vt-paragraph-medium",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fill",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "support_q3_answer"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "support_q1",
+                                                "support_q2",
+                                                "support_q3"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "support_questions"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "orders",
+                                "shipping",
+                                "returns",
+                                "payment",
+                                "products",
+                                "materials",
+                                "support"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "topics_sidebar",
+                        "topics_content"
+                    ]
+                }
+            },
+            "block_order": [
+                "topics_columns"
+            ]
+        }
+    },
+    "order": [
+        "main",
+        "image_with_text_overlay_section",
+        "faq_topics_section",
+        "contact_options_section"
+    ]
+}

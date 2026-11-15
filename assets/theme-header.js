@@ -19,12 +19,18 @@ class VtHeader extends HTMLElement {
       this.lastScrollY = window.scrollY;
       this.scrollTravel = 0;
       window.addEventListener('scroll', this.onScroll, { signal, passive: true });
+      // The header height changes with the viewport, the logo and the menu
+      this.resizeObserver = new ResizeObserver(() => this.updateSticky());
+      this.resizeObserver.observe(this.wrapper);
       this.updateSticky();
     }
   }
 
   disconnectedCallback() {
     this.abort.abort();
+    this.resizeObserver?.disconnect();
+    document.documentElement.style.removeProperty('--vt-header-height');
+    document.documentElement.style.removeProperty('--vt-header-offset');
   }
 
   // Keeps the sticky header in view while a selector is open
@@ -76,6 +82,27 @@ class VtHeader extends HTMLElement {
     }
 
     this.lastScrollY = scrollY;
+    this.publishOffset(height);
+  }
+
+  /*
+    Sticky content further down the page stays clear of the header:
+    --vt-header-height: the header's height, for anchor targets (scroll-margin)
+    --vt-header-offset: the part of the page it covers now, 0 while it's hidden
+  */
+  publishOffset(height) {
+    const rootStyle = document.documentElement.style;
+    const headerHeight = `${Math.round(height)}px`;
+    const headerOffset = this.wrapper.hasAttribute('data-header-hidden') ? '0px' : headerHeight;
+
+    if (headerHeight !== this.headerHeight) {
+      this.headerHeight = headerHeight;
+      rootStyle.setProperty('--vt-header-height', headerHeight);
+    }
+    if (headerOffset !== this.headerOffset) {
+      this.headerOffset = headerOffset;
+      rootStyle.setProperty('--vt-header-offset', headerOffset);
+    }
   }
 
   refreshCartCount = async () => {

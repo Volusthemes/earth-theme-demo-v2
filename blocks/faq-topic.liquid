@@ -1,0 +1,269 @@
+{% doc %}
+  "Topic with anchor": a heading with the topic's content under it (an
+  Accordion of questions, or any other blocks), for an FAQ, a policy or a
+  size guide page.
+
+  The heading is also the topic's anchor: the page can link to it
+  (/pages/faq#shipping-delivery), and a Topic menu (blocks/faq-topic-menu.liquid) in the same section
+  lists it, with the icon picked here, and highlights it while it's read.
+
+  @example
+  {% content_for 'block', type: 'faq-topic', id: 'faq-topic' %}
+{% enddoc %}
+
+{%- liquid
+  assign title = block.settings.title
+  # A readable anchor from the title, so links to a topic can be shared
+  assign anchor = title | handleize
+  if anchor == blank
+    assign anchor = 'faq-topic-' | append: block.id
+  endif
+
+  assign animation_classes = ''
+  unless block.settings.animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
+    assign animation_classes = ' vt-animate vt-animate--' | append: block.settings.animation_type
+    if block.settings.animation_type == 'slide'
+      assign animation_classes = animation_classes | append: ' vt-animate--dir-from-bottom'
+    endif
+  endunless
+-%}
+
+<div
+  id="{{ anchor }}"
+  class="vt-faq-topic"
+  data-faq-topic
+  style="--vt-faq-topic-gap: {% render 'fluid-clamp', min_px: block.settings.gap_mobile, max_px: block.settings.gap_desktop %};"
+  {{ block.shopify_attributes }}
+>
+  {%- if block.settings.menu_icon != 'none' -%}
+    <template data-faq-topic-icon>{% render 'icons', icon: block.settings.menu_icon %}</template>
+  {%- endif -%}
+  {%- if title != blank -%}
+    <{{ block.settings.heading_tag }}
+      class="vt-faq-topic__title vt-heading {{ block.settings.heading_size }}{{ animation_classes }}"
+      tabindex="-1"
+      data-faq-topic-title
+    >
+      {{- title | escape -}}
+    </{{ block.settings.heading_tag }}>
+  {%- endif -%}
+  <div class="vt-faq-topic__content{{ animation_classes }}" style="--vt-delay: 0.15s;">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-faq-topic {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-faq-topic-gap);
+    width: 100%;
+    /* A link to the topic leaves its heading clear of the sticky header */
+    scroll-margin-block-start: calc(var(--vt-header-height, 0px) + 2rem);
+  }
+
+  .vt-faq-topic__title {
+    margin: 0;
+  }
+
+  /* Focus moves here from the topic menu, so reading continues from the topic.
+     The heading is not a control, so it shows no focus ring */
+  .vt-faq-topic__title:focus {
+    outline: none;
+  }
+
+  .vt-faq-topic__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-faq-topic-gap);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Topic with anchor",
+  "tag": null,
+  "blocks": [
+    { "type": "@theme" }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Topic title",
+      "default": "Orders",
+      "info": "Shown above the content and in the Topic menu. It also names the link to this topic, for example /pages/faq#orders."
+    },
+    {
+      "type": "select",
+      "id": "menu_icon",
+      "label": "Menu icon",
+      "info": "Shown next to the title in the Topic menu.",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "leaf", "label": "t:blocks.icon.settings.icon.options__1.label" },
+        { "value": "carbon", "label": "t:blocks.icon.settings.icon.options__2.label" },
+        { "value": "cotton-plant", "label": "t:blocks.icon.settings.icon.options__20.label" },
+        { "value": "tree", "label": "t:blocks.icon.settings.icon.options__3.label" },
+        { "value": "zero-emissions", "label": "t:blocks.icon.settings.icon.options__4.label" },
+        { "value": "quality", "label": "t:blocks.icon.settings.icon.options__5.label" },
+        { "value": "drop", "label": "t:blocks.icon.settings.icon.options__6.label" },
+        { "value": "ecology", "label": "t:blocks.icon.settings.icon.options__7.label" },
+        { "value": "flower", "label": "t:blocks.icon.settings.icon.options__11.label" },
+        { "value": "sparkle", "label": "t:blocks.icon.settings.icon.options__12.label" },
+        { "value": "handshake", "label": "t:blocks.icon.settings.icon.options__13.label" },
+        { "value": "organic-cotton", "label": "t:blocks.icon.settings.icon.options__14.label" },
+        { "value": "recycled-materials", "label": "t:blocks.icon.settings.icon.options__15.label" },
+        { "value": "vegan-cruelty-free", "label": "t:blocks.icon.settings.icon.options__16.label" },
+        { "value": "eco", "label": "t:blocks.icon.settings.icon.options__17.label" },
+        { "value": "certificate-regulation", "label": "t:blocks.icon.settings.icon.options__18.label" },
+        { "value": "shake-hand-cooperate", "label": "t:blocks.icon.settings.icon.options__19.label" },
+        { "value": "heart", "label": "t:blocks.icon.settings.icon.options__21.label" },
+        { "value": "calculator", "label": "t:blocks.icon.settings.icon.options__22.label" },
+        { "value": "check-circle", "label": "t:blocks.icon.settings.icon.options__23.label" },
+        { "value": "close-circle", "label": "t:blocks.icon.settings.icon.options__24.label" },
+        { "value": "info-circle", "label": "t:blocks.icon.settings.icon.options__25.label" },
+        { "value": "washing", "label": "t:blocks.icon.settings.icon.options__26.label" },
+        { "value": "get-dressed", "label": "t:blocks.icon.settings.icon.options__27.label" },
+        { "value": "hands-light", "label": "t:blocks.icon.settings.icon.options__28.label" },
+        { "value": "materials", "label": "t:blocks.icon.settings.icon.options__29.label" },
+        { "value": "partners", "label": "t:blocks.icon.settings.icon.options__30.label" },
+        { "value": "recycle", "label": "t:blocks.icon.settings.icon.options__31.label" },
+        { "value": "honest-progress", "label": "t:blocks.icon.settings.icon.options__32.label" },
+        { "value": "sprout", "label": "t:blocks.icon.settings.icon.options__37.label" },
+        { "value": "cloud-leaf", "label": "t:blocks.icon.settings.icon.options__38.label" },
+        { "value": "money-plant", "label": "t:blocks.icon.settings.icon.options__39.label" },
+        { "value": "smile", "label": "t:blocks.icon.settings.icon.options__40.label" },
+        { "value": "message", "label": "t:blocks.icon.settings.icon.options__41.label" },
+        { "value": "orders-tracking", "label": "t:blocks.icon.settings.icon.options__42.label" },
+        { "value": "shipping-delivery", "label": "t:blocks.icon.settings.icon.options__43.label" },
+        { "value": "payment-account", "label": "t:blocks.icon.settings.icon.options__44.label" },
+        { "value": "returns-exchange", "label": "t:blocks.icon.settings.icon.options__45.label" },
+        { "value": "products-care", "label": "t:blocks.icon.settings.icon.options__46.label" },
+        { "value": "let-talk", "label": "t:blocks.icon.settings.icon.options__47.label" },
+        { "value": "mail", "label": "t:blocks.icon.settings.icon.options__33.label" },
+        { "value": "telephone-call", "label": "t:blocks.icon.settings.icon.options__34.label" },
+        { "value": "location-map", "label": "t:blocks.icon.settings.icon.options__35.label" },
+        { "value": "arrow-right", "label": "t:blocks.icon.settings.icon.options__36.label" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Heading style"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "t:blocks.heading.settings.heading_size.label",
+      "options": [
+        { "value": "vt-heading-h2", "label": "t:blocks.heading.settings.heading_size.options__3.label" },
+        { "value": "vt-heading-h3", "label": "t:blocks.heading.settings.heading_size.options__4.label" },
+        { "value": "vt-heading-h4", "label": "t:blocks.heading.settings.heading_size.options__5.label" },
+        { "value": "vt-heading-h5", "label": "t:blocks.heading.settings.heading_size.options__6.label" }
+      ],
+      "default": "vt-heading-h3"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "HTML tag",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ],
+      "default": "h2",
+      "info": "Changes how search engines and screen readers read the page, not how it looks. Use one level above the questions."
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Space under heading (desktop)",
+      "min": 8,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Space under heading (mobile)",
+      "min": 8,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Entrance",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "fade", "label": "Fade" },
+        { "value": "slide", "label": "Slide up" }
+      ],
+      "default": "slide",
+      "info": "The heading, then the questions, appear as the topic is scrolled to."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Topic with anchor",
+      "settings": {
+        "title": "Orders",
+        "menu_icon": "orders-tracking"
+      },
+      "blocks": [
+        {
+          "type": "accordion",
+          "settings": {
+            "open_one_at_a_time": true,
+            "keep_first_open": true,
+            "expand_effect": "slide_fade",
+            "indicator": "arrow",
+            "gap": 16,
+            "padding_x_desktop": 28,
+            "padding_x_mobile": 20,
+            "padding_y_desktop": 24,
+            "padding_y_mobile": 20,
+            "content_gap_desktop": 16,
+            "content_gap_mobile": 12,
+            "border_style": "all",
+            "header_divider": true
+          },
+          "blocks": [
+            {
+              "type": "_accordion-item",
+              "settings": { "heading": "How do I know my order is confirmed?", "heading_size": "vt-heading-h5" },
+              "blocks": [
+                { "type": "paragraph", "settings": { "text": "<p>Explain what customers receive after they place an order.</p>" } }
+              ]
+            },
+            {
+              "type": "_accordion-item",
+              "settings": { "heading": "How can I track my order?", "heading_size": "vt-heading-h5" },
+              "blocks": [
+                { "type": "paragraph", "settings": { "text": "<p>Describe where customers find their tracking details.</p>" } }
+              ]
+            },
+            {
+              "type": "_accordion-item",
+              "settings": { "heading": "Can I change or cancel my order?", "heading_size": "vt-heading-h5" },
+              "blocks": [
+                { "type": "paragraph", "settings": { "text": "<p>Share how long customers have to make changes.</p>" } }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

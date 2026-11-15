@@ -3306,7 +3306,7 @@
                         "timeline-intro_heading_2": {
                             "type": "heading",
                             "settings": {
-                                "heading": "Our Sustainability Journey",
+                                "heading": "Our Sustainability Journey: from a small organic farm to global impact",
                                 "heading_size": "vt-heading-h2",
                                 "heading_tag": "h2",
                                 "heading_alignment": "text-inherit",
@@ -3319,28 +3319,11 @@
                                 "animation_blur_intensity": 5
                             },
                             "blocks": {}
-                        },
-                        "timeline-intro_paragraph_3": {
-                            "type": "paragraph",
-                            "settings": {
-                                "text": "<p>From a small organic farm to global impact – our story unfolds through transparent milestones and unwavering commitment to the planet</p>",
-                                "paragraph_size": "vt-paragraph-medium",
-                                "paragraph_alignment": "text-inherit",
-                                "paragraph_width": "fill",
-                                "animation_type": "slide",
-                                "animation_direction": "from-bottom",
-                                "animation_duration": 1.2,
-                                "animation_delay": 0.4,
-                                "animation_easing": "ease-out-sine",
-                                "animation_blur_intensity": 5
-                            },
-                            "blocks": {}
                         }
                     },
                     "block_order": [
                         "timeline-intro_icons_1",
-                        "timeline-intro_heading_2",
-                        "timeline-intro_paragraph_3"
+                        "timeline-intro_heading_2"                        
                     ]
                 },
                 "timeline-badges": {

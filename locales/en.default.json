@@ -17,6 +17,7 @@
     "close_announcement": "Close announcement",
     "skip_to_text": "Skip to content",
     "timeline": "Timeline",
+    "topic_menu": "Topics on this page",
     "collection_aria_label": "Collection gallery",
     "view_collection": "View collection",
     "items_with_count": "{{ count }} items",
@@ -167,6 +168,7 @@
     }
   },
   "content": {
+    "topic_menu_empty": "Add Topic with anchor blocks to this section to fill the menu.",
     "pagination": {
       "nav_label": "Pagination",
       "previous": "Previous",

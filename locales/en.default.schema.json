@@ -1320,6 +1320,27 @@
 					},
 					"options__40": {
 						"label": "Smiley face"
+					},
+					"options__41": {
+						"label": "Chat bubbles"
+					},
+					"options__42": {
+						"label": "Package tracking"
+					},
+					"options__43": {
+						"label": "Delivery truck"
+					},
+					"options__44": {
+						"label": "Payment card"
+					},
+					"options__45": {
+						"label": "Return box"
+					},
+					"options__46": {
+						"label": "Garment care"
+					},
+					"options__47": {
+						"label": "Question bubble"
 					}
 				},
 				"icon_size_desktop": {

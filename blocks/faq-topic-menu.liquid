@@ -1,0 +1,366 @@
+{% doc %}
+  "Topic menu": menu of the topics in the same section: one link per "Topic with anchor" block (blocks/faq-topic.liquid), in
+  page order, with the topic's icon and title.
+
+  @example
+  {% content_for 'block', type: 'faq-topic-menu', id: 'faq-topic-menu' %}
+{% enddoc %}
+
+{%- liquid
+  # Empty colors follow the color palette
+  assign menu_bg = 'transparent'
+  if block.settings.show_background
+    assign menu_bg = block.settings.background_color | default: 'color-mix(in srgb, var(--vt-color-secondary) 16%, var(--vt-background-color))'
+  endif
+  assign menu_text = block.settings.text_color | default: 'var(--vt-color-primary)'
+  assign active_bg = block.settings.active_background | default: 'var(--vt-color-primary)'
+  assign active_text = block.settings.active_text_color | default: 'var(--vt-background-color)'
+
+  assign link_class = 'vt-faq-menu__link ' | append: block.settings.text_size
+  assign menu_class = 'vt-faq-menu'
+  if block.settings.show_dividers
+    assign menu_class = menu_class | append: ' vt-faq-menu--dividers'
+  endif
+-%}
+
+<vt-faq-menu
+  class="{{ menu_class }}"
+  style="
+    --vt-faq-menu-bg: {{ menu_bg }};
+    --vt-faq-menu-color: {{ menu_text }};
+    --vt-faq-menu-active-bg: {{ active_bg }};
+    --vt-faq-menu-active-color: {{ active_text }};
+    --vt-faq-menu-padding: {{ block.settings.padding | divided_by: 16.0 }}rem;
+    --vt-faq-menu-radius: {{ block.settings.radius | divided_by: 16.0 }}rem;
+    --vt-faq-menu-item-padding: {{ block.settings.item_padding | divided_by: 16.0 }}rem;
+    --vt-faq-menu-item-radius: {{ block.settings.item_radius | divided_by: 16.0 }}rem;
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if block.blocks.size > 0 -%}
+    <div class="vt-faq-menu__header">
+      {% content_for 'blocks' %}
+    </div>
+  {%- endif -%}
+  <nav class="vt-faq-menu__nav" aria-label="{{ 'accessibility.topic_menu' | t }}">
+    <div class="vt-faq-menu__track">
+      <span class="vt-faq-menu__indicator" aria-hidden="true"></span>
+      <ol class="vt-faq-menu__list" role="list" data-faq-menu-list></ol>
+    </div>
+  </nav>
+  {%- comment -%} Theme editor only: on the storefront an empty menu stays hidden {%- endcomment -%}
+  {%- if request.design_mode -%}
+    <p class="vt-faq-menu__empty vt-paragraph-small">{{ 'content.topic_menu_empty' | t }}</p>
+  {%- endif -%}
+  <template data-faq-menu-item>
+    <li class="vt-faq-menu__item">
+      <a class="{{ link_class }}" href="#" data-faq-menu-link>
+        {%- if block.settings.show_icons -%}
+          <span class="vt-faq-menu__icon" aria-hidden="true"></span>
+        {%- endif -%}
+        <span class="vt-faq-menu__label"></span>
+      </a>
+    </li>
+  </template>
+</vt-faq-menu>
+<script src="{{ 'theme-faq-menu.js' | asset_url }}" type="module"></script>
+
+{% stylesheet %}
+  /* Until the script has added the links there is nothing to show */
+  .vt-faq-menu {
+    display: none;
+    width: 100%;
+    padding: var(--vt-faq-menu-padding);
+    border-radius: var(--vt-faq-menu-radius);
+    background: var(--vt-faq-menu-bg);
+    color: var(--vt-faq-menu-color);
+  }
+
+  @media screen and (min-width: 1024px) {
+    .vt-faq-menu:has(.vt-faq-menu__item),
+    .vt-faq-menu:has(.vt-faq-menu__empty) {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+  }
+
+  /* Editor hint, until the menu has links */
+  .vt-faq-menu__empty {
+    margin: 0;
+    padding: 1rem;
+    border: 1px dashed currentColor;
+    opacity: 0.8;
+  }
+
+  .vt-faq-menu:has(.vt-faq-menu__item) .vt-faq-menu__empty {
+    display: none;
+  }
+
+  .vt-faq-menu__header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vt-faq-menu__track {
+    position: relative;
+  }
+
+  .vt-faq-menu__list {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-faq-menu--dividers .vt-faq-menu__item + .vt-faq-menu__item {
+    border-block-start: 1px solid color-mix(in srgb, var(--vt-faq-menu-color) 14%, transparent);
+  }
+
+  .vt-faq-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: var(--vt-faq-menu-item-padding) 1.25rem;
+    border-radius: var(--vt-faq-menu-item-radius);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      color 0.35s ease,
+      background-color 0.35s ease;
+  }
+
+  .vt-faq-menu__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  /* Active, and the link under the mouse: the highlight slides to it (data-hover,
+     set by the script), so it looks the same as the active link */
+  .vt-faq-menu__link[aria-current='true'],
+  .vt-faq-menu__link[data-hover] {
+    color: var(--vt-faq-menu-active-color);
+    font-weight: 600;
+  }
+
+  /* Meanwhile the active link, now without the highlight, looks like the others */
+  .vt-faq-menu__list:has([data-hover]) .vt-faq-menu__link[aria-current='true']:not([data-hover]) {
+    color: inherit;
+    font-weight: inherit;
+  }
+
+  .vt-faq-menu__icon {
+    display: flex;
+    flex: none;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .vt-faq-menu__icon:empty {
+    display: none;
+  }
+
+  .vt-faq-menu__icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Highlight behind the current link. The script sets its place, and it
+     slides there once it has been placed the first time */
+  .vt-faq-menu__indicator {
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: var(--vt-faq-indicator-height, 0);
+    border-radius: var(--vt-faq-menu-item-radius);
+    background-color: var(--vt-faq-menu-active-bg);
+    transform: translateY(var(--vt-faq-indicator-y, 0));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .vt-faq-menu[data-active] .vt-faq-menu__indicator {
+    opacity: 1;
+  }
+
+  .vt-faq-menu[data-ready] .vt-faq-menu__indicator {
+    transition:
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.3s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-faq-menu__link,
+    .vt-faq-menu[data-ready] .vt-faq-menu__indicator {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Topic menu",
+  "tag": null,
+  "blocks": [
+    { "type": "icons" },
+    { "type": "sub-heading" },
+    { "type": "heading" },
+    { "type": "paragraph" },
+    { "type": "stack" }
+  ],
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Lists the Topic with anchor blocks of this section, with their icons. The topic being read is highlighted. Shown on screens 1024px and wider."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show topic icons",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "text_size",
+      "label": "Text size",
+      "options": [
+        { "value": "vt-paragraph-small", "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label" },
+        { "value": "vt-paragraph-medium", "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label" },
+        { "value": "vt-paragraph-large", "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label" }
+      ],
+      "default": "vt-paragraph-medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Show dividers",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "item_padding",
+      "label": "Item height",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 14,
+      "info": "Space above and below each topic title."
+    },
+    {
+      "type": "range",
+      "id": "item_radius",
+      "label": "Highlight corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Box"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_background",
+      "label": "Show background",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "info": "Leave empty for a light tint of the secondary color.",
+      "visible_if": "{{ block.settings.show_background }}"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "active_background",
+      "label": "Highlighted background",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "Highlighted text",
+      "info": "Leave empty to use the color palette."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Topic menu",
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--horizontal",
+            "layout_direction_tablet": "vt-stack--horizontal",
+            "layout_direction_mobile": "vt-stack--horizontal",
+            "alignment": "flex-start",
+            "position": "center",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "gap_desktop": 8,
+            "gap_mobile": 8
+          },
+          "blocks": [
+            {
+              "type": "icons",
+              "settings": {
+                "icon": "sparkle",
+                "color_style": "accent",
+                "icon_size_desktop": 16,
+                "icon_size_mobile": 16,
+                "show_box": false,
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "sub-heading",
+              "settings": {
+                "sub_heading": "Browse topics",
+                "subheading_tag": "p",
+                "subheading_alignment": "text-left",
+                "animation_type": "none"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

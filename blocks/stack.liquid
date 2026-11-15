@@ -26,6 +26,7 @@
     vt-stack--tablet-{{ dir_tablet }}
     vt-stack--mobile-{{ dir_mobile }}
     {% if block.settings.reverse_mobile %}vt-stack--reverse-mobile{% endif %}
+    {% if block.settings.last_when_stacked %}vt-stack--last-stacked{% endif %}
     vt-stack--align-{{ block.settings.alignment }}
     vt-stack--position-{{ block.settings.position }}
     vt-stack--wrap-{{ block.settings.wrap_content }}
@@ -36,6 +37,9 @@
     --vt-stack-gap: {% render 'fluid-clamp', min_px: gap_mobile_px, max_px: gap_desktop_px %};
     {%- if block.settings.width == 'custom' -%}
       --vt-stack-width: {{ block.settings.width_custom }}%;
+    {%- endif -%}
+    {%- if block.settings.position_type == 'sticky' -%}
+      --vt-stack-sticky-gap: {{ block.settings.sticky_offset | divided_by: 16.0 }}rem;
     {%- endif -%}
     {%- if block.settings.height == 'custom' -%}
       --vt-min-height: {% render 'fluid-clamp', min_px: block.settings.min_height, max_px: block.settings.min_height %};
@@ -324,10 +328,27 @@
   }
 
   /* Position type */
+  /* Show last on mobile and tablet: after the other columns of a Column layout
+     (for example a sidebar), where the columns stack below 1024px */
+  @media screen and (max-width: 1023.98px) {
+    .vt-stack--last-stacked {
+      order: 99;
+    }
+  }
+
+  /* Sticky: stays under the sticky header and glides with it as it hides and
+     comes back (--vt-header-offset, set by assets/theme-header.js) */
   .vt-stack--sticky {
     position: sticky;
-    top: 0;
+    top: calc(var(--vt-header-offset, 0px) + var(--vt-stack-sticky-gap, 0px));
     z-index: 2;
+    transition: top 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-stack--sticky {
+      transition: none;
+    }
   }
 
   /* Pinned: fixed to viewport */
@@ -455,6 +476,25 @@
         }
       ],
       "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "label": "Space above when sticky",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 0,
+      "info": "Space between the group and the top of the screen, or the header when it shows.",
+      "visible_if": "{{ block.settings.position_type == 'sticky' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "last_when_stacked",
+      "label": "Show last on mobile and tablet",
+      "default": false,
+      "info": "Places this group after the other columns of a Column layout below 1024px, for example a sidebar."
     },
     {
       "type": "select",
