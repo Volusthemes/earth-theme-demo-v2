@@ -1341,6 +1341,9 @@
 					},
 					"options__47": {
 						"label": "Question bubble"
+					},
+					"options__48": {
+						"label": "Clock"
 					}
 				},
 				"icon_size_desktop": {

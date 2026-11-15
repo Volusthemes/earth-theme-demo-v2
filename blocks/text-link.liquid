@@ -12,6 +12,8 @@
   Without a link it renders as plain text, so contact details that aren't links
   (an address, opening hours) can share the same look.
 
+  Uppercase and the scroll-in animation work like the Heading block's.
+
   Self-contained: callers must leave the body empty.
 
   @example
@@ -29,6 +31,44 @@
   if block.settings.icon_position == 'end'
     assign link_class = link_class | append: ' vt-text-link--icon-end'
   endif
+  if block.settings.uppercase
+    assign link_class = link_class | append: ' uppercase!'
+  endif
+
+  # Scroll-in animation: the theme-wide options from snippets/animate.liquid
+  # (Theme settings > Animations), off in the first section and in preview thumbnails
+  assign animation_type = block.settings.animation_type
+  assign animation_style = ''
+  unless animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
+    assign link_class = link_class | append: ' vt-animate vt-animate--' | append: animation_type
+    if animation_type == 'slide' or animation_type == 'reveal'
+      assign link_class = link_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
+    endif
+    assign animation_style = ' --vt-duration: ' | append: block.settings.animation_duration | append: 's; --vt-delay: ' | append: block.settings.animation_delay | append: 's;'
+
+    if animation_type == 'slide' or animation_type == 'reveal' or animation_type == 'blur'
+      case block.settings.animation_easing
+        when 'linear'
+          assign easing = 'linear'
+        when 'ease-in-sine'
+          assign easing = 'cubic-bezier(0.12, 0, 0.39, 0)'
+        when 'ease-in-out-sine'
+          assign easing = 'cubic-bezier(0.37, 0, 0.63, 1)'
+        when 'ease-in-cubic'
+          assign easing = 'cubic-bezier(0.32, 0, 0.67, 0)'
+        when 'ease-out-cubic'
+          assign easing = 'cubic-bezier(0.33, 1, 0.68, 1)'
+        when 'ease-in-out-cubic'
+          assign easing = 'cubic-bezier(0.65, 0, 0.35, 1)'
+        else
+          assign easing = 'cubic-bezier(0.61, 1, 0.88, 1)'
+      endcase
+      assign animation_style = animation_style | append: ' --vt-easing: ' | append: easing | append: ';'
+    endif
+    if animation_type == 'blur'
+      assign animation_style = animation_style | append: ' --vt-blur: ' | append: block.settings.animation_blur_intensity | append: 'px;'
+    endif
+  endunless
 
   assign link_style = ''
   if block.settings.text_color != blank
@@ -58,7 +98,7 @@
         target="_blank" rel="noopener"
       {% endif %}
     {% endif %}
-    style="--vt-text-link-gap: {% render 'fluid-clamp', min_px: block.settings.icon_gap_mobile, max_px: block.settings.icon_gap_desktop %};{{ link_style }}"
+    style="--vt-text-link-gap: {% render 'fluid-clamp', min_px: block.settings.icon_gap_mobile, max_px: block.settings.icon_gap_desktop %};{{ link_style }}{{ animation_style }}"
     {{ block.shopify_attributes }}
   >
     {% content_for 'blocks' %}
@@ -242,6 +282,13 @@
       "info": "Default hover follows Theme settings > Typography > Link hover effect."
     },
     {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": false,
+      "info": "Overrides the text case set for this text size in Theme settings > Typography."
+    },
+    {
       "type": "select",
       "id": "hover_effect",
       "label": "Hover effect",
@@ -269,6 +316,134 @@
       "id": "hover_color",
       "label": "Hover color",
       "info": "With Default, colors the hover line. With Color only, colors the text and icon. Leave empty for the text color, or a lighter text color with Color only."
+    },
+    {
+      "type": "header",
+      "content": "t:blocks.heading.settings.header_animation.content"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "info": "Turned off in the first section of a page, so it loads faster.",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.heading.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
+      ],
+      "default": "none",
+      "label": "t:blocks.heading.settings.animation_type.label"
+    },
+    {
+      "type": "select",
+      "id": "animation_direction",
+      "options": [
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
+      ],
+      "default": "from-bottom",
+      "label": "t:blocks.heading.settings.animation_direction.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_duration",
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.2,
+      "label": "t:blocks.heading.settings.animation_duration.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_delay",
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "unit": "s",
+      "default": 0.2,
+      "label": "t:blocks.heading.settings.animation_delay.label",
+      "visible_if": "{{ block.settings.animation_type != 'none' }}"
+    },
+    {
+      "type": "select",
+      "id": "animation_easing",
+      "options": [
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
+      ],
+      "default": "ease-out-sine",
+      "label": "t:blocks.heading.settings.animation_easing.label",
+      "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' or block.settings.animation_type == 'blur' }}"
+    },
+    {
+      "type": "range",
+      "id": "animation_blur_intensity",
+      "min": 5,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 5,
+      "label": "t:blocks.heading.settings.animation_blur_intensity.label",
+      "visible_if": "{{ block.settings.animation_type == 'blur' }}"
     }
   ],
   "presets": [

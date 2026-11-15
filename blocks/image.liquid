@@ -24,33 +24,48 @@
   # ---------------------------------------------------------------
   # Aspect ratio (CSS aspect-ratio value)
   # ---------------------------------------------------------------
-  # frame_ratio: width / height of the frame, used for sizes="auto" below
-  assign frame_ratio = 100
-  case block.settings.image_aspect_ratio
-    when 'square'
-      assign aspect_ratio = '1/1'
-      assign frame_ratio = 1.0
-    when 'landscape'
-      assign aspect_ratio = '4/3'
-      assign frame_ratio = 1.3333
-    when 'portrait_4_5'
-      assign aspect_ratio = '4/5'
-      assign frame_ratio = 0.8
-    when 'portrait'
-      assign aspect_ratio = '3/4'
-      assign frame_ratio = 0.75
-    when 'wide'
-      assign aspect_ratio = '16/9'
-      assign frame_ratio = 1.7778
-    when 'classic_portrait'
-      assign aspect_ratio = '2/3'
-      assign frame_ratio = 0.6667
-    when 'ultra_wide'
-      assign aspect_ratio = '21/9'
-      assign frame_ratio = 2.3333
-    else
-      assign aspect_ratio = 'auto'
-  endcase
+  # frame_ratio: width / height of the frame, used for sizes="auto" below.
+  # Mobile has its own shape when "Aspect ratio (mobile)" isn't "Same as desktop".
+  assign ratio_keys = block.settings.image_aspect_ratio | append: ',' | append: block.settings.image_aspect_ratio_mobile | split: ','
+  for ratio_key in ratio_keys
+    assign ratio_value = 'auto'
+    assign ratio_frame = 100
+    case ratio_key
+      when 'square'
+        assign ratio_value = '1/1'
+        assign ratio_frame = 1.0
+      when 'landscape'
+        assign ratio_value = '4/3'
+        assign ratio_frame = 1.3333
+      when 'portrait_4_5'
+        assign ratio_value = '4/5'
+        assign ratio_frame = 0.8
+      when 'portrait'
+        assign ratio_value = '3/4'
+        assign ratio_frame = 0.75
+      when 'wide'
+        assign ratio_value = '16/9'
+        assign ratio_frame = 1.7778
+      when 'classic_portrait'
+        assign ratio_value = '2/3'
+        assign ratio_frame = 0.6667
+      when 'tall'
+        assign ratio_value = '9/16'
+        assign ratio_frame = 0.5625
+      when 'ultra_wide'
+        assign ratio_value = '21/9'
+        assign ratio_frame = 2.3333
+    endcase
+    if forloop.first
+      assign aspect_ratio = ratio_value
+      assign frame_ratio = ratio_frame
+      assign aspect_ratio_mobile = ratio_value
+      assign frame_ratio_mobile = ratio_frame
+    elsif ratio_key != 'same' and ratio_key != blank
+      assign aspect_ratio_mobile = ratio_value
+      assign frame_ratio_mobile = ratio_frame
+    endif
+  endfor
 
   # ---------------------------------------------------------------
   # Width per breakpoint. `image_device` in the schema only toggles
@@ -109,7 +124,8 @@
   endif
 
   assign mobile_auto = ''
-  if image_mobile.aspect_ratio <= frame_ratio
+  assign mobile_source_ratio = image_mobile.aspect_ratio | default: image.aspect_ratio
+  if mobile_source_ratio <= frame_ratio_mobile
     assign mobile_auto = 'auto, '
   endif
 
@@ -152,13 +168,16 @@
   assign widths = '165, 360, 535, 750, 940, 1080, 1296, 1512, 1728, 1950, 2100, 3200'
   assign widths_arr = widths | split: ', '
 
-  # The first section is usually above the fold: its images load right away, so the
-  # Largest Contentful Paint isn't held back by lazy loading
+  # The first two sections are often on screen when the page opens: their images load
+  # right away, so the Largest Contentful Paint isn't held back by lazy loading.
+  # Only the first section's images also get a high fetch priority.
   assign image_loading = 'lazy'
   assign image_priority = 'auto'
-  if section.index == 1 and section.location == 'template'
+  if section.location == 'template' and section.index <= 2
     assign image_loading = 'eager'
-    assign image_priority = 'high'
+    if section.index == 1
+      assign image_priority = 'high'
+    endif
   endif
 
   assign has_link = false
@@ -190,6 +209,7 @@
   {{ block.shopify_attributes }}
   style="
     --vt-aspect-ratio: {{ aspect_ratio }};
+    --vt-aspect-ratio-mobile: {{ aspect_ratio_mobile }};
     --vt-mobile-width: {{ mobile_width_css }};
     --vt-desktop-width: {{ desktop_width_css }};
     --vt-mobile-max-width: {{ mobile_max_css }};
@@ -306,7 +326,7 @@
     display: block;
     position: relative;
     overflow: hidden;
-    aspect-ratio: var(--vt-aspect-ratio, auto);
+    aspect-ratio: var(--vt-aspect-ratio-mobile, var(--vt-aspect-ratio, auto));
     border-radius: var(--vt-radius, 0);
     border-width: var(--vt-border-width, 0);
     border-style: solid;
@@ -315,8 +335,19 @@
 
   .vt-image__media--placeholder {
     width: 100%;
-    aspect-ratio: var(--vt-aspect-ratio, 4 / 3);
+    aspect-ratio: var(--vt-aspect-ratio-mobile, var(--vt-aspect-ratio, 4 / 3));
     background: rgba(0, 0, 0, 0.08);
+  }
+
+  @media (min-width: 750px) {
+    .vt-image__media,
+    .vt-image__media--placeholder {
+      aspect-ratio: var(--vt-aspect-ratio, 4 / 3);
+    }
+
+    .vt-image__media:not(.vt-image__media--placeholder) {
+      aspect-ratio: var(--vt-aspect-ratio, auto);
+    }
   }
 
   .vt-image__img {
@@ -371,7 +402,7 @@
     {
       "type": "select",
       "id": "image_aspect_ratio",
-      "label": "Aspect ratio",
+      "label": "Aspect ratio (desktop)",
       "options": [
         {
           "value": "square",
@@ -398,11 +429,60 @@
           "label": "Portrait (2:3)"
         },
         {
+          "value": "tall",
+          "label": "Tall (9:16)"
+        },
+        {
           "value": "ultra_wide",
           "label": "Ultra wide (21:9)"
         }
       ],
       "default": "square"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio_mobile",
+      "label": "Aspect ratio (mobile)",
+      "options": [
+        {
+          "value": "same",
+          "label": "Same as desktop"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "portrait_4_5",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "classic_portrait",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "tall",
+          "label": "Tall (9:16)"
+        },
+        {
+          "value": "ultra_wide",
+          "label": "Ultra wide (21:9)"
+        }
+      ],
+      "default": "same",
+      "info": "Shape below 750px."
     },
     {
       "type": "checkbox",
@@ -416,25 +496,34 @@
       "id": "image_device",
       "label": "Device",
       "options": [
-      {
-        "value": "desktop",
-        "label": "Desktop"
-      },
-      {
-        "value": "mobile",
-        "label": "Mobile"
-      }    
+        {
+          "value": "desktop",
+          "label": "Desktop"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        }
       ],
-        "default": "desktop"
+      "default": "desktop"
     },
     {
       "type": "select",
       "id": "image_desktop_width",
       "label": "Width (desktop)",
       "options": [
-        { "value": "fit", "label": "Fit" },
-        { "value": "fill", "label": "Fill" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "fill",
       "visible_if": "{{ block.settings.image_device == 'desktop' }}"
@@ -468,14 +557,23 @@
       "default": 500,
       "visible_if": "{{ block.settings.image_device == 'desktop' and block.settings.image_desktop_width != 'fit' and block.settings.enable_desktop_max_width }}"
     },
-    {      
+    {
       "type": "select",
-      "id": "image_mobile_width",      
+      "id": "image_mobile_width",
       "label": "Width (mobile)",
       "options": [
-        { "value": "fit", "label": "Fit" },
-        { "value": "fill", "label": "Fill" },
-        { "value": "custom", "label": "Custom" }
+        {
+          "value": "fit",
+          "label": "Fit"
+        },
+        {
+          "value": "fill",
+          "label": "Fill"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
       ],
       "default": "fill",
       "visible_if": "{{ block.settings.image_device == 'mobile' }}"
@@ -525,7 +623,7 @@
         {
           "value": "solid",
           "label": "Solid"
-        }    
+        }
       ],
       "default": "none"
     },
@@ -537,7 +635,7 @@
       "step": 0.5,
       "unit": "px",
       "label": "Border thickness",
-      "default": 1,            
+      "default": 1,
       "visible_if": "{{ block.settings.image_border_style == 'solid' }}"
     },
     {
@@ -548,7 +646,7 @@
       "step": 1,
       "unit": "%",
       "label": "Border opacity",
-      "default": 100,          
+      "default": 100,
       "visible_if": "{{ block.settings.image_border_style == 'solid' }}"
     },
     {
@@ -559,7 +657,7 @@
       "step": 2,
       "unit": "px",
       "label": "Corner radius",
-      "default": 0        
+      "default": 0
     },
     {
       "type": "header",
@@ -570,11 +668,26 @@
       "id": "animation_type",
       "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.icon.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.icon.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.icon.settings.animation_type.options__3.label" },
-        { "value": "reveal", "label": "t:blocks.icon.settings.animation_type.options__4.label" },
-        { "value": "blur", "label": "t:blocks.icon.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.icon.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.icon.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.icon.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.icon.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.icon.settings.animation_type.options__5.label"
+        }
       ],
       "default": "slide",
       "label": "t:blocks.icon.settings.animation_type.label"
@@ -583,17 +696,29 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.icon.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.icon.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.icon.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.icon.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.icon.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.icon.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.icon.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.icon.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.icon.settings.animation_direction.label",
       "visible_if": "{{ block.settings.animation_type == 'slide' or block.settings.animation_type == 'reveal' }}"
     },
     {
-      "type": "range",      
+      "type": "range",
       "id": "animation_duration",
       "min": 0.1,
       "max": 3,
@@ -618,13 +743,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.icon.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.icon.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.icon.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.icon.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.icon.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.icon.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.icon.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.icon.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.icon.settings.animation_easing.label",
@@ -640,7 +786,7 @@
       "default": 5,
       "label": "t:blocks.icon.settings.animation_blur_intensity.label",
       "visible_if": "{{ block.settings.animation_type == 'blur' }}"
-    }   
+    }
   ],
   "presets": [
     {

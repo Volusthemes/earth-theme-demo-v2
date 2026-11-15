@@ -12,12 +12,710 @@
         "main": {
             "type": "page",
             "disabled": true,
+            "settings": {}
+        },
+        "contact_details_section": {
+            "type": "multicolumn",
             "settings": {
-
-            }
+                "gap": 0,
+                "gap_mobile": 0,
+                "padding_top_desktop": 60,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 48,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "color_style": "default",
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}"
+            },
+            "blocks": {
+                "details_columns": {
+                    "type": "column-layout",
+                    "settings": {
+                        "desktop_column_count": 4,
+                        "tablet_column_count": 2,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-1/4|25",
+                        "desktop_column_2_width": "lg:w-1/4|25",
+                        "desktop_column_3_width": "lg:w-1/4|25",
+                        "desktop_column_4_width": "lg:w-1/4|25",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": true,
+                        "autoplay": "5",
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-4",
+                        "vertical_alignment": "flex-start",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "phone_column": {
+                            "type": "stack",
+                            "name": "Phone",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 12,
+                                "gap_mobile": 10,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "phone_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "telephone-call",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine",
+                                        "icon_color": "{{ settings.color_palette.primary }}"
+                                    }
+                                },
+                                "phone_lines": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 0,
+                                        "gap_mobile": 0,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "phone_line_1": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "(555) 123-4567",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.2,
+                                                "animation_easing": "ease-out-sine",
+                                                "link": "tel:+15551234567",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        },
+                                        "phone_line_2": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "(222) 123-4567",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.3,
+                                                "animation_easing": "ease-out-sine",
+                                                "link": "tel:+12221234567",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "phone_line_1",
+                                        "phone_line_2"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "phone_icon",
+                                "phone_lines"
+                            ]
+                        },
+                        "email_column": {
+                            "type": "stack",
+                            "name": "Email",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 12,
+                                "gap_mobile": 10,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "email_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "mail",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine",
+                                        "icon_color": "{{ settings.color_palette.primary }}"
+                                    }
+                                },
+                                "email_lines": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 0,
+                                        "gap_mobile": 0,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "email_line_1": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "hello@earthecoshop.com",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.2,
+                                                "animation_easing": "ease-out-sine",
+                                                "link": "mailto:hello@earthecoshop.com",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        },
+                                        "email_line_2": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "sale@earthecoshop.com",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.3,
+                                                "animation_easing": "ease-out-sine",
+                                                "link": "mailto:sale@earthecoshop.com",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "email_line_1",
+                                        "email_line_2"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "email_icon",
+                                "email_lines"
+                            ]
+                        },
+                        "hours_column": {
+                            "type": "stack",
+                            "name": "Opening hours",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 12,
+                                "gap_mobile": 10,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "hours_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "clock",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine",
+                                        "icon_color": "{{ settings.color_palette.primary }}"
+                                    }
+                                },
+                                "hours_lines": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 0,
+                                        "gap_mobile": 0,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "hours_line_1": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "Monday–Friday",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.2,
+                                                "animation_easing": "ease-out-sine",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        },
+                                        "hours_line_2": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "9:00 AM–6:00 PM EST",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.3,
+                                                "animation_easing": "ease-out-sine",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "hours_line_1",
+                                        "hours_line_2"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "hours_icon",
+                                "hours_lines"
+                            ]
+                        },
+                        "address_column": {
+                            "type": "stack",
+                            "name": "Address",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 12,
+                                "gap_mobile": 10,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "address_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "location-map",
+                                        "icon_size_desktop": 32,
+                                        "icon_size_mobile": 28,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine",
+                                        "icon_color": "{{ settings.color_palette.primary }}"
+                                    }
+                                },
+                                "address_lines": {
+                                    "type": "stack",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 0,
+                                        "gap_mobile": 0,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "address_line_1": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "1234 Palm Boulevard,",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.2,
+                                                "animation_easing": "ease-out-sine",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        },
+                                        "address_line_2": {
+                                            "type": "text-link",
+                                            "settings": {
+                                                "label": "Miami, United States",
+                                                "text_style": "vt-paragraph-large",
+                                                "underline": "none",
+                                                "hover_effect": "color",
+                                                "uppercase": false,
+                                                "open_in_new_tab": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1.2,
+                                                "animation_delay": 0.3,
+                                                "animation_easing": "ease-out-sine",
+                                                "text_color": "{{ settings.color_palette.primary }}"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "address_line_1",
+                                        "address_line_2"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "address_icon",
+                                "address_lines"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "phone_column",
+                        "email_column",
+                        "hours_column",
+                        "address_column"
+                    ]
+                }
+            },
+            "block_order": [
+                "details_columns"
+            ]
+        },
+        "contact_header_section": {
+            "type": "custom-section",
+            "settings": {
+                "color_style": "default",
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "gap": 40,
+                "gap_mobile": 24,
+                "padding_top_desktop": 40,
+                "padding_bottom_desktop": 0,
+                "padding_top_mobile": 20,
+                "padding_bottom_mobile": 0
+            },
+            "blocks": {
+                "breadcrumbs": {
+                    "type": "breadcrumbs",
+                    "settings": {
+                        "show_home": true,
+                        "show_previous_icon": false,
+                        "previous_icon": "arrow",
+                        "show_separator_icon": true,
+                        "separator_icon": "chevron",
+                        "icon_size": 14,
+                        "text_size": "vt-paragraph-medium",
+                        "gap_desktop": 12,
+                        "gap_mobile": 10,
+                        "truncate_style": "mobile",
+                        "max_width_mobile": 250,
+                        "max_width_desktop": 600,
+                        "animation_type": "none"
+                    }
+                },
+                "intro_columns": {
+                    "type": "column-layout",
+                    "name": "Heading and intro",
+                    "settings": {
+                        "desktop_column_count": 2,
+                        "tablet_column_count": 1,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-2/3|66.6667",
+                        "desktop_column_2_width": "lg:w-1/3|33.3333",
+                        "tablet_column_1_width": "md:w-full|100",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": false,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-4",
+                        "vertical_alignment": "center",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "heading_column": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 0,
+                                "gap_mobile": 0,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "page_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Let’s Connect",
+                                        "heading_size": "vt-heading-h1",
+                                        "heading_tag": "h1",
+                                        "heading_alignment": "text-left",
+                                        "heading_width": "fill",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "page_heading"
+                            ]
+                        },
+                        "intro_column": {
+                            "type": "stack",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 0,
+                                "gap_mobile": 0,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "page_intro": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Whether you have a question about an order, a product, delivery or our materials, our team is here to help.</p>",
+                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_alignment": "text-left",
+                                        "paragraph_width": "fill",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "page_intro"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "heading_column",
+                        "intro_column"
+                    ]
+                }
+            },
+            "block_order": [
+                "breadcrumbs",
+                "intro_columns"
+            ]
+        },
+        "contact_form_section": {
+            "type": "contact-form",
+            "settings": {
+                "color_style": "default",
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "gap": 32,
+                "gap_mobile": 32,
+                "padding_top_desktop": 60,
+                "padding_bottom_desktop": 60,
+                "padding_top_mobile": 32,
+                "padding_bottom_mobile": 48,
+                "show_phone": true,
+                "show_subject": true,
+                "subject_options": "Orders and delivery\nProducts and sizing\nReturns and exchanges\nMaterials and care\nSomething else",
+                "form_note": "<p>This site is protected by hCaptcha and the hCaptcha <a href=\"https://www.hcaptcha.com/privacy\" title=\"hCaptcha Privacy Policy\">Privacy Policy</a> and <a href=\"https://www.hcaptcha.com/terms\" title=\"hCaptcha Terms of Service\">Terms of Service</a> apply.</p>",
+                "button_label": "Send message",
+                "button_style": "primary",
+                "field_gap_desktop": 28,
+                "field_gap_mobile": 20,
+                "show_border": true,
+                "box_padding_desktop": 32,
+                "box_padding_mobile": 20,
+                "box_radius": 0,
+                "show_image": true,
+                "image_position": "right",
+                "image_width": 33,
+                "mobile_image": "below",
+                "equal_height": true
+            },
+            "blocks": {
+                "form_title": {
+                    "type": "heading-group",
+                    "name": "Form heading",
+                    "settings": {
+                        "direction": "horizontal",
+                        "alignment": "left",
+                        "vertical_alignment": "center",
+                        "gap_desktop": 24,
+                        "gap_mobile": 12,
+                        "width": "fit",
+                        "hide_icon_mobile": true
+                    },
+                    "blocks": {
+                        "form_title_icon": {
+                            "type": "icons",
+                            "settings": {
+                                "icon": "leaf",
+                                "icon_size_desktop": 48,
+                                "icon_size_mobile": 36,
+                                "show_box": false,
+                                "icon_color": "{{ settings.color_palette.secondary }}",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.1,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        },
+                        "form_title_heading": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Tell us what you need",
+                                "heading_size": "vt-heading-h3",
+                                "heading_tag": "h2",
+                                "heading_alignment": "text-left",
+                                "heading_width": "fit",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "form_title_icon",
+                        "form_title_heading"
+                    ]
+                },
+                "contact-image": {
+                    "type": "image",
+                    "name": "Image",
+                    "static": true,
+                    "settings": {
+                        "image_aspect_ratio": "tall",
+                        "image_aspect_ratio_mobile": "square",
+                        "image_desktop_width": "fill",
+                        "image_mobile_width": "fill",
+                        "image_corner": 0,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.1,
+                        "animation_easing": "ease-out-sine"
+                    }
+                }
+            },
+            "block_order": [
+                "form_title"
+            ]
         }
     },
     "order": [
-        "main"
+        "main",
+        "contact_header_section",
+        "contact_form_section",
+        "contact_details_section"
     ]
 }

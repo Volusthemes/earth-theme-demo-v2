@@ -1483,3 +1483,110 @@ body {
 .vt-badge--border {
   border-width: var(--vt-badge-border-width, 1px);
 }
+/* ==========================================================================
+   Form fields: Theme settings > Inputs (variables in snippets/css-variables.liquid)
+   .vt-input on <input>, <textarea> and <select>; wrap a <select> in .vt-select
+   for the arrow. Colors follow the section text unless picked in the settings.
+   ========================================================================== */
+.vt-input {
+  --vt-input-height: var(--vt-input-height-mobile);
+  --vt-input-line: color-mix(in srgb, var(--vt-input-border-color) var(--vt-input-border-opacity), transparent);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--vt-input-height);
+  margin: 0;
+  padding: 0.5rem var(--vt-input-padding);
+  /* 16px or more: phones don't zoom in on the field */
+  font: inherit;
+  font-size: max(1rem, 1em);
+  line-height: 1.4;
+  color: var(--vt-input-text);
+  background-color: var(--vt-input-bg);
+  border-style: solid;
+  border-color: var(--vt-input-line);
+  border-width: var(--vt-input-border-x) var(--vt-input-border-x) var(--vt-input-border-width);
+  border-radius: var(--vt-input-radius);
+  box-shadow: none;
+  appearance: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media screen and (min-width: 990px) {
+  .vt-input {
+    --vt-input-height: var(--vt-input-height-desktop);
+  }
+}
+
+.vt-input::placeholder {
+  color: inherit;
+  opacity: 0.8;
+}
+
+@media (hover: hover) {
+  .vt-input:hover {
+    --vt-input-line: color-mix(in srgb, var(--vt-input-border-color) 70%, transparent);
+  }
+}
+
+/* In use: the border at full strength, one pixel thicker on the drawn sides */
+.vt-input:focus {
+  outline: none;
+}
+
+.vt-input:focus-visible,
+.vt-input:focus {
+  --vt-input-line: var(--vt-input-border-color);
+  box-shadow: 0 0 0 1px var(--vt-input-border-color);
+}
+
+.vt-input[aria-invalid='true'] {
+  --vt-input-line: var(--vt-color-red);
+}
+
+textarea.vt-input {
+  min-height: calc(var(--vt-input-height) * 2.75);
+  padding-block: calc((var(--vt-input-height) - 1.4em) / 2);
+  resize: vertical;
+}
+
+.vt-select {
+  position: relative;
+  display: block;
+}
+
+.vt-select > .vt-input {
+  padding-inline-end: calc(var(--vt-input-padding) * 2 + 0.75rem);
+  cursor: pointer;
+}
+
+/* Arrow: a mask painted in the field's text color */
+.vt-select::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: var(--vt-input-padding);
+  top: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  translate: 0 -50%;
+  background-color: var(--vt-input-text);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 8 8 8 8-8'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+/* The prompt option shows like a placeholder until a choice is made */
+.vt-select > .vt-input:has(option[value='']:checked) {
+  color: color-mix(in srgb, var(--vt-input-text) 80%, transparent);
+}
+
+.vt-select option {
+  color: var(--vt-foreground-color);
+  background-color: var(--vt-background-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt-input {
+    transition: none;
+  }
+}

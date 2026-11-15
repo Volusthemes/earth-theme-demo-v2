@@ -1839,8 +1839,13 @@
 		"name": "Inputs",
 		"settings": [
 			{
+				"type": "paragraph",
+				"content": "Applies to text fields, dropdowns and message boxes in forms, such as the contact form."
+			},
+			{
 				"type": "select",
 				"id": "input_style",
+				"label": "Input style",
 				"options": [
 					{
 						"value": "solid",
@@ -1851,9 +1856,117 @@
 						"label": "Outline"
 					}
 				],
-				"default": "solid",
-				"label": "Input style"
-			}	
+				"default": "outline",
+				"info": "Solid adds a light fill behind the text."
+			},
+			{
+				"type": "select",
+				"id": "input_border_style",
+				"label": "Border",
+				"options": [
+					{
+						"value": "all",
+						"label": "All sides"
+					},
+					{
+						"value": "bottom",
+						"label": "Bottom only"
+					}
+				],
+				"default": "all"
+			},
+			{
+				"type": "range",
+				"id": "input_border_width",
+				"label": "Border thickness",
+				"min": 0,
+				"max": 3,
+				"step": 1,
+				"unit": "px",
+				"default": 1
+			},
+			{
+				"type": "range",
+				"id": "input_border_opacity",
+				"label": "Border opacity",
+				"min": 10,
+				"max": 100,
+				"step": 5,
+				"unit": "%",
+				"default": 30,
+				"info": "The border shows at full strength while the field is in use."
+			},
+			{
+				"type": "range",
+				"id": "input_radius",
+				"label": "Corner radius",
+				"min": 0,
+				"max": 24,
+				"step": 2,
+				"unit": "px",
+				"default": 0,
+				"visible_if": "{{ settings.input_border_style == 'all' }}"
+			},
+			{
+				"type": "header",
+				"content": "Size"
+			},
+			{
+				"type": "range",
+				"id": "input_height_desktop",
+				"label": "Height (desktop)",
+				"min": 36,
+				"max": 72,
+				"step": 2,
+				"unit": "px",
+				"default": 48
+			},
+			{
+				"type": "range",
+				"id": "input_height_mobile",
+				"label": "Height (mobile)",
+				"min": 40,
+				"max": 64,
+				"step": 2,
+				"unit": "px",
+				"default": 44,
+				"info": "44px or more is easier to tap."
+			},
+			{
+				"type": "range",
+				"id": "input_padding",
+				"label": "Horizontal padding",
+				"min": 8,
+				"max": 32,
+				"step": 2,
+				"unit": "px",
+				"default": 16
+			},
+			{
+				"type": "header",
+				"content": "Colors"
+			},
+			{
+				"type": "paragraph",
+				"content": "Background and Text: leave empty to follow the text color of each section."
+			},
+			{
+				"type": "color",
+				"id": "input_background",
+				"label": "Background"
+			},
+			{
+				"type": "color",
+				"id": "input_text",
+				"label": "Text"
+			},
+			{
+				"type": "color",
+				"id": "input_border",
+				"label": "Border",
+				"default": "{{ settings.color_palette.primary }}",
+				"info": "Uses the primary color of the color palette. Clear it to follow the text color of each section."
+			}
 		]
 	},
 	{

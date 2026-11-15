@@ -1,0 +1,835 @@
+{% comment %}
+  Contact form: a framed form with an optional image beside it.
+
+  - Above the fields, any blocks (for example a heading with an icon)
+  - Fields: name and email side by side from 750px, then phone, topic and message.
+    Phone and topic can be turned off; the topic list comes from the settings.
+    Field look (height, border, corners, colors): Theme settings > Inputs.
+  - The image is a static Image block (shape, separate mobile image, border,
+    animation in its own settings). The section places it: left or right of the
+    form on desktop, before or after it, or hidden, on smaller screens. Below 990px
+    the image sits under the form, so it takes its mobile shape there.
+
+  Shopify sends the message to the store's email. The note above the button is
+  plain text from the settings (for example a privacy or spam protection notice).
+{% endcomment %}
+
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  assign form_id = 'ContactForm-' | append: section.id
+
+  assign layout_class = 'vt-contact-form__layout vt-contact-form--image-' | append: section.settings.image_position
+  assign layout_class = layout_class | append: ' vt-contact-form--mobile-image-' | append: section.settings.mobile_image
+  if section.settings.equal_height
+    assign layout_class = layout_class | append: ' vt-contact-form--equal'
+  endif
+
+
+  assign box_border = 'none'
+  if section.settings.show_border
+    assign box_border = '1px solid ' | append: section.settings.border_color
+    if section.settings.border_color == blank
+      assign box_border = '1px solid currentColor'
+    endif
+  endif
+
+  assign button_class = 'vt-button vt-button--' | append: section.settings.button_style
+  if settings.buttons_hover_effect == 'standard'
+    assign button_class = button_class | append: ' vt-button--hover-standard'
+  endif
+
+  assign subject_options = section.settings.subject_options | newline_to_br | split: '<br />'
+-%}
+
+{% render 'section-styles', section: section %}
+
+<div class="vt-section vt-contact-form" {{ section.shopify_attributes }}>
+  <div class="{{ inner_classes }}">
+    <div
+      class="{{ layout_class }}"
+      style="
+        --vt-contact-image-width: {{ section.settings.image_width }}%;
+        --vt-contact-box-border: {{ box_border }};
+        --vt-contact-box-bg: {{ section.settings.box_background | default: 'transparent' }};
+        --vt-contact-box-radius: {{ section.settings.box_radius }}px;
+        --vt-contact-box-padding: {% render 'fluid-clamp', min_px: section.settings.box_padding_mobile, max_px: section.settings.box_padding_desktop %};
+        --vt-contact-field-gap: {% render 'fluid-clamp', min_px: section.settings.field_gap_mobile, max_px: section.settings.field_gap_desktop %};
+      "
+    >
+      <div class="vt-contact-form__box">
+        {%- if section.blocks.size > 0 -%}
+          <div class="vt-contact-form__intro">
+            {% content_for 'blocks' %}
+          </div>
+        {%- endif -%}
+
+        {%- form 'contact', id: form_id, class: 'vt-contact-form__form' -%}
+          {%- if form.posted_successfully? -%}
+            <p class="vt-contact-form__message vt-contact-form__message--success" role="status" tabindex="-1" autofocus>
+              {{ 'contact_form.success' | t }}
+            </p>
+          {%- elsif form.errors -%}
+            <div
+              id="{{ form_id }}-errors"
+              class="vt-contact-form__message vt-contact-form__message--error"
+              role="alert"
+              tabindex="-1"
+              autofocus
+            >
+              <p>{{ 'contact_form.error' | t }}</p>
+              {{ form.errors | default_errors }}
+            </div>
+          {%- endif -%}
+
+          <div class="vt-contact-form__fields">
+            <div class="vt-contact-form__field">
+              <label class="vt-visually-hidden" for="{{ form_id }}-name">{{ 'contact_form.name' | t }}</label>
+              <input
+                class="vt-input"
+                type="text"
+                id="{{ form_id }}-name"
+                name="contact[{{ 'contact_form.name' | t }}]"
+                value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
+                autocomplete="name"
+                placeholder="{{ 'contact_form.name' | t }}"
+              >
+            </div>
+
+            <div class="vt-contact-form__field">
+              <label class="vt-visually-hidden" for="{{ form_id }}-email">
+                {{- 'contact_form.email' | t }} ({{ 'contact_form.required' | t }})
+              </label>
+              <input
+                class="vt-input"
+                type="email"
+                id="{{ form_id }}-email"
+                name="contact[email]"
+                value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}"
+                autocomplete="email"
+                autocapitalize="off"
+                spellcheck="false"
+                placeholder="{{ 'contact_form.email' | t }}"
+                required
+                {% if form.errors contains 'email' %}
+                  aria-invalid="true"
+                  aria-describedby="{{ form_id }}-errors"
+                {% endif %}
+              >
+            </div>
+
+            {%- if section.settings.show_phone -%}
+              <div class="vt-contact-form__field vt-contact-form__field--full">
+                <label class="vt-visually-hidden" for="{{ form_id }}-phone">{{ 'contact_form.phone' | t }}</label>
+                <input
+                  class="vt-input"
+                  type="tel"
+                  id="{{ form_id }}-phone"
+                  name="contact[{{ 'contact_form.phone' | t }}]"
+                  value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
+                  autocomplete="tel"
+                  pattern="[0-9\-\+\s\(\)\.]*"
+                  placeholder="{{ 'contact_form.phone' | t }}"
+                >
+              </div>
+            {%- endif -%}
+
+            {%- if section.settings.show_subject and section.settings.subject_options != blank -%}
+              <div class="vt-contact-form__field vt-contact-form__field--full">
+                <label class="vt-visually-hidden" for="{{ form_id }}-subject">{{ 'contact_form.subject' | t }}</label>
+                <span class="vt-select">
+                  <select
+                    class="vt-input"
+                    id="{{ form_id }}-subject"
+                    name="contact[{{ 'contact_form.subject_label' | t }}]"
+                  >
+                    <option value="" selected>{{ 'contact_form.subject' | t }}</option>
+                    {%- for option in subject_options -%}
+                      {%- assign option_text = option | strip -%}
+                      {%- if option_text != blank -%}
+                        <option value="{{ option_text | escape }}">{{ option_text | escape }}</option>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </select>
+                </span>
+              </div>
+            {%- endif -%}
+
+            <div class="vt-contact-form__field vt-contact-form__field--full">
+              <label class="vt-visually-hidden" for="{{ form_id }}-message">{{ 'contact_form.message' | t }}</label>
+              <textarea
+                class="vt-input"
+                id="{{ form_id }}-message"
+                name="contact[body]"
+                rows="5"
+                placeholder="{{ 'contact_form.message' | t }}"
+              >
+                {{- form.body -}}
+              </textarea>
+            </div>
+          </div>
+
+          {%- if section.settings.form_note != blank -%}
+            <div class="vt-contact-form__note">{{ section.settings.form_note }}</div>
+          {%- endif -%}
+
+          <div class="vt-contact-form__actions">
+            <button type="submit" class="{{ button_class }}">
+              <span class="vt-button-label">{{ section.settings.button_label | escape }}</span>
+            </button>
+          </div>
+        {%- endform -%}
+      </div>
+
+      {%- if section.settings.show_image -%}
+        <div class="vt-contact-form__media">
+          {% content_for 'block', type: 'image', id: 'contact-image' %}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-contact-form__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--vt-section-gap, 2rem);
+    align-items: start;
+  }
+
+  /* Mobile: image after the form (default), before it, or hidden */
+  .vt-contact-form--mobile-image-above .vt-contact-form__media {
+    order: -1;
+  }
+
+  @media screen and (max-width: 989.98px) {
+    .vt-contact-form--mobile-image-hidden .vt-contact-form__media {
+      display: none;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    .vt-contact-form__layout:has(.vt-contact-form__media) {
+      grid-template-columns: minmax(0, 1fr) var(--vt-contact-image-width);
+    }
+
+    .vt-contact-form__layout .vt-contact-form__media {
+      order: 0;
+    }
+
+    .vt-contact-form--image-left:has(.vt-contact-form__media) {
+      grid-template-columns: var(--vt-contact-image-width) minmax(0, 1fr);
+    }
+
+    .vt-contact-form--image-left .vt-contact-form__media {
+      order: -1;
+    }
+
+    /*
+      Same height: both columns take the height of the taller one. A taller image
+      stretches the form box; a taller form stretches the image, whose shape stays
+      the minimum height and which is cropped to fill (object-fit: cover).
+    */
+    .vt-contact-form--equal {
+      align-items: stretch;
+    }
+
+    .vt-contact-form--equal .vt-contact-form__media > .vt-image {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .vt-contact-form--equal .vt-contact-form__media .vt-image__link,
+    .vt-contact-form--equal .vt-contact-form__media .vt-image__media {
+      flex: 1 0 auto;
+    }
+  }
+
+  .vt-contact-form__box {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--vt-contact-field-gap) * 1.25);
+    padding: var(--vt-contact-box-padding);
+    border: var(--vt-contact-box-border);
+    border-radius: var(--vt-contact-box-radius);
+    background: var(--vt-contact-box-bg);
+  }
+
+  .vt-contact-form__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .vt-contact-form__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-contact-field-gap);
+  }
+
+  .vt-contact-form__fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--vt-contact-field-gap);
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-contact-form__fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .vt-contact-form__field--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .vt-contact-form__field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vt-contact-form__message {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-inline-start: 3px solid currentColor;
+    background-color: color-mix(in srgb, currentColor 6%, transparent);
+  }
+
+  .vt-contact-form__message:focus {
+    outline: none;
+  }
+
+  .vt-contact-form__message--error {
+    border-color: var(--vt-color-red);
+  }
+
+  .vt-contact-form__message p,
+  .vt-contact-form__message ul {
+    margin: 0;
+  }
+
+  .vt-contact-form__message ul {
+    padding-inline-start: 1.25rem;
+  }
+
+  .vt-contact-form__note p {
+    margin: 0;
+  }
+
+  .vt-contact-form__note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (hover: hover) {
+    .vt-contact-form__note a:hover {
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  .vt-contact-form__actions {
+    display: flex;
+  }
+
+  .vt-contact-form__media {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Stacked under the form (below 990px) the image takes its mobile shape */
+  @media screen and (max-width: 989.98px) {
+    .vt-contact-form__media .vt-image__media {
+      aspect-ratio: var(--vt-aspect-ratio-mobile, var(--vt-aspect-ratio, auto));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Contact form",
+  "tag": "section",
+  "class": "section-contact-form",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_phone",
+      "label": "Show phone field",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subject",
+      "label": "Show topic dropdown",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "subject_options",
+      "label": "Topics",
+      "default": "Orders and delivery\nProducts and sizing\nReturns and exchanges\nSomething else",
+      "info": "One topic per line. The topic is added to the message you receive.",
+      "visible_if": "{{ section.settings.show_subject }}"
+    },
+    {
+      "type": "richtext",
+      "id": "form_note",
+      "label": "Note above the button",
+      "info": "For example a privacy or spam protection notice. Leave empty to hide."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Send message"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "secondary",
+          "label": "Secondary"
+        },
+        {
+          "value": "outline",
+          "label": "Outline"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        }
+      ],
+      "default": "primary"
+    },
+    {
+      "type": "range",
+      "id": "field_gap_desktop",
+      "label": "Space between fields (desktop)",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "field_gap_mobile",
+      "label": "Space between fields (mobile)",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "paragraph",
+      "content": "Field height, border and colors: Theme settings > Inputs."
+    },
+    {
+      "type": "header",
+      "content": "Form box"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Show border",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "info": "Leave empty to use the section text color.",
+      "visible_if": "{{ section.settings.show_border }}"
+    },
+    {
+      "type": "color",
+      "id": "box_background",
+      "label": "Background",
+      "info": "Leave empty for no background."
+    },
+    {
+      "type": "range",
+      "id": "box_padding_desktop",
+      "label": "Padding (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "box_padding_mobile",
+      "label": "Padding (mobile)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "box_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show image",
+      "default": true,
+      "info": "Pick the image and its shape in the Image block of this section."
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Position on desktop",
+      "options": [
+        {
+          "value": "right",
+          "label": "Right of the form"
+        },
+        {
+          "value": "left",
+          "label": "Left of the form"
+        }
+      ],
+      "default": "right",
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Width on desktop",
+      "min": 25,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 33,
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "equal_height",
+      "label": "Same height for form and image",
+      "default": true,
+      "info": "On desktop, the shorter side grows to the height of the other.",
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "select",
+      "id": "mobile_image",
+      "label": "On mobile",
+      "options": [
+        {
+          "value": "below",
+          "label": "Below the form"
+        },
+        {
+          "value": "above",
+          "label": "Above the form"
+        },
+        {
+          "value": "hidden",
+          "label": "Hidden"
+        }
+      ],
+      "default": "below",
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Space between form and image (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Space between form and image (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact form",
+      "settings": {
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80
+      },
+      "blocks": [
+        {
+          "type": "heading-group",
+          "name": "Form heading",
+          "settings": {
+            "direction": "horizontal",
+            "alignment": "left",
+            "vertical_alignment": "center",
+            "gap_desktop": 24,
+            "gap_mobile": 12,
+            "width": "fit",
+            "hide_icon_mobile": true
+          },
+          "blocks": [
+            {
+              "type": "icons",
+              "settings": {
+                "icon": "leaf",
+                "icon_size_desktop": 48,
+                "icon_size_mobile": 36,
+                "show_box": false,
+                "color_style": "secondary",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.1,
+                "animation_easing": "ease-out-sine"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Send us a message",
+                "heading_size": "vt-heading-h3",
+                "heading_tag": "h2",
+                "heading_alignment": "text-left",
+                "heading_width": "fit",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine"
+              }
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "id": "contact-image",
+          "static": true,
+          "settings": {
+            "image_aspect_ratio": "tall",
+            "image_aspect_ratio_mobile": "square",
+            "image_desktop_width": "fill",
+            "image_mobile_width": "fill",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.1,
+            "animation_easing": "ease-out-sine"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

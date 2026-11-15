@@ -567,6 +567,37 @@
         * ------------------------------------------------------------
         */
 
+        /*
+        * ------------------------------------------------------------
+        * INPUTS (Theme settings > Inputs, used by .vt-input in theme.css)
+        * Empty colors follow the text color of the section around the field
+        * ------------------------------------------------------------
+        */
+
+        {%- liquid
+          assign input_bg = 'transparent'
+          if settings.input_style == 'solid'
+            assign input_bg = 'color-mix(in srgb, currentColor 5%, transparent)'
+          endif
+          assign input_border_color = settings.input_border | default: 'currentColor'
+          assign input_border_x = settings.input_border_width | append: 'px'
+          assign input_radius = settings.input_radius | append: 'px'
+          if settings.input_border_style == 'bottom'
+            assign input_border_x = '0px'
+            assign input_radius = '0px'
+          endif
+        -%}
+        --vt-input-bg: {{ settings.input_background | default: input_bg }};
+        --vt-input-text: {{ settings.input_text | default: 'currentColor' }};
+        --vt-input-border-color: {{ input_border_color }};
+        --vt-input-border-opacity: {{ settings.input_border_opacity }}%;
+        --vt-input-border-width: {{ settings.input_border_width }}px;
+        --vt-input-border-x: {{ input_border_x }};
+        --vt-input-radius: {{ input_radius }};
+        --vt-input-height-mobile: {{ settings.input_height_mobile | divided_by: 16.0 }}rem;
+        --vt-input-height-desktop: {{ settings.input_height_desktop | divided_by: 16.0 }}rem;
+        --vt-input-padding: {{ settings.input_padding | divided_by: 16.0 }}rem;
+
         --vt-button-border-width: {{ settings.buttons_border_width }}px;
         --vt-button-border-opacity: {{ settings.buttons_border_opacity | divided_by: 100.0 }}; 
         
