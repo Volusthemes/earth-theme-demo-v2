@@ -19,7 +19,11 @@
   </style>
 {%- endif -%}
 
-{%- if settings.enable_scroll_animations -%}
+{%- comment -%}
+  Not in the theme editor's visual preview (section and block picker thumbnails): the
+  preview is captured as rendered, and scrolled-to elements would still be hidden
+{%- endcomment -%}
+{%- if settings.enable_scroll_animations and request.visual_preview_mode != true -%}
   <script>
     (() => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -33,32 +37,57 @@
         element.classList.remove(...animateClasses, 'vt-in-view');
       };
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          /* A watched box can stand for several animated elements (see watchTarget) */
-          const targets = entries
-            .filter((entry) => entry.isIntersecting)
-            .flatMap((entry) => {
-              observer.unobserve(entry.target);
-              const elements = watched.get(entry.target) || [];
-              watched.delete(entry.target);
-              return elements;
-            });
-
-          /* Read every timing first, then write, to avoid recalculating styles per element */
-          const timings = targets.map((target) => {
-            const styles = getComputedStyle(target);
-            const duration = parseFloat(styles.getPropertyValue('--vt-duration')) || 0;
-            const delay = parseFloat(styles.getPropertyValue('--vt-delay')) || 0;
-            return (duration + delay) * 1000;
+      /* A watched box can stand for several animated elements (see watchTarget) */
+      const onIntersect = (entries, observer) => {
+        const targets = entries
+          .filter((entry) => entry.isIntersecting)
+          .flatMap((entry) => {
+            observer.unobserve(entry.target);
+            const elements = watched.get(entry.target) || [];
+            watched.delete(entry.target);
+            return elements;
           });
 
-          targets.forEach((target, index) => {
-            target.classList.add('vt-in-view');
-            setTimeout(() => finish(target), timings[index] + 100);
+        /* Read every timing first, then write, to avoid recalculating styles per element */
+        const timings = targets.map((target) => {
+          const styles = getComputedStyle(target);
+          const duration = parseFloat(styles.getPropertyValue('--vt-duration')) || 0;
+          const delay = parseFloat(styles.getPropertyValue('--vt-delay')) || 0;
+          return (duration + delay) * 1000;
+        });
+
+        targets.forEach((target, index) => {
+          target.classList.add('vt-in-view');
+          setTimeout(() => finish(target), timings[index] + 100);
+        });
+      };
+
+      const observer = new IntersectionObserver(onIntersect, { threshold: 0.15 });
+
+      /*
+        data-vt-animate-start="middle": plays once the element's top passes 60% of the
+        screen height, so items in a long list appear one at a time as they are scrolled
+        to (Timeline cards) rather than together as soon as they peek in at the bottom.
+        It also plays back when scrolling up moves the element below that line again;
+        elements scrolled past the top stay shown. The classes stay for that, so the
+        element keeps its animation layer.
+      */
+      const middleObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(({ target, isIntersecting, boundingClientRect, rootBounds }) => {
+            if (isIntersecting) {
+              target.classList.add('vt-in-view');
+            } else if (rootBounds && boundingClientRect.top >= rootBounds.bottom) {
+              target.classList.remove('vt-in-view');
+            }
           });
         },
-        { threshold: 0.15 }
+        /*
+          root: document, because with the default root a page shown in a cross-origin
+          frame (the theme editor preview) ignores rootMargin, and the element would
+          count as reached as soon as it peeks in at the bottom
+        */
+        { root: document, rootMargin: '0px 0px -40% 0px' }
       );
 
       /*
@@ -82,6 +111,11 @@
 
       const observe = (root) => {
         root.querySelectorAll('.vt-animate:not(.vt-in-view)').forEach((element) => {
+          if (element.dataset.vtAnimateStart === 'middle') {
+            middleObserver.observe(element);
+            return;
+          }
+
           const target = watchTarget(element);
           if (!watched.has(target)) {
             watched.set(target, []);

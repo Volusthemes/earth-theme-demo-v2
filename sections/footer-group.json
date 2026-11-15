@@ -760,7 +760,7 @@
           },
           "blocks": {
             "copyright": {
-              "type": "copyright",
+              "type": "_copyright",
               "settings": {
                 "text": "All rights reserved",
                 "show_powered_by": true,

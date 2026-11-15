@@ -16,6 +16,7 @@
     "play_announcements": "Play announcements",
     "close_announcement": "Close announcement",
     "skip_to_text": "Skip to content",
+    "timeline": "Timeline",
     "collection_aria_label": "Collection gallery",
     "view_collection": "View collection",
     "items_with_count": "{{ count }} items",

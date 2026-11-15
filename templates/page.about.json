@@ -3264,6 +3264,467 @@
                 "column_layout_block"
             ]
         },
+        "timeline_section": {
+            "type": "timeline",
+            "blocks": {
+                "timeline-intro": {
+                    "type": "stack",
+                    "static": true,
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 16,
+                        "gap_mobile": 12
+                    },
+                    "blocks": {
+                        "timeline-intro_icons_1": {
+                            "type": "icons",
+                            "settings": {
+                                "icon": "leaf",
+                                "icon_size_desktop": 40,
+                                "icon_size_mobile": 32,
+                                "show_box": false,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        },
+                        "timeline-intro_heading_2": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Our Sustainability Journey",
+                                "heading_size": "vt-heading-h2",
+                                "heading_tag": "h2",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        },
+                        "timeline-intro_paragraph_3": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>From a small organic farm to global impact – our story unfolds through transparent milestones and unwavering commitment to the planet</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.4,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "timeline-intro_icons_1",
+                        "timeline-intro_heading_2",
+                        "timeline-intro_paragraph_3"
+                    ]
+                },
+                "timeline-badges": {
+                    "type": "_timeline-badges",
+                    "static": true,
+                    "settings": {
+                        "radius": "3.125rem",
+                        "show_border": true,
+                        "badge_size": "vt-paragraph-small",
+                        "gap": 8
+                    },
+                    "blocks": {}
+                },
+                "timeline-closing": {
+                    "type": "stack",
+                    "static": true,
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 24,
+                        "gap_mobile": 20
+                    },
+                    "blocks": {
+                        "timeline-closing_paragraph_1": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Learn how we source our materials, work with partners and measure our progress.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        },
+                        "timeline-closing_button_2": {
+                            "type": "button",
+                            "settings": {
+                                "button_label": "Transparency",
+                                "button_link": "",
+                                "open_in_new_tab": false,
+                                "button_style": "primary",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "timeline-closing_paragraph_1",
+                        "timeline-closing_button_2"
+                    ]
+                },
+                "milestone_1": {
+                    "type": "_timeline-item",
+                    "settings": {},
+                    "blocks": {
+                        "milestone_1_image_1": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "landscape",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_1_sub_heading_2": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "2018",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_1_heading_3": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "The Beginning",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_1_paragraph_4": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Founded in Memphis with mission to source 100% organic cotton from local farms</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "milestone_1_image_1",
+                        "milestone_1_sub_heading_2",
+                        "milestone_1_heading_3",
+                        "milestone_1_paragraph_4"
+                    ]
+                },
+                "milestone_2": {
+                    "type": "_timeline-item",
+                    "settings": {},
+                    "blocks": {
+                        "milestone_2_image_1": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "landscape",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_2_sub_heading_2": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "2019",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_2_heading_3": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Fair Trade Partnership",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_2_paragraph_4": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Partnered with first Fair Trade factories, ensuring ethical labor for 500 artisans</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "milestone_2_image_1",
+                        "milestone_2_sub_heading_2",
+                        "milestone_2_heading_3",
+                        "milestone_2_paragraph_4"
+                    ]
+                },
+                "milestone_3": {
+                    "type": "_timeline-item",
+                    "settings": {},
+                    "blocks": {
+                        "milestone_3_image_1": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "landscape",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_3_sub_heading_2": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "2020",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_3_heading_3": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Reforestation Initiative",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_3_paragraph_4": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Launched \"1 Tree Per Product\" – planted 50K trees in Vietnam reforestation</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "milestone_3_image_1",
+                        "milestone_3_sub_heading_2",
+                        "milestone_3_heading_3",
+                        "milestone_3_paragraph_4"
+                    ]
+                },
+                "milestone_4": {
+                    "type": "_timeline-item",
+                    "settings": {},
+                    "blocks": {
+                        "milestone_4_image_1": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "landscape",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_4_sub_heading_2": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "2024",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_4_heading_3": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Carbon Neutral",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_4_paragraph_4": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Achieved B Corp certification and full carbon-neutral shipping</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "milestone_4_image_1",
+                        "milestone_4_sub_heading_2",
+                        "milestone_4_heading_3",
+                        "milestone_4_paragraph_4"
+                    ]
+                },
+                "milestone_5": {
+                    "type": "_timeline-item",
+                    "settings": {},
+                    "blocks": {
+                        "milestone_5_image_1": {
+                            "type": "image",
+                            "settings": {
+                                "image_aspect_ratio": "landscape",
+                                "image_desktop_width": "fill",
+                                "image_mobile_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_5_sub_heading_2": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "2026",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_5_heading_3": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Circular Economy",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        },
+                        "milestone_5_paragraph_4": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Turn old garments into new collections, creating a sustainable fashion future.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "milestone_5_image_1",
+                        "milestone_5_sub_heading_2",
+                        "milestone_5_heading_3",
+                        "milestone_5_paragraph_4"
+                    ]
+                }
+            },
+            "block_order": [
+                "milestone_1",
+                "milestone_2",
+                "milestone_3",
+                "milestone_4",
+                "milestone_5"
+            ],
+            "settings": {
+                "content_width": 50,
+                "column_gap": 100,
+                "sticky_content": true,
+                "sticky_offset": 40,
+                "gap": 32,
+                "gap_mobile": 40,
+                "card_animation": "slide",
+                "card_radius": 0,
+                "card_padding": 32,
+                "card_padding_mobile": 20,
+                "card_gap": 12,
+                "card_gap_mobile": 10,
+                "card_spacing": 32,
+                "card_spacing_mobile": 20,
+                "color_style": "default",
+                "background_style": "gradient",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "background_gradient": "radial-gradient(45% 30% at 55% 0%, rgba(113, 204, 59, 0.6) 0%, rgba(113, 204, 59, 0) 100%), radial-gradient(35% 25% at 25% 40%, rgba(113, 204, 59, 0.45) 0%, rgba(113, 204, 59, 0) 100%), radial-gradient(30% 20% at 15% 90%, rgba(113, 204, 59, 0.45) 0%, rgba(113, 204, 59, 0) 100%), #EAE060"
+            }
+        },
         "founder_quote_section": {
             "type": "custom-section",
             "settings": {
@@ -3274,12 +3735,12 @@
                 "background_color": "{{ settings.color_palette.background }}",
                 "heading_color": "{{ settings.color_palette.foreground }}",
                 "paragraph_color": "{{ settings.color_palette.primary }}",
-                "padding_top_desktop": 0,
+                "padding_top_desktop": 110,
                 "padding_bottom_desktop": 110,
                 "padding_left_desktop": 34,
                 "padding_right_desktop": 34,
                 "enable_custom_mobile_padding": true,
-                "padding_top_mobile": 48,
+                "padding_top_mobile": 80,
                 "padding_bottom_mobile": 80,
                 "padding_left_mobile": 20,
                 "padding_right_mobile": 20,
@@ -3806,6 +4267,7 @@
         "multicolumn_metrics_section",
         "rich_text_two_section",
         "multicolumn_stats_section",
+        "timeline_section",
         "founder_quote_section",
         "values_highlights_section"
     ]

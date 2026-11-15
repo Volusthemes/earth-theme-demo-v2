@@ -14,7 +14,7 @@
       "settings": {},
       "blocks": {
         "products-list": {
-          "type": "products-list",
+          "type": "_products-list",
           "static": true,
           "settings": {}
         }

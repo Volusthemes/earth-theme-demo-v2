@@ -1,0 +1,194 @@
+{% doc %}
+  Renders the Timeline section's badge list: one link per Timeline item, in the
+  same order as the cards, named by the item's "Badge label" or its heading.
+  Uses the shared badge styles (.vt-badge in theme.css).
+
+  Liquid can't read theme block settings from section.blocks, so the list is
+  filled by assets/theme-timeline.js from the cards on the page, using the
+  badge markup in the <template>. The script also marks the badge of the card in
+  view with aria-current and moves to a card when its badge is used.
+
+  Shown from 990px up, where the list stays in view beside the cards. The sticky
+  column has a fixed height there, so adding the list doesn't move the content.
+
+  @example
+  {% content_for 'block', type: '_timeline-badges', id: 'timeline-badges' %}
+{% enddoc %}
+
+{%- liquid
+  # Empty colors follow the color palette and the section's color style
+  assign badge_color = block.settings.text_color | default: 'currentColor'
+  # Not currentColor: on the active badge that would be its own (light) text color
+  assign active_bg = block.settings.active_background | default: 'var(--vt-section-color, var(--vt-foreground-color))'
+  # Like the badge "Dark" style: section text color behind accent text
+  assign active_text_default = 'var(--vt-color-accent)'
+  if section.settings.color_style == 'primary'
+    assign active_text_default = 'var(--vt-color-primary)'
+  endif
+  assign active_color = block.settings.active_text_color | default: active_text_default
+
+  assign badge_classes = 'vt-badge vt-timeline-badges__link vt-badge--width-fit ' | append: block.settings.badge_size
+  if block.settings.show_border
+    assign badge_classes = badge_classes | append: ' vt-badge--border'
+  endif
+-%}
+
+<nav
+  class="vt-timeline-badges"
+  aria-label="{{ 'accessibility.timeline' | t }}"
+  style="
+    --vt-timeline-badges-gap: {{ block.settings.gap | divided_by: 16.0 }}rem;
+    --vt-badge-radius: {{ block.settings.radius }};
+    --vt-badge-color: {{ badge_color }};
+    --vt-badge-border-color: {{ badge_color }};
+    --vt-timeline-badge-active-bg: {{ active_bg }};
+    --vt-timeline-badge-active-color: {{ active_color }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <ol class="vt-timeline-badges__list" role="list" data-timeline-badges></ol>
+  <template data-timeline-badge>
+    <li><a class="{{ badge_classes }}" href="#" data-timeline-link></a></li>
+  </template>
+</nav>
+
+{% stylesheet %}
+  .vt-timeline-badges {
+    display: none;
+  }
+
+  /* Until the script has added the badges there is nothing to show */
+  @media screen and (min-width: 990px) {
+    .vt-timeline-badges:has(li) {
+      display: block;
+    }
+  }
+
+  .vt-timeline-badges__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--vt-timeline-badges-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-timeline-badges__link {
+    --vt-badge-bg: transparent;
+    text-decoration: none;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease,
+      border-color 0.3s ease;
+  }
+
+  .vt-timeline-badges__link:hover {
+    --vt-badge-bg: color-mix(in srgb, currentColor 10%, transparent);
+  }
+
+  .vt-timeline-badges__link:focus-visible {
+    outline: 2px solid var(--vt-badge-color);
+    outline-offset: 2px;
+  }
+
+  /* Active: the card in view (the first one until a card reaches the reading line) */
+  .vt-timeline-badges__link[aria-current='true'],
+  .vt-timeline-badges__list:not(:has([aria-current='true'])) > li:first-child > .vt-timeline-badges__link {
+    --vt-badge-bg: var(--vt-timeline-badge-active-bg);
+    --vt-badge-border-color: var(--vt-timeline-badge-active-bg);
+    color: var(--vt-timeline-badge-active-color);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-timeline-badges__link {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Badges",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "One badge per Timeline item, named by its \"Badge label\" or its heading. The badge of the card in view is highlighted. Shown on desktop."
+    },
+    {
+      "type": "select",
+      "id": "radius",
+      "label": "Badge style",
+      "options": [
+        { "value": "3.125rem", "label": "Pill badge" },
+        { "value": "0", "label": "Square badge" },
+        { "value": "0.5rem", "label": "Default badge" }
+      ],
+      "default": "3.125rem"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Badge with outline",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "badge_size",
+      "label": "Badge size",
+      "options": [
+        {
+          "value": "vt-paragraph-extra-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__1.label"
+        },
+        {
+          "value": "vt-paragraph-small",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__2.label"
+        },
+        {
+          "value": "vt-paragraph-medium",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__3.label"
+        },
+        {
+          "value": "vt-paragraph-large",
+          "label": "t:blocks.paragraph.settings.paragraph_size.options__4.label"
+        }
+      ],
+      "default": "vt-paragraph-small"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8,
+      "label": "Space between badges"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text and outline",
+      "info": "Leave empty to use the section text color."
+    },
+    {
+      "type": "color",
+      "id": "active_background",
+      "label": "Highlighted background",
+      "info": "Leave empty to use the section text color."
+    },
+    {
+      "type": "color",
+      "id": "active_text_color",
+      "label": "Highlighted text",
+      "info": "Leave empty to use the color palette."
+    }
+  ]
+}
+{% endschema %}

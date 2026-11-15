@@ -1,6 +1,7 @@
 {%- comment -%}
   Section: Image with text overlay
-  - Full-width background image (section settings, with an optional mobile image)
+  - Background image (section settings, with an optional mobile image), full width or
+    inside the page width with even space above and below ("Image width")
   - Overlay layer between the image and the content, so the text stays readable
   - Content comes from child blocks (stack, icons, heading, sub-heading, paragraph, button)
 {%- endcomment -%}
@@ -9,6 +10,12 @@
   assign make_section_page_width = section.settings.make_section_page_width
   assign image = section.settings.image
   assign image_mobile = section.settings.image_mobile
+
+  # Image width: "page" keeps the image inside the page margins with even space above and below
+  assign frame_classes = 'vt-image-overlay-frame'
+  if section.settings.image_width == 'page'
+    assign frame_classes = frame_classes | append: ' vt-image-overlay-frame--page vt-page-width'
+  endif
 
   # Outer class list
   assign section_height = section.settings.section_height | default: 'scale'
@@ -57,6 +64,11 @@
 {% render 'section-styles', section: section %}
 
 <div
+  class="{{ frame_classes }}"
+  style="--vt-image-overlay-space: {% render 'fluid-clamp', min_px: section.settings.image_space_mobile, max_px: section.settings.image_space_desktop %};"
+  {{ section.shopify_attributes }}
+>
+<div
   class="{{ section_classes }}"
   style="
     --vt-image-overlay-ratio-desktop: {{ ratio_desktop }};
@@ -74,7 +86,6 @@
     --vt-image-overlay-focal-mobile: {{ image_mobile.presentation.focal_point | default: image.presentation.focal_point }};
     {%- endif %}
   "
-  {{ section.shopify_attributes }}
 >
   <div class="vt-image-overlay__media">
     {%- if image != blank -%}
@@ -111,8 +122,14 @@
     {% content_for 'blocks' %}
   </div>
 </div>
+</div>
 
 {% stylesheet %}
+  /* Page width: the image sits inside the page margins, with even space above and below */
+  .vt-image-overlay-frame--page {
+    padding-block: var(--vt-image-overlay-space, 0);
+  }
+
   /* Every height is a minimum: a taller content block makes the section grow */
   .vt-image-overlay {
     position: relative;
@@ -214,6 +231,45 @@
       "info": "Optional. Uses the image above when empty."
     },
     {
+      "type": "select",
+      "id": "image_width",
+      "label": "Image width",
+      "options": [
+        {
+          "value": "full",
+          "label": "Full width"
+        },
+        {
+          "value": "page",
+          "label": "Page width"
+        }
+      ],
+      "default": "full",
+      "info": "Page width keeps the image inside the page margins, with space above and below."
+    },
+    {
+      "type": "range",
+      "id": "image_space_desktop",
+      "label": "Space above and below (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40,
+      "visible_if": "{{ section.settings.image_width == 'page' }}"
+    },
+    {
+      "type": "range",
+      "id": "image_space_mobile",
+      "label": "Space above and below (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.image_width == 'page' }}"
+    },
+    {
       "type": "range",
       "id": "image_radius",
       "min": 0,
@@ -228,9 +284,18 @@
       "id": "section_height",
       "label": "Height",
       "options": [
-        { "value": "scale", "label": "Scale proportionally" },
-        { "value": "fixed", "label": "Fixed height" },
-        { "value": "screen", "label": "Fit to screen" }
+        {
+          "value": "scale",
+          "label": "Scale proportionally"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed height"
+        },
+        {
+          "value": "screen",
+          "label": "Fit to screen"
+        }
       ],
       "default": "scale"
     },
@@ -261,9 +326,18 @@
       "id": "image_ratio_desktop",
       "label": "Ratio (desktop)",
       "options": [
-        { "value": "wide", "label": "Wide (16:9)" },
-        { "value": "ultra_wide", "label": "Ultra wide (21:9)" },
-        { "value": "landscape", "label": "Landscape (4:3)" }
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "ultra_wide",
+          "label": "Ultra wide (21:9)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        }
       ],
       "default": "wide",
       "visible_if": "{{ section.settings.section_height == 'scale' }}"
@@ -273,9 +347,18 @@
       "id": "image_ratio_mobile",
       "label": "Ratio (mobile)",
       "options": [
-        { "value": "classic_portrait", "label": "Tall portrait (2:3)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "square", "label": "Square (1:1)" }        
+        {
+          "value": "classic_portrait",
+          "label": "Tall portrait (2:3)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        }
       ],
       "default": "classic_portrait",
       "visible_if": "{{ section.settings.section_height == 'scale' }}"
@@ -294,7 +377,7 @@
       "step": 5,
       "unit": "%",
       "default": 10,
-      "label": "Overlay opacity"      
+      "label": "Overlay opacity"
     },
     {
       "type": "header",
@@ -305,9 +388,18 @@
       "id": "content_position",
       "label": "Vertical position",
       "options": [
-        { "value": "flex-start", "label": "Top" },
-        { "value": "center", "label": "Middle" },
-        { "value": "flex-end", "label": "Bottom" }
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
       ],
       "default": "center"
     },
@@ -315,9 +407,18 @@
       "type": "select",
       "id": "desktop_content_alignment",
       "options": [
-        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
-        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
-        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+        {
+          "value": "justify-start",
+          "label": "t:sections.rich_text.settings.content_alignment.options__1.label"
+        },
+        {
+          "value": "justify-center",
+          "label": "t:sections.rich_text.settings.content_alignment.options__2.label"
+        },
+        {
+          "value": "justify-end",
+          "label": "t:sections.rich_text.settings.content_alignment.options__3.label"
+        }
       ],
       "default": "justify-center",
       "label": "t:sections.rich_text.settings.desktop_content_alignment.label"
@@ -326,9 +427,18 @@
       "type": "select",
       "id": "mobile_content_alignment",
       "options": [
-        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
-        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
-        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+        {
+          "value": "justify-start",
+          "label": "t:sections.rich_text.settings.content_alignment.options__1.label"
+        },
+        {
+          "value": "justify-center",
+          "label": "t:sections.rich_text.settings.content_alignment.options__2.label"
+        },
+        {
+          "value": "justify-end",
+          "label": "t:sections.rich_text.settings.content_alignment.options__3.label"
+        }
       ],
       "default": "justify-center",
       "label": "t:sections.rich_text.settings.mobile_content_alignment.label"
@@ -340,7 +450,7 @@
       "max": 80,
       "step": 2,
       "unit": "px",
-      "default": 30,      
+      "default": 30,
       "label": "Gap (desktop)"
     },
     {
@@ -351,7 +461,7 @@
       "step": 2,
       "unit": "px",
       "default": 20,
-      "label": "Gap (mobile)"      
+      "label": "Gap (mobile)"
     },
     {
       "type": "header",
@@ -371,7 +481,8 @@
     },
     {
       "type": "header",
-      "content": "Padding"
+      "content": "Padding",
+      "info": "Space between the image edges and the content."
     },
     {
       "type": "range",
@@ -471,12 +582,24 @@
     }
   ],
   "blocks": [
-    { "type": "stack" },
-    { "type": "icons" },
-    { "type": "heading" },
-    { "type": "sub-heading" },
-    { "type": "paragraph" },
-    { "type": "button" }
+    {
+      "type": "stack"
+    },
+    {
+      "type": "icons"
+    },
+    {
+      "type": "heading"
+    },
+    {
+      "type": "sub-heading"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "button"
+    }
   ],
   "presets": [
     {

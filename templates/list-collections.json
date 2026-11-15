@@ -13,7 +13,7 @@
       "type": "collections",
       "blocks": {
         "vt-collection-card": {
-          "type": "collection-card",          
+          "type": "_collection-card",          
           "settings": {
             "collection": "{{ closest.collection }}",
             "position": "content-between",
@@ -42,7 +42,7 @@
           },
           "blocks": {
             "collection-card-badges": {
-              "type": "collection-card-badges",
+              "type": "_collection-card-badges",
               "settings": {
                 "gap_desktop": 8,
                 "gap_mobile": 6,
@@ -50,7 +50,7 @@
               },
               "blocks": {
                 "collection-badge": {
-                  "type": "collection-badge",
+                  "type": "_collection-badge",
                   "settings": {
                     "radius": "3.125rem",
                     "badge_size": "vt-paragraph-extra-small",
@@ -78,7 +78,7 @@
               ]
             },
             "collection-card-content": {
-              "type": "collection-card-content",
+              "type": "_collection-card-content",
               "settings": {
                 "gap_desktop": 8,
                 "gap_mobile": 6,
@@ -87,7 +87,7 @@
               },
               "blocks": {
                 "collection-title": {
-                  "type": "collection-title",
+                  "type": "_collection-title",
                   "settings": {
                     "heading": "Collection title",
                     "heading_size": "vt-heading-h3",
@@ -109,7 +109,7 @@
                   }
                 },
                 "collection-paragraph": {
-                  "type": "collection-paragraph",
+                  "type": "_collection-paragraph",
                   "settings": {
                     "text": "<p>Collection description</p>",
                     "paragraph_size": "vt-paragraph-medium",
@@ -124,7 +124,7 @@
                   }
                 },
                 "collection-button": {
-                  "type": "collection-button",
+                  "type": "_collection-button",
                   "settings": {
                     "button_label": "Shop collection",
                     "button_link": "",

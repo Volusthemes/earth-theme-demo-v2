@@ -47,9 +47,18 @@
       "type": "select",
       "id": "desktop_content_alignment",
       "options": [
-        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
-        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
-        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+        {
+          "value": "justify-start",
+          "label": "t:sections.rich_text.settings.content_alignment.options__1.label"
+        },
+        {
+          "value": "justify-center",
+          "label": "t:sections.rich_text.settings.content_alignment.options__2.label"
+        },
+        {
+          "value": "justify-end",
+          "label": "t:sections.rich_text.settings.content_alignment.options__3.label"
+        }
       ],
       "default": "justify-center",
       "label": "t:sections.rich_text.settings.desktop_content_alignment.label"
@@ -58,9 +67,18 @@
       "type": "select",
       "id": "mobile_content_alignment",
       "options": [
-        { "value": "justify-start", "label": "t:sections.rich_text.settings.content_alignment.options__1.label" },
-        { "value": "justify-center", "label": "t:sections.rich_text.settings.content_alignment.options__2.label" },
-        { "value": "justify-end", "label": "t:sections.rich_text.settings.content_alignment.options__3.label" }
+        {
+          "value": "justify-start",
+          "label": "t:sections.rich_text.settings.content_alignment.options__1.label"
+        },
+        {
+          "value": "justify-center",
+          "label": "t:sections.rich_text.settings.content_alignment.options__2.label"
+        },
+        {
+          "value": "justify-end",
+          "label": "t:sections.rich_text.settings.content_alignment.options__3.label"
+        }
       ],
       "default": "justify-center",
       "label": "t:sections.rich_text.settings.mobile_content_alignment.label"
@@ -115,8 +133,14 @@
       "id": "background_style",
       "label": "Background",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "default": "solid"
     },
@@ -180,7 +204,7 @@
       "default": 34,
       "label": "Left (desktop)"
     },
-    {      
+    {
       "type": "range",
       "id": "padding_right_desktop",
       "min": 0,
@@ -248,10 +272,18 @@
     }
   ],
   "blocks": [
-    { "type": "heading" },
-    { "type": "paragraph" },
-    { "type": "button" },
-    { "type": "stack" }
+    {
+      "type": "heading"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "stack"
+    }
   ],
   "presets": [
     {
@@ -269,7 +301,7 @@
         "padding_top_mobile": 32,
         "padding_bottom_mobile": 32,
         "padding_left_mobile": 20,
-        "padding_right_mobile": 20,               
+        "padding_right_mobile": 20,
         "make_section_page_width": false
       },
       "blocks": [
@@ -284,9 +316,9 @@
             "width_custom": 100,
             "enable_max_width": true,
             "heading_max_width": 1100,
-            "animation_type": "none",
+            "animation_type": "slide",
             "animation_direction": "from-bottom",
-            "animation_duration": 1,
+            "animation_duration": 1.2,
             "animation_delay": 0.2,
             "animation_easing": "ease-out-sine",
             "animation_blur_intensity": 5
@@ -305,7 +337,7 @@
             "animation_type": "slide",
             "animation_direction": "from-bottom",
             "animation_duration": 1.2,
-            "animation_delay": 0.2,
+            "animation_delay": 0.3,
             "animation_easing": "ease-out-sine",
             "animation_blur_intensity": 5
           }
@@ -320,10 +352,10 @@
             "animation_type": "slide",
             "animation_direction": "from-bottom",
             "animation_duration": 1.2,
-            "animation_delay": 0.2,
+            "animation_delay": 0.4,
             "animation_easing": "ease-out-sine",
             "animation_blur_intensity": 5
-          }   
+          }
         }
       ]
     }

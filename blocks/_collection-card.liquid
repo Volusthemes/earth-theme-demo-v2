@@ -1,7 +1,7 @@
 
 {% doc %}
   @example
-  {% content_for 'block', type: 'collection-card', id: 'collection-card' %}
+  {% content_for 'block', type: '_collection-card', id: 'collection-card' %}
 {% enddoc %}
 
 {%- liquid
@@ -562,8 +562,8 @@
     }
   ],
   "blocks": [
-    { "type": "collection-card-badges" },
-    { "type": "collection-card-content" }
+    { "type": "_collection-card-badges" },
+    { "type": "_collection-card-content" }
   ],
   "presets": [
     {
@@ -595,7 +595,7 @@
       },
       "blocks": [
         { 
-          "type": "collection-card-badges",
+          "type": "_collection-card-badges",
           "settings": {
             "gap_desktop": 8,
             "gap_mobile": 6,
@@ -603,7 +603,7 @@
           },
           "blocks": [
             { 
-              "type": "collection-badge",
+              "type": "_collection-badge",
               "settings": {
                 "radius": "3.125rem",
                 "badge_size": "vt-paragraph-extra-small",
@@ -625,7 +625,7 @@
           ]
         },  
         {
-          "type": "collection-card-content",
+          "type": "_collection-card-content",
           "settings": {
             "gap_desktop": 8,
             "gap_mobile": 6,
@@ -634,7 +634,7 @@
           },
           "blocks": [
             { 
-              "type": "collection-title", 
+              "type": "_collection-title", 
               "settings": {
                 "heading": "Collection title",
                 "heading_size": "vt-heading-h3",
@@ -654,7 +654,7 @@
               }
             },
             { 
-              "type": "collection-paragraph",
+              "type": "_collection-paragraph",
               "settings": {
                 "text": "<p>Collection description</p>",
                 "paragraph_size": "vt-paragraph-medium",
@@ -669,7 +669,7 @@
               }
             },
             { 
-              "type": "collection-button",
+              "type": "_collection-button",
               "settings": {
                 "button_label": "Shop collection",
                 "button_link": "",

@@ -11,7 +11,7 @@
 
   @example
   {%- paginate collection.products by 24 -%}
-    {% content_for 'block', type: 'products-list', id: 'products-list', products: collection.products, aria_label: collection.title %}
+    {% content_for 'block', type: '_products-list', id: 'products-list', products: collection.products, aria_label: collection.title %}
   {%- endpaginate -%}
 {% enddoc %}
 
@@ -51,7 +51,7 @@
     <ul class="vt-products-list__grid" role="list" aria-label="{{ vt_list_label | escape }}">
       {%- for i in (1..vt_s.products_to_show) -%}
         <li class="vt-products-list__item">
-          {% content_for 'block', type: 'products-card', id: 'products-card', placeholder_index: i %}
+          {% content_for 'block', type: '_products-card', id: 'products-card', placeholder_index: i %}
         </li>
       {%- endfor -%}
     </ul>
@@ -61,7 +61,7 @@
       {%- for product in vt_products limit: vt_limit -%}
         <li class="vt-products-list__item">
           {%- comment -%} Same static card for every product; styled in Theme settings > Product cards {%- endcomment -%}
-          {% content_for 'block', type: 'products-card', id: 'products-card', product: product %}
+          {% content_for 'block', type: '_products-card', id: 'products-card', product: product %}
         </li>
       {%- endfor -%}      
     </ul>

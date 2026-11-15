@@ -69,6 +69,18 @@
   endunless
 -%}
 
+{%- comment -%}
+  The divider line under all tabs follows the first tab's text color. The section
+  can't read this block's settings, so the first tab passes its color up.
+{%- endcomment -%}
+{%- if section.blocks.first.id == block.id and block.settings.text_color != blank -%}
+  {%- style -%}
+    #shopify-section-{{ section.id }} {
+      --vt-tabs-first-color: {{ block.settings.text_color }};
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
 <button
   type="button"
   class="vt-tab-title {{ block.settings.font_size | default: 'vt-heading-h6' }}{% if block.settings.is_default %} is-active{% endif %}{{ vt_anim_classes }}"

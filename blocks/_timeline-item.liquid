@@ -1,0 +1,110 @@
+{% doc %}
+  Renders one milestone card of the Timeline section as a list item. The card
+  holds any theme blocks; its look (background, padding, corners) is set once
+  for all cards in the section settings.
+
+  The "Badge label" names the card in the section's badge list (built by
+  assets/theme-timeline.js from data-timeline-label, or from the card's first
+  heading when the label is empty). The badge links to the card and highlights
+  while the card is in view.
+
+  @example
+  {% content_for 'block', type: '_timeline-item', id: 'timeline-item' %}
+{% enddoc %}
+
+{%- liquid
+  # Entrance set once for all cards in the section. It plays when the card reaches
+  # the middle of the screen and plays back when scrolling up takes it below there
+  # again (data-vt-animate-start, see snippets/animate.liquid).
+  # Off in the first section of a page and in editor preview thumbnails.
+  assign card_animation = section.settings.card_animation
+  assign animation_classes = ''
+  unless card_animation == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
+    assign animation_classes = ' vt-animate vt-animate--' | append: card_animation
+    if card_animation == 'slide'
+      assign animation_classes = animation_classes | append: ' vt-animate--dir-from-right'
+    endif
+  endunless
+-%}
+
+<li
+  id="timeline-{{ block.id }}"
+  class="vt-timeline-item{{ animation_classes }}"
+  tabindex="-1"
+  {% if animation_classes != blank %}
+    data-vt-animate-start="middle"
+  {% endif %}
+  data-timeline-item
+  {% if block.settings.label != blank %}
+    data-timeline-label="{{ block.settings.label | escape }}"
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</li>
+
+{% schema %}
+{
+  "name": "Timeline item",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Badge label",
+      "info": "Name of this card in the badge list. Leave empty to use the card's heading."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline item",
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "image_aspect_ratio": "landscape",
+            "image_desktop_width": "fill",
+            "image_mobile_width": "fill",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "sub-heading",
+          "settings": {
+            "sub_heading": "Year",
+            "subheading_tag": "p",
+            "subheading_alignment": "text-left",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "heading",
+          "settings": {
+            "heading": "Milestone",
+            "heading_size": "vt-heading-h4",
+            "heading_tag": "h3",
+            "heading_alignment": "text-inherit",
+            "heading_width": "fill",
+            "animation_type": "none"
+          }
+        },
+        {
+          "type": "paragraph",
+          "settings": {
+            "text": "<p>Describe what happened and why it matters to your customers.</p>",
+            "paragraph_size": "vt-paragraph-medium",
+            "paragraph_alignment": "text-inherit",
+            "paragraph_width": "fill",
+            "animation_type": "none"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -82,12 +82,12 @@
           "
         >
           {%- for collection in vt_sorted -%}
-            {% content_for 'block', type: 'collection-card', id: 'vt-collection-card', closest.collection: collection %}
+            {% content_for 'block', type: '_collection-card', id: 'vt-collection-card', closest.collection: collection %}
           {%- endfor -%}
         </ul>
 
         {%- assign vt_pagination_label = 'collections.pagination_label' | t -%}
-        {% content_for 'block', type: 'pagination', id: 'vt-pagination', paginate: paginate, aria_label: vt_pagination_label %}
+        {% content_for 'block', type: '_pagination', id: 'vt-pagination', paginate: paginate, aria_label: vt_pagination_label %}
       {%- else -%}
         <p class="vt-collections-empty">{{ 'collections.empty' | t }}</p>
       {%- endif -%}
@@ -410,7 +410,7 @@
         "padding_right_mobile": 20,
         "make_section_page_width": true
       },
-      "blocks": [        
+      "blocks": [
         {
           "type": "stack",
           "settings": {
@@ -434,14 +434,24 @@
                 "icon_size": 14,
                 "text_size": "vt-paragraph-medium",
                 "gap_desktop": 12,
-                "gap_mobile": 10
+                "gap_mobile": 10,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
               }
             }
-          ] 
+          ]
         }
       ]
     }
   ],
-  "blocks": [{ "type": "stack" } ] 
+  "blocks": [
+    {
+      "type": "stack"
+    }
+  ]
 }
 {% endschema %}

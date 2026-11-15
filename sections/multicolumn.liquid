@@ -25,7 +25,8 @@
   </div>
 {%- endif -%}
 
-{% schema %}{
+{% schema %}
+{
   "name": "Multicolumn",
   "tag": "section",
   "class": "multicolumn-section",
@@ -303,7 +304,13 @@
                     "box_size_desktop": 64,
                     "box_size_mobile": 54,
                     "box_radius": "50%",
-                    "color_style": "secondary"
+                    "color_style": "secondary",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
                   }
                 },
                 {
@@ -315,7 +322,7 @@
                     "heading_tag": "h2",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.2,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -331,7 +338,13 @@
                     "box_size_desktop": 64,
                     "box_size_mobile": 54,
                     "box_radius": "50%",
-                    "color_style": "secondary"
+                    "color_style": "secondary",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
                   }
                 }
               ]
@@ -347,8 +360,8 @@
                 "paragraph_max_width": 560,
                 "animation_type": "slide",
                 "animation_direction": "from-bottom",
-                "animation_duration": 1,
-                "animation_delay": 0.2,
+                "animation_duration": 1.2,
+                "animation_delay": 0.3,
                 "animation_easing": "ease-out-sine",
                 "animation_blur_intensity": 5
               }
@@ -409,7 +422,7 @@
                 "animation_type": "slide",
                 "animation_direction": "from-bottom",
                 "animation_duration": 1.2,
-                "animation_delay": 0.2,
+                "animation_delay": 0.1,
                 "animation_easing": "ease-out-sine",
                 "animation_blur_intensity": 5
               },
@@ -424,13 +437,13 @@
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
+                    "color_style": "text",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5,
-                    "color_style": "text"
+                    "animation_blur_intensity": 5
                   }
                 },
                 {
@@ -442,7 +455,7 @@
                     "heading_tag": "h2",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.4,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -460,7 +473,7 @@
                     "paragraph_max_width": 180,
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.5,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -478,7 +491,116 @@
                     "paragraph_max_width": 200,
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.6,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              ]
+            },
+            {
+              "type": "card",
+              "settings": {
+                "position": "middle",
+                "alignment": "center",
+                "enable_decorative_icon": true,
+                "decorative_icon": "ecology",
+                "decorative_icon_position": "center",
+                "decorative_icon_alignment": "center",
+                "decorative_icon_size_desktop": 226,
+                "decorative_icon_size_mobile": 212,
+                "decorative_icon_opacity": 5,
+                "padding_vertical": 30,
+                "padding_horizontal": 26,
+                "enable_padding_mobile": true,
+                "padding_vertical_mobile": 30,
+                "padding_horizontal_mobile": 24,
+                "width": "fill",
+                "width_custom": 100,
+                "height": "custom",
+                "min_height": 250,
+                "min_height_mobile": 250,
+                "gap": 6,
+                "enable_gap_mobile": true,
+                "gap_mobile": 5,
+                "border": "none",
+                "border_width": 0,
+                "border_opacity": 100,
+                "border_radius": 0,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "zero-emissions",
+                    "icon_size_desktop": 36,
+                    "icon_size_mobile": 28,
+                    "show_box": false,
+                    "box_size_desktop": 60,
+                    "box_size_mobile": 42,
+                    "box_radius": "50%",
+                    "color_style": "text",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "000T",
+                    "heading_size": "vt-heading-h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_tag": "h2",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.4,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>CO₂ Saved</p>",
+                    "paragraph_size": "vt-paragraph-medium",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": false,
+                    "paragraph_max_width": 180,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.5,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "paragraph",
+                  "settings": {
+                    "text": "<p>Through our efforts</p>",
+                    "paragraph_size": "vt-paragraph-small",
+                    "paragraph_alignment": "text-inherit",
+                    "paragraph_width": "fit",
+                    "width_custom": 100,
+                    "enable_max_width": true,
+                    "paragraph_max_width": 200,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
                     "animation_delay": 0.6,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -526,32 +648,32 @@
                 {
                   "type": "icons",
                   "settings": {
-                    "icon": "zero-emissions",
+                    "icon": "quality",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
                     "show_box": false,
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
+                    "color_style": "text",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5,
-                    "color_style": "text"
+                    "animation_blur_intensity": 5
                   }
                 },
                 {
                   "type": "heading",
                   "settings": {
-                    "heading": "000T",
+                    "heading": "00%",
                     "heading_size": "vt-heading-h2",
                     "heading_alignment": "text-inherit",
                     "heading_tag": "h2",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.4,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -560,7 +682,7 @@
                 {
                   "type": "paragraph",
                   "settings": {
-                    "text": "<p>CO₂ Saved</p>",
+                    "text": "<p>Certified Materials</p>",
                     "paragraph_size": "vt-paragraph-medium",
                     "paragraph_alignment": "text-inherit",
                     "paragraph_width": "fit",
@@ -569,29 +691,62 @@
                     "paragraph_max_width": 180,
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.5,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
                   }
                 },
                 {
-                  "type": "paragraph",
+                  "type": "stack",
                   "settings": {
-                    "text": "<p>Through our efforts</p>",
-                    "paragraph_size": "vt-paragraph-small",
-                    "paragraph_alignment": "text-inherit",
-                    "paragraph_width": "fit",
-                    "width_custom": 100,
-                    "enable_max_width": true,
-                    "paragraph_max_width": 200,
-                    "animation_type": "slide",
-                    "animation_direction": "from-bottom",
-                    "animation_duration": 1,
-                    "animation_delay": 0.6,
-                    "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
-                  }
+                    "layout_direction_desktop": "vt-stack--horizontal",
+                    "layout_direction_tablet": "vt-stack--horizontal",
+                    "layout_direction_mobile": "vt-stack--horizontal",
+                    "alignment": "center",
+                    "gap_desktop": 5,
+                    "gap_mobile": 5
+                  },
+                  "blocks": [
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "GOTS",
+                        "radius": "3.125rem",
+                        "badge_size": "vt-paragraph-small",
+                        "font_size": 14,
+                        "width": "fit",
+                        "width_custom": 50,
+                        "show_border": false,
+                        "border_size": 1,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.7,
+                        "animation_easing": "ease-out-sine",
+                        "animation_blur_intensity": 5
+                      }
+                    },
+                    {
+                      "type": "badge",
+                      "settings": {
+                        "text": "B Corp",
+                        "radius": "3.125rem",
+                        "badge_size": "vt-paragraph-small",
+                        "font_size": 14,
+                        "width": "fit",
+                        "width_custom": 50,
+                        "show_border": false,
+                        "border_size": 1,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.8,
+                        "animation_easing": "ease-out-sine",
+                        "animation_blur_intensity": 5
+                      }
+                    }
+                  ]
                 }
               ]
             },
@@ -635,136 +790,6 @@
                 {
                   "type": "icons",
                   "settings": {
-                    "icon": "quality",
-                    "icon_size_desktop": 36,
-                    "icon_size_mobile": 28,
-                    "show_box": false,
-                    "box_size_desktop": 60,
-                    "box_size_mobile": 42,
-                    "box_radius": "50%",
-                    "animation_type": "slide",
-                    "animation_direction": "from-bottom",
-                    "animation_duration": 1,
-                    "animation_delay": 0.3,
-                    "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5,
-                    "color_style": "text"
-                  }
-                },
-                {
-                  "type": "heading",
-                  "settings": {
-                    "heading": "00%",
-                    "heading_size": "vt-heading-h2",
-                    "heading_alignment": "text-inherit",
-                    "heading_tag": "h2",
-                    "animation_type": "slide",
-                    "animation_direction": "from-bottom",
-                    "animation_duration": 1,
-                    "animation_delay": 0.4,
-                    "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
-                  }
-                },
-                {
-                  "type": "paragraph",
-                  "settings": {
-                    "text": "<p>Certified Materials</p>",
-                    "paragraph_size": "vt-paragraph-medium",
-                    "paragraph_alignment": "text-inherit",
-                    "paragraph_width": "fit",
-                    "width_custom": 100,
-                    "enable_max_width": false,
-                    "paragraph_max_width": 180,
-                    "animation_type": "slide",
-                    "animation_direction": "from-bottom",
-                    "animation_duration": 1,
-                    "animation_delay": 0.5,
-                    "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5
-                  }
-                },
-                {
-                  "type": "stack",
-                  "settings": {
-                    "layout_direction_desktop": "vt-stack--horizontal",
-                    "layout_direction_tablet": "vt-stack--horizontal",
-                    "layout_direction_mobile": "vt-stack--horizontal",
-                    "alignment": "center",
-                    "gap_desktop": 5,
-                    "gap_mobile": 5
-                  },
-                  "blocks": [
-                    {
-                      "type": "badge",
-                      "settings": {
-                        "text": "GOTS",
-                        "radius": "3.125rem",
-                        "badge_size": "vt-paragraph-small",
-                        "font_size": 14,
-                        "width": "fit",
-                        "width_custom": 50,
-                        "show_border": false,
-                        "border_size": 1
-                      }
-                    },
-                    {
-                      "type": "badge",
-                      "settings": {
-                        "text": "B Corp",
-                        "radius": "3.125rem",
-                        "badge_size": "vt-paragraph-small",
-                        "font_size": 14,
-                        "width": "fit",
-                        "width_custom": 50,
-                        "show_border": false,
-                        "border_size": 1
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "card",
-              "settings": {
-                "position": "middle",
-                "alignment": "center",
-                "enable_decorative_icon": true,
-                "decorative_icon": "ecology",
-                "decorative_icon_position": "center",
-                "decorative_icon_alignment": "center",
-                "decorative_icon_size_desktop": 226,
-                "decorative_icon_size_mobile": 212,
-                "decorative_icon_opacity": 5,
-                "padding_vertical": 30,
-                "padding_horizontal": 26,
-                "enable_padding_mobile": true,
-                "padding_vertical_mobile": 30,
-                "padding_horizontal_mobile": 24,
-                "width": "fill",
-                "width_custom": 100,
-                "height": "custom",
-                "min_height": 250,
-                "min_height_mobile": 250,
-                "gap": 6,
-                "enable_gap_mobile": true,
-                "gap_mobile": 5,
-                "border": "none",
-                "border_width": 0,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "animation_type": "slide",
-                "animation_direction": "from-bottom",
-                "animation_duration": 1.2,
-                "animation_delay": 0.5,
-                "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 5
-              },
-              "blocks": [
-                {
-                  "type": "icons",
-                  "settings": {
                     "icon": "drop",
                     "icon_size_desktop": 36,
                     "icon_size_mobile": 28,
@@ -772,13 +797,13 @@
                     "box_size_desktop": 60,
                     "box_size_mobile": 42,
                     "box_radius": "50%",
+                    "color_style": "text",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.3,
                     "animation_easing": "ease-out-sine",
-                    "animation_blur_intensity": 5,
-                    "color_style": "text"
+                    "animation_blur_intensity": 5
                   }
                 },
                 {
@@ -790,7 +815,7 @@
                     "heading_tag": "h2",
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.4,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -808,7 +833,7 @@
                     "paragraph_max_width": 180,
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.5,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5
@@ -826,7 +851,7 @@
                     "paragraph_max_width": 200,
                     "animation_type": "slide",
                     "animation_direction": "from-bottom",
-                    "animation_duration": 1,
+                    "animation_duration": 1.2,
                     "animation_delay": 0.6,
                     "animation_easing": "ease-out-sine",
                     "animation_blur_intensity": 5

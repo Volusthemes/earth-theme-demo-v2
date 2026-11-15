@@ -56,17 +56,17 @@
 
       {%- liquid
         assign vt_tab_count = section.blocks.size
-
-        # Divider line follows the first tab's text color (same fallback as the tab)
-        assign vt_first_tab = section.blocks | where: 'type', 'products-tab-title' | first
-        assign vt_tabs_line_color = vt_first_tab.settings.text_color | default: 'var(--vt-foreground-color)'
       -%}
 
       {%- comment -%} Mobile and tablet: horizontal swipe area for the tabs {%- endcomment -%}
       <div class="vt-products-tab-carousel__tabs-scroller vt-tabs-scroller vt-tabs-scroller--mobile {{ tabs_alignment }}" data-tabs-scroller>
         <div
           class="vt-products-tab-carousel__tabs {{ tabs_alignment }}"
-          style="--vt-tabs-line-color: {{ vt_tabs_line_color }};"
+          {%- comment -%}
+            Divider line: the first tab's text color, which that tab block sets as
+            --vt-tabs-first-color (Liquid can't read theme block settings from section.blocks)
+          {%- endcomment %}
+          style="--vt-tabs-line-color: var(--vt-tabs-first-color, var(--vt-foreground-color));"
           {% if vt_tab_count > 0 %}
             role="tablist"
             aria-label="{{ 'products.tabs.label' | t }}"
@@ -429,8 +429,8 @@
 {
   "name": "Products tab carousel",
   "tag": "section",
-  "class": "products-tab-carousel-section",  
-  "settings": [    
+  "class": "products-tab-carousel-section",
+  "settings": [
     {
       "type": "collection_list",
       "id": "collection_list",
@@ -494,7 +494,7 @@
       "step": 2,
       "unit": "px",
       "default": 16
-    },    
+    },
     {
       "type": "header",
       "content": "Carousel"
@@ -513,28 +513,46 @@
       "id": "tablet_card_size",
       "label": "Product item (tablet)",
       "options": [
-        { "value": "large", "label": "2" },
-        { "value": "compact", "label": "3" }
-      ],      
-      "default": "large"      
+        {
+          "value": "large",
+          "label": "2"
+        },
+        {
+          "value": "compact",
+          "label": "3"
+        }
+      ],
+      "default": "large"
     },
-    {     
+    {
       "type": "select",
       "id": "mobile_card_size",
       "label": "Product item (mobile)",
       "options": [
-        { "value": "large", "label": "1" },
-        { "value": "compact", "label": "2" }
+        {
+          "value": "large",
+          "label": "1"
+        },
+        {
+          "value": "compact",
+          "label": "2"
+        }
       ],
-      "default": "large"            
+      "default": "large"
     },
     {
       "type": "select",
       "id": "slide_style",
       "label": "Slide style",
       "options": [
-        { "value": "standard", "label": "Standard" },
-        { "value": "offset", "label": "Offset" }
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "offset",
+          "label": "Offset"
+        }
       ],
       "default": "offset",
       "info": "Offset keeps the current product a set distance from the left edge, with part of the previous product showing"
@@ -555,12 +573,12 @@
       "type": "checkbox",
       "id": "show_arrows",
       "label": "Show navigation arrows",
-      "default": true      
+      "default": true
     },
     {
       "type": "select",
-      "id": "arrows_style",      
-      "options": [        
+      "id": "arrows_style",
+      "options": [
         {
           "value": "primary",
           "label": "Primary"
@@ -608,7 +626,7 @@
       "id": "animate_tab_switch",
       "label": "Animate products when switching tabs",
       "default": true
-    },  
+    },
     {
       "type": "header",
       "content": "Tabs"
@@ -684,14 +702,20 @@
       "id": "background_style",
       "label": "Background",
       "options": [
-        { "value": "solid", "label": "Solid" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "default": "solid"
     },
     {
       "type": "color",
-      "id": "background_color",      
+      "id": "background_color",
       "label": "Background color",
       "info": "Leave empty to use the color palette.",
       "visible_if": "{{ section.settings.background_style == 'solid' }}"
@@ -705,13 +729,13 @@
     },
     {
       "type": "color",
-      "id": "heading_color",      
+      "id": "heading_color",
       "label": "Heading",
       "info": "Leave empty to use the color palette."
     },
     {
       "type": "color",
-      "id": "paragraph_color",      
+      "id": "paragraph_color",
       "label": "Paragraph",
       "info": "Leave empty to use the color palette."
     },
@@ -792,7 +816,7 @@
       "id": "padding_left_mobile",
       "min": 0,
       "max": 100,
-      "step": 1,      
+      "step": 1,
       "unit": "px",
       "default": 20,
       "label": "Left (mobile)",
@@ -814,11 +838,11 @@
       "id": "make_section_page_width",
       "default": false,
       "label": "Apply max width"
-    }     
+    }
   ],
   "blocks": [
     {
-      "type": "products-tab-title"
+      "type": "_products-tab-title"
     }
   ],
   "presets": [
@@ -933,7 +957,7 @@
           ]
         },
         {
-          "type": "products-tab-title",
+          "type": "_products-tab-title",
           "settings": {
             "tab_type": "all",
             "title": "All",
@@ -941,28 +965,28 @@
           }
         },
         {
-          "type": "products-tab-title",
+          "type": "_products-tab-title",
           "settings": {
             "tab_type": "collection",
             "title": "Men's"
           }
         },
         {
-          "type": "products-tab-title",
+          "type": "_products-tab-title",
           "settings": {
             "tab_type": "collection",
             "title": "Women's"
           }
         },
         {
-          "type": "products-tab-title",
+          "type": "_products-tab-title",
           "settings": {
             "tab_type": "new_arrivals",
             "title": "New Arrivals"
           }
         },
         {
-          "type": "products-tab-title",
+          "type": "_products-tab-title",
           "settings": {
             "tab_type": "sale",
             "title": "Sale"

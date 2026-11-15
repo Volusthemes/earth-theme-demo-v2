@@ -51,7 +51,7 @@
       when 'square'
         assign ratio_mobile = '1 / 1'
         assign frame_ratio_mobile = 1.0
-      when 'portrait_4_5'
+      when 'portrait_4_5'      
         assign ratio_mobile = '4 / 5'
         assign frame_ratio_mobile = 0.8
       when 'portrait'
@@ -177,7 +177,14 @@
   if block.settings.overlay_style != 'none'
     assign card_class = card_class | append: ' vt-image-card--overlay-' | append: block.settings.overlay_style
   endif
-  if block.settings.animation_type != 'none' and request.visual_preview_mode != true and section.index != 1 or section.location != 'template'
+  # Same rule as the other blocks: no entrance in the editor's visual preview or the first section
+  assign card_animates = true
+  if block.settings.animation_type == 'none' or request.visual_preview_mode
+    assign card_animates = false
+  elsif section.index == 1 and section.location == 'template'
+    assign card_animates = false
+  endif
+  if card_animates
     assign card_class = card_class | append: ' vt-animate vt-animate--' | append: block.settings.animation_type
     if block.settings.animation_type == 'slide'
       assign card_class = card_class | append: ' vt-animate--dir-' | append: block.settings.animation_direction
@@ -373,13 +380,34 @@
       "id": "aspect_ratio",
       "label": "Aspect ratio",
       "options": [
-        { "value": "adapt", "label": "Adapt to image" },
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait_4_5", "label": "Portrait (4:5)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "classic_portrait", "label": "Portrait (2:3)" },
-        { "value": "landscape", "label": "Landscape (4:3)" },
-        { "value": "wide", "label": "Wide (16:9)" }
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait_4_5",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "classic_portrait",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        }
       ],
       "default": "portrait_4_5",
       "info": "The card grows taller when its content needs more room."
@@ -395,13 +423,34 @@
       "id": "aspect_ratio_mobile",
       "label": "Aspect ratio (mobile)",
       "options": [
-        { "value": "adapt", "label": "Adapt to image" },
-        { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait_4_5", "label": "Portrait (4:5)" },
-        { "value": "portrait", "label": "Portrait (3:4)" },
-        { "value": "classic_portrait", "label": "Portrait (2:3)" },
-        { "value": "landscape", "label": "Landscape (4:3)" },
-        { "value": "wide", "label": "Wide (16:9)" }
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "square",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "portrait_4_5",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "portrait",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "classic_portrait",
+          "label": "Portrait (2:3)"
+        },
+        {
+          "value": "landscape",
+          "label": "Landscape (4:3)"
+        },
+        {
+          "value": "wide",
+          "label": "Wide (16:9)"
+        }
       ],
       "default": "portrait_4_5",
       "visible_if": "{{ block.settings.enable_aspect_ratio_mobile == true }}"
@@ -415,9 +464,18 @@
       "id": "overlay_style",
       "label": "Style",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "solid", "label": "Solid" },
-        { "value": "gradient", "label": "Gradient" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
       ],
       "default": "gradient",
       "info": "Keeps text readable on busy images."
@@ -445,10 +503,22 @@
       "id": "gradient_direction",
       "label": "Gradient starts from",
       "options": [
-        { "value": "bottom", "label": "Bottom" },
-        { "value": "top", "label": "Top" },
-        { "value": "left", "label": "Left" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "bottom",
       "visible_if": "{{ block.settings.overlay_style == 'gradient' }}"
@@ -489,10 +559,22 @@
       "id": "position",
       "label": "Position",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "middle", "label": "Middle" },
-        { "value": "bottom", "label": "Bottom" },
-        { "value": "between", "label": "Between" }
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "middle",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "between",
+          "label": "Between"
+        }
       ],
       "default": "bottom"
     },
@@ -501,9 +583,18 @@
       "id": "alignment",
       "label": "Alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "left"
     },
@@ -613,10 +704,22 @@
       "id": "animation_type",
       "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
-        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
       ],
       "default": "none",
       "label": "t:blocks.heading.settings.animation_type.label"
@@ -625,10 +728,22 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.heading.settings.animation_direction.label",
@@ -660,13 +775,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.heading.settings.animation_easing.label",
@@ -685,14 +821,30 @@
     }
   ],
   "blocks": [
-    { "type": "badge" },
-    { "type": "heading" },
-    { "type": "sub-heading" },
-    { "type": "heading-group" },
-    { "type": "paragraph" },
-    { "type": "button" },
-    { "type": "icons" },
-    { "type": "stack" }
+    {
+      "type": "badge"
+    },
+    {
+      "type": "heading"
+    },
+    {
+      "type": "sub-heading"
+    },
+    {
+      "type": "heading-group"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "icons"
+    },
+    {
+      "type": "stack"
+    }
   ],
   "presets": [
     {
@@ -705,18 +857,28 @@
         "overlay_style": "gradient",
         "overlay_opacity": 90,
         "gradient_direction": "bottom",
-        "gradient_size": 60,
+        "gradient_size": 55,
         "padding_vertical": 40,
         "padding_horizontal": 40,
         "padding_vertical_mobile": 24,
-        "padding_horizontal_mobile": 24
+        "padding_horizontal_mobile": 24,
+        "enable_padding_mobile": true,
+        "gap": 16,
+        "enable_gap_mobile": true,
+        "gap_mobile": 12,
+        "animation_type": "fade",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1.2,
+        "animation_delay": 0.1,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 2
       },
       "blocks": [
         {
           "type": "badge",
           "settings": {
             "color_style": "light",
-            "text": "Quality Checked",
+            "text": "Label",
             "badge_size": "vt-paragraph-medium",
             "animation_type": "none"
           }
@@ -739,7 +901,7 @@
             {
               "type": "heading",
               "settings": {
-                "heading": "Cut, sew and make",
+                "heading": "Tell a short story",
                 "heading_size": "vt-heading-h3",
                 "heading_tag": "h3",
                 "heading_alignment": "text-inherit",
@@ -749,7 +911,7 @@
             {
               "type": "paragraph",
               "settings": {
-                "text": "<p>Cut, sew, and create garments with care.</p>",
+                "text": "<p>Pair an image with a few words about it.</p>",
                 "paragraph_size": "vt-paragraph-medium",
                 "paragraph_alignment": "text-inherit",
                 "animation_type": "none"
@@ -772,39 +934,59 @@
         "overlay_opacity": 90,
         "gradient_direction": "bottom",
         "gradient_size": 70,
-        "padding_vertical": 80,
-        "padding_horizontal": 80,
-        "padding_vertical_mobile": 32,
-        "padding_horizontal_mobile": 24,        
-        "gap": 20,
-        "gap_mobile": 12
+        "padding_vertical": 40,
+        "padding_horizontal": 40,
+        "padding_vertical_mobile": 30,
+        "padding_horizontal_mobile": 20,
+        "gap": 16,
+        "gap_mobile": 12,
+        "enable_padding_mobile": true,
+        "enable_gap_mobile": true,
+        "animation_type": "slide",
+        "animation_direction": "from-bottom",
+        "animation_duration": 1,
+        "animation_delay": 0.2,
+        "animation_easing": "ease-out-sine",
+        "animation_blur_intensity": 2
       },
       "blocks": [
         {
           "type": "heading",
           "settings": {
-            "heading": "Supply Chain",
+            "heading": "Highlight a story",
             "heading_size": "vt-heading-h2",
             "heading_tag": "h3",
             "heading_alignment": "text-inherit",
-            "animation_type": "none"
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.4,
+            "animation_easing": "ease-out-sine"
           }
         },
         {
           "type": "paragraph",
           "settings": {
-            "text": "<p>Ethical Manufacturing: Seen from within our atelier.</p>",
+            "text": "<p>Add a short description that invites customers to learn more.</p>",
             "paragraph_size": "vt-paragraph-medium",
             "paragraph_alignment": "text-inherit",
-            "animation_type": "none"
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.5,
+            "animation_easing": "ease-out-sine"
           }
         },
         {
           "type": "button",
           "settings": {
-            "button_label": "View our production",
+            "button_label": "Learn more",
             "button_style": "link-light",
-            "animation_type": "none"
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1,
+            "animation_delay": 0.6,
+            "animation_easing": "ease-out-sine"
           }
         }
       ]

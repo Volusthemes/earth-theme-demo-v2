@@ -375,9 +375,18 @@
       "id": "video_source",
       "label": "Source",
       "options": [
-        { "value": "shopify", "label": "Shopify" },
-        { "value": "external", "label": "YouTube or Vimeo" },
-        { "value": "mp4", "label": "MP4 link" }
+        {
+          "value": "shopify",
+          "label": "Shopify"
+        },
+        {
+          "value": "external",
+          "label": "YouTube or Vimeo"
+        },
+        {
+          "value": "mp4",
+          "label": "MP4 link"
+        }
       ],
       "default": "shopify"
     },
@@ -398,14 +407,20 @@
       "type": "video_url",
       "id": "video_url",
       "label": "Video link",
-      "accept": ["youtube", "vimeo"],
+      "accept": [
+        "youtube",
+        "vimeo"
+      ],
       "visible_if": "{{ section.settings.video_source == 'external' }}"
     },
     {
       "type": "video_url",
       "id": "video_url_mobile",
       "label": "Mobile video link",
-      "accept": ["youtube", "vimeo"],
+      "accept": [
+        "youtube",
+        "vimeo"
+      ],
       "info": "Optional. Use a vertical video.",
       "visible_if": "{{ section.settings.video_source == 'external' }}"
     },
@@ -479,8 +494,14 @@
       "id": "ratio_desktop",
       "label": "Ratio (desktop)",
       "options": [
-        { "value": "16 / 9", "label": "Wide (16:9)" },
-        { "value": "21 / 9", "label": "Ultra wide (21:9)" }
+        {
+          "value": "16 / 9",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "21 / 9",
+          "label": "Ultra wide (21:9)"
+        }
       ],
       "default": "16 / 9"
     },
@@ -489,8 +510,14 @@
       "id": "ratio_mobile",
       "label": "Ratio (mobile)",
       "options": [
-        { "value": "9 / 16", "label": "Vertical (9:16)" },
-        { "value": "4 / 5", "label": "Portrait (4:5)" }
+        {
+          "value": "9 / 16",
+          "label": "Vertical (9:16)"
+        },
+        {
+          "value": "4 / 5",
+          "label": "Portrait (4:5)"
+        }
       ],
       "default": "9 / 16"
     },
@@ -568,9 +595,18 @@
       "id": "content_position",
       "label": "Vertical position",
       "options": [
-        { "value": "flex-start", "label": "Top" },
-        { "value": "center", "label": "Middle" },
-        { "value": "flex-end", "label": "Bottom" }
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
       ],
       "default": "center"
     },
@@ -579,9 +615,18 @@
       "id": "desktop_content_alignment",
       "label": "Horizontal position (desktop)",
       "options": [
-        { "value": "justify-start", "label": "Left" },
-        { "value": "justify-center", "label": "Center" },
-        { "value": "justify-end", "label": "Right" }
+        {
+          "value": "justify-start",
+          "label": "Left"
+        },
+        {
+          "value": "justify-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-end",
+          "label": "Right"
+        }
       ],
       "default": "justify-center"
     },
@@ -590,9 +635,18 @@
       "id": "mobile_content_alignment",
       "label": "Horizontal position (mobile)",
       "options": [
-        { "value": "justify-start", "label": "Left" },
-        { "value": "justify-center", "label": "Center" },
-        { "value": "justify-end", "label": "Right" }
+        {
+          "value": "justify-start",
+          "label": "Left"
+        },
+        {
+          "value": "justify-center",
+          "label": "Center"
+        },
+        {
+          "value": "justify-end",
+          "label": "Right"
+        }
       ],
       "default": "justify-center"
     },
@@ -601,9 +655,18 @@
       "id": "text_alignment",
       "label": "Text alignment",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ],
       "default": "center"
     },
@@ -745,13 +808,27 @@
     }
   ],
   "blocks": [
-    { "type": "stack" },
-    { "type": "icons" },
-    { "type": "heading" },
-    { "type": "sub-heading" },
-    { "type": "paragraph" },
-    { "type": "button" },
-    { "type": "_video-play-button" }
+    {
+      "type": "stack"
+    },
+    {
+      "type": "icons"
+    },
+    {
+      "type": "heading"
+    },
+    {
+      "type": "sub-heading"
+    },
+    {
+      "type": "paragraph"
+    },
+    {
+      "type": "button"
+    },
+    {
+      "type": "_video-play-button"
+    }
   ],
   "presets": [
     {
@@ -783,7 +860,7 @@
         "padding_top_mobile": 40,
         "padding_bottom_mobile": 40,
         "padding_left_mobile": 20,
-        "padding_right_mobile": 20,        
+        "padding_right_mobile": 20,
         "make_section_page_width": false
       },
       "blocks": [
@@ -802,7 +879,7 @@
             "animation_delay": 0.2,
             "animation_easing": "ease-out-sine"
           }
-        },        
+        },
         {
           "type": "sub-heading",
           "settings": {

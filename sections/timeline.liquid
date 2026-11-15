@@ -1,0 +1,831 @@
+{%- comment -%}
+  Section: Timeline
+  - Left: intro stack, badge list and closing stack (always last). On desktop the
+    three stay in view (sticky) while the cards scroll past.
+  - Right: one Timeline item per milestone. Each item is a card that takes any
+    theme block (image, sub-heading, heading, paragraph...).
+  - assets/theme-timeline.js builds the badge list from the cards (their "Badge label",
+    or their heading), so it never goes out of sync, and highlights the badge of the
+    card in view. Liquid can't read theme block settings from section.blocks, so the
+    list can't be built here.
+  - Card entrance uses the theme's scroll animations (snippets/animate.liquid), started
+    when a card reaches the middle of the screen, so cards appear one at a time.
+  - Below 990px: intro, cards, then the closing stack; the badge list is hidden.
+{%- endcomment -%}
+
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  # Only Timeline items can be added, and static blocks aren't in section.blocks
+  assign items = section.blocks
+
+  assign timeline_classes = 'vt-timeline'
+  if section.settings.sticky_content
+    assign timeline_classes = timeline_classes | append: ' vt-timeline--sticky'
+  endif
+
+  # Empty card colors follow the color palette
+  assign card_bg = section.settings.card_background | default: 'var(--vt-background-color)'
+  assign card_heading = section.settings.card_text_color | default: 'var(--vt-foreground-color)'
+  assign card_paragraph = section.settings.card_text_color | default: 'var(--vt-color-primary)'
+-%}
+
+{% render 'section-styles', section: section %}
+
+<div class="vt-section vt-timeline-section" {{ section.shopify_attributes }}>
+  <div class="{{ inner_classes }}">
+    <vt-timeline
+      class="{{ timeline_classes }}"
+      style="
+        --vt-timeline-content-width: {{ section.settings.content_width }}%;
+        --vt-timeline-column-gap: {{ section.settings.column_gap | divided_by: 16.0 }}rem;
+        --vt-timeline-sticky-top: {{ section.settings.sticky_offset | divided_by: 16.0 }}rem;
+        --vt-timeline-card-spacing: {% render 'fluid-clamp', min_px: section.settings.card_spacing_mobile, max_px: section.settings.card_spacing %};
+        --vt-timeline-card-bg: {{ card_bg }};
+        --vt-timeline-card-heading: {{ card_heading }};
+        --vt-timeline-card-paragraph: {{ card_paragraph }};
+        --vt-timeline-card-padding: {% render 'fluid-clamp', min_px: section.settings.card_padding_mobile, max_px: section.settings.card_padding %};
+        --vt-timeline-card-gap: {% render 'fluid-clamp', min_px: section.settings.card_gap_mobile, max_px: section.settings.card_gap %};
+        --vt-timeline-card-radius: {{ section.settings.card_radius | divided_by: 16.0 }}rem;
+      "
+    >
+      <div class="vt-timeline__aside">
+        <div class="vt-timeline__intro">
+          {% content_for 'block', type: 'stack', id: 'timeline-intro' %}
+        </div>
+
+        {% content_for 'block', type: '_timeline-badges', id: 'timeline-badges' %}
+
+        <div class="vt-timeline__closing">
+          {% content_for 'block', type: 'stack', id: 'timeline-closing' %}
+        </div>
+      </div>
+
+      {%- if items.size > 0 or request.design_mode -%}
+        <ol class="vt-timeline__items" role="list">
+          {% content_for 'blocks' %}
+        </ol>
+      {%- endif -%}
+    </vt-timeline>
+  </div>
+</div>
+
+{%- if items.size > 0 -%}
+  <script src="{{ 'theme-timeline.js' | asset_url }}" type="module"></script>
+{%- endif -%}
+
+{% stylesheet %}
+  /* ---- Layout: mobile first (one column: intro, cards, closing) ---- */
+  .vt-timeline {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--vt-section-gap, 2.5rem);
+  }
+
+  /* The aside's parts join the grid directly, so the closing stack can move after the cards */
+  .vt-timeline__aside {
+    display: contents;
+  }
+
+  .vt-timeline__intro {
+    order: 1;
+  }
+
+  .vt-timeline__items {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-timeline-card-spacing);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-timeline__closing {
+    order: 3;
+  }
+
+  /* Empty static stacks take no room */
+  .vt-timeline__intro:not(:has(> .vt-stack > *)),
+  .vt-timeline__closing:not(:has(> .vt-stack > *)) {
+    display: none;
+  }
+
+  /* ---- Desktop: two columns, content on the left ---- */
+  @media screen and (min-width: 990px) {
+    .vt-timeline {
+      grid-template-columns:
+        minmax(0, calc(var(--vt-timeline-content-width) - var(--vt-timeline-column-gap) / 2))
+        minmax(0, 1fr);
+      column-gap: var(--vt-timeline-column-gap);
+      align-items: start;
+    }
+
+    .vt-timeline__aside {
+      display: flex;
+      flex-direction: column;
+      gap: var(--vt-section-gap, 2.5rem);
+    }
+
+    /* Back to source order inside the column: intro, badges, closing */
+    .vt-timeline__aside > * {
+      order: 0;
+    }
+
+    /* Sticky: the column fills the screen, so the closing stack rests at its bottom edge */
+    .vt-timeline--sticky .vt-timeline__aside {
+      position: sticky;
+      top: var(--vt-timeline-sticky-top);
+      min-height: calc(100svh - var(--vt-timeline-sticky-top) * 2);
+    }
+
+    .vt-timeline__closing {
+      margin-block-start: auto;
+    }
+  }
+
+  /* ---- Cards ---- */
+  .vt-timeline-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-timeline-card-gap);
+    padding: var(--vt-timeline-card-padding);
+    border-radius: var(--vt-timeline-card-radius);
+    background: var(--vt-timeline-card-bg);
+    color: var(--vt-timeline-card-heading);
+    --vt-section-paragraph-color: var(--vt-timeline-card-paragraph);
+    /* A badge jump leaves the card clear of the sticky header */
+    scroll-margin-block-start: calc(var(--vt-timeline-sticky-top) + 1rem);
+  }
+
+  .vt-timeline-item:focus {
+    outline: none;
+  }
+
+  .vt-timeline-item:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 4px;
+  }
+
+  /* Card entrance (classes from the item block): a short, soft settle, one card at a time */
+  .vt-timeline-item.vt-animate {
+    --vt-duration: 0.8s;
+    --vt-easing: cubic-bezier(0.22, 1, 0.36, 1);
+    --vt-offset: 1.5rem;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Timeline",
+  "tag": "section",
+  "class": "timeline-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "min": 30,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 50,
+      "label": "Content width",
+      "info": "Width of the left column on desktop. The cards fill the rest."
+    },
+    {
+      "type": "range",
+      "id": "column_gap",
+      "min": 40,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 100,
+      "label": "Space between columns"
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_content",
+      "default": true,
+      "label": "Keep content in view",
+      "info": "On desktop the left column stays on screen while the cards scroll."
+    },
+    {
+      "type": "range",
+      "id": "sticky_offset",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 40,
+      "label": "Space above content",
+      "info": "Increase it if a header that is always visible covers the content.",
+      "visible_if": "{{ section.settings.sticky_content }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Space between content groups (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Space between content groups (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "select",
+      "id": "card_animation",
+      "label": "Entrance on scroll",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide",
+          "label": "Fade and slide in"
+        }
+      ],
+      "default": "slide",
+      "info": "Each card appears as it reaches the middle of the screen, and hides again when scrolling back up. Uses Theme settings > Animations, and is off in the first section of a page."
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Background",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Text",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "label": "Corner radius"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Padding (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_mobile",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "label": "Padding (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 12,
+      "label": "Space inside card (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 10,
+      "label": "Space inside card (mobile)"
+    },
+    {
+      "type": "range",
+      "id": "card_spacing",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Space between cards (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "card_spacing_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "label": "Space between cards (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "_timeline-item"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Timeline",
+      "settings": {
+        "content_width": 50,
+        "column_gap": 100,
+        "sticky_content": true,
+        "sticky_offset": 40,
+        "gap": 32,
+        "gap_mobile": 40,
+        "card_animation": "slide",
+        "card_radius": 0,
+        "card_padding": 32,
+        "card_padding_mobile": 20,
+        "card_gap": 12,
+        "card_gap_mobile": 10,
+        "card_spacing": 32,
+        "card_spacing_mobile": 20,
+        "color_style": "default",
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "enable_padding": false,
+            "gap_desktop": 16,
+            "gap_mobile": 12
+          },
+          "blocks": [
+            {
+              "type": "icons",
+              "settings": {
+                "icon": "leaf",
+                "icon_size_desktop": 40,
+                "icon_size_mobile": 32,
+                "show_box": false,
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Tell your story",
+                "heading_size": "vt-heading-h2",
+                "heading_tag": "h2",
+                "heading_alignment": "text-inherit",
+                "heading_width": "fill",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.3,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Walk customers through the moments that shaped your brand, one milestone at a time.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fill",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.4,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            }
+          ],
+          "id": "timeline-intro",
+          "static": true
+        },
+        {
+          "type": "_timeline-badges",
+          "id": "timeline-badges",
+          "static": true,
+          "settings": {
+            "radius": "3.125rem",
+            "show_border": true,
+            "badge_size": "vt-paragraph-small",
+            "gap": 8
+          }
+        },
+        {
+          "type": "stack",
+          "settings": {
+            "layout_direction_desktop": "vt-stack--vertical",
+            "layout_direction_tablet": "vt-stack--vertical",
+            "layout_direction_mobile": "vt-stack--vertical",
+            "alignment": "flex-start",
+            "position": "flex-start",
+            "position_type": "default",
+            "wrap_content": "nowrap",
+            "width": "fill",
+            "width_custom": 100,
+            "height": "fit",
+            "min_height": 400,
+            "enable_padding": false,
+            "gap_desktop": 24,
+            "gap_mobile": 20
+          },
+          "blocks": [
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Add a closing note and point customers to where they can learn more.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fill",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            },
+            {
+              "type": "button",
+              "settings": {
+                "button_label": "Learn more",
+                "button_link": "",
+                "open_in_new_tab": false,
+                "button_style": "primary",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.3,
+                "animation_easing": "ease-out-sine",
+                "animation_blur_intensity": 5
+              }
+            }
+          ],
+          "id": "timeline-closing",
+          "static": true
+        },
+        {
+          "type": "_timeline-item",
+          "settings": {},
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "landscape",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "sub-heading",
+              "settings": {
+                "sub_heading": "Year",
+                "subheading_tag": "p",
+                "subheading_alignment": "text-left",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "First milestone",
+                "heading_size": "vt-heading-h4",
+                "heading_tag": "h3",
+                "heading_alignment": "text-inherit",
+                "heading_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Describe what happened and why it matters to your customers.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_timeline-item",
+          "settings": {},
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "landscape",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "sub-heading",
+              "settings": {
+                "sub_heading": "Year",
+                "subheading_tag": "p",
+                "subheading_alignment": "text-left",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Second milestone",
+                "heading_size": "vt-heading-h4",
+                "heading_tag": "h3",
+                "heading_alignment": "text-inherit",
+                "heading_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Share a step that moved your brand forward.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            }
+          ]
+        },
+        {
+          "type": "_timeline-item",
+          "settings": {},
+          "blocks": [
+            {
+              "type": "image",
+              "settings": {
+                "image_aspect_ratio": "landscape",
+                "image_desktop_width": "fill",
+                "image_mobile_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "sub-heading",
+              "settings": {
+                "sub_heading": "Year",
+                "subheading_tag": "p",
+                "subheading_alignment": "text-left",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "Third milestone",
+                "heading_size": "vt-heading-h4",
+                "heading_tag": "h3",
+                "heading_alignment": "text-inherit",
+                "heading_width": "fill",
+                "animation_type": "none"
+              }
+            },
+            {
+              "type": "paragraph",
+              "settings": {
+                "text": "<p>Tell customers where you are heading next.</p>",
+                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_alignment": "text-inherit",
+                "paragraph_width": "fill",
+                "animation_type": "none"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
