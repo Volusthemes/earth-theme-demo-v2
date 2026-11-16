@@ -32,7 +32,15 @@
         </div>
       {% endfor %}
 
-      {{ paginate | default_pagination: anchor: 'comments' }}
+      {%- comment -%} The next page of comments opens at the comments (#comments) {%- endcomment -%}
+      {%- assign vt_pagination_label = 'blog.comments_pagination_label' | t -%}
+      {% content_for 'block',
+        type: '_pagination',
+        id: 'vt-pagination',
+        paginate: paginate,
+        aria_label: vt_pagination_label,
+        anchor: 'comments'
+      %}
     {% endpaginate %}
   </div>
 

@@ -1,33 +1,638 @@
 {% comment %}
-  This section is used in the blog template to render the blog page listing all
-  articles within a blog.
+  Blog page (templates/blog.json): every article of one blog, newest first.
+
+  - Header: breadcrumbs (static block), the blog's title and an optional intro.
+  - Featured article: the newest article, large, on the first page only and not
+    while a topic is selected. It isn't repeated in the grid. On desktop its
+    excerpt slides in on hover; phones and touch screens always show it.
+  - Topics: links to the blog's tags (/blogs/<blog>/tagged/<tag>). Shopify filters
+    the articles; the current topic is marked with aria-current.
+  - Grid: article cards (snippets/article-card.liquid, styled in Theme settings >
+    Blog cards) in Tailwind grid columns set per screen size, then the shared
+    pagination block, styled like the collection pages.
+
+  Theme Store: shows blog.title, and each article's title (full, linked), image
+  and excerpt_or_content; the articles are paginated.
 
   https://shopify.dev/docs/storefronts/themes/architecture/templates/blog
 {% endcomment %}
 
-<h1>{{ blog.title }}</h1>
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
 
-{% paginate blog.articles by 5 %}
-  {% for article in blog.articles %}
-    <div>
-      {% if article.image %}
-        {{ article.image | image_url: width: 1000 | image_tag }}
-      {% endif %}
-      <h2>
-        {{ article.title | link_to: article.url }}
-      </h2>
-      {% assign date = article.published_at | time_tag: format: 'date' %}
-      <p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
-      <p>{{ article.excerpt }}</p>
-    </div>
-  {% endfor %}
+  assign is_tagged = false
+  if current_tags.size > 0
+    assign is_tagged = true
+  endif
 
-  {% content_for 'block', type: '_pagination', id: 'vt-pagination', paginate: paginate %}
-{% endpaginate %}
+  # Columns: Tailwind grid classes per screen size (assets/tailwind.css)
+  assign columns_desktop = section.settings.columns_desktop | plus: 0
+  assign columns_tablet = section.settings.columns_tablet | plus: 0
+  assign columns_mobile = section.settings.columns_mobile | plus: 0
+  assign grid_class = 'vt-blog__grid grid grid-cols-' | append: columns_mobile
+  assign grid_class = grid_class | append: ' md:grid-cols-' | append: columns_tablet
+  assign grid_class = grid_class | append: ' lg:grid-cols-' | append: columns_desktop
+
+  # Image width hint for the browser, from the columns at each size
+  assign sizes = '(min-width: 990px) calc((min(100vw, 1440px) - 4rem) / ' | append: columns_desktop | append: '), (min-width: 750px) calc((100vw - 3rem) / ' | append: columns_tablet | append: '), calc((100vw - 2.5rem) / ' | append: columns_mobile | append: ')'
+
+-%}
+
+{% render 'section-styles', section: section %}
+
+<div class="vt-section vt-blog" {{ section.shopify_attributes }}>
+  <div
+    class="{{ inner_classes }}"
+    style="
+      --vt-blog-featured-ratio: {{ section.settings.featured_ratio_desktop }};
+      --vt-blog-featured-ratio-mobile: {{ section.settings.featured_ratio_mobile }};
+      --vt-blog-gap: {% render 'fluid-clamp', min_px: section.settings.grid_gap_mobile, max_px: section.settings.grid_gap_desktop %};
+    "
+  >
+    <header class="vt-blog__header">
+      {%- if section.settings.show_breadcrumbs -%}
+        {% content_for 'block', type: 'breadcrumbs', id: 'blog-breadcrumbs' %}
+      {%- endif -%}
+      <h1 class="vt-blog__title vt-heading vt-heading-h1">{{ blog.title | escape }}</h1>
+      {%- if section.settings.description != blank -%}
+        <div class="vt-blog__description vt-paragraph-medium">{{ section.settings.description }}</div>
+      {%- endif -%}
+    </header>
+
+    {%- paginate blog.articles by section.settings.posts_per_page -%}
+      {%- liquid
+        # The newest article is featured on the first page, and skipped in the grid there
+        assign show_featured = false
+        assign grid_offset = 0
+        if section.settings.show_featured and paginate.current_page == 1 and is_tagged == false and blog.articles.size > 0
+          assign show_featured = true
+          assign grid_offset = 1
+        endif
+
+        # The top of the page loads right away: the featured image, or the first row.
+        # Index 2 too, for a thin section above it such as a divider.
+        assign priority = 'auto'
+        if section.index <= 2 and section.location == 'template'
+          assign priority = 'high'
+        endif
+      -%}
+
+      {%- if show_featured -%}
+        {%- render 'article-card',
+          article: blog.articles.first,
+          featured: true,
+          heading_tag: 'h2',
+          loading: 'eager',
+          fetchpriority: priority,
+          sizes: '(min-width: 1440px) 1372px, calc(100vw - 2.5rem)'
+        -%}
+      {%- endif -%}
+
+      {%- if section.settings.show_topics and blog.all_tags.size > 0 -%}
+        <nav class="vt-blog__topics" aria-label="{{ 'blog.topics_label' | t }}">
+          <ul class="vt-blog__topic-list" role="list">
+            <li>
+              <a
+                class="vt-blog__topic vt-paragraph-medium"
+                href="{{ blog.url }}"
+                {% unless is_tagged %}
+                  aria-current="page"
+                {% endunless %}
+              >
+                {{- 'blog.all_topics' | t -}}
+              </a>
+            </li>
+            {%- for tag in blog.all_tags -%}
+              <li>
+                <a
+                  class="vt-blog__topic vt-paragraph-medium"
+                  href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                  {% if current_tags contains tag %}
+                    aria-current="page"
+                  {% endif %}
+                >
+                  {{- tag | escape -}}
+                </a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+      {%- endif -%}
+
+      {%- if blog.articles.size > grid_offset -%}
+        <ul class="{{ grid_class }}" role="list">
+          {%- for article in blog.articles offset: grid_offset -%}
+            {%- liquid
+              assign card_loading = 'lazy'
+              if show_featured == false and forloop.index <= columns_desktop and section.index <= 2
+                assign card_loading = 'eager'
+              endif
+            -%}
+            <li class="vt-blog__item">
+              {%- render 'article-card',
+                article: article,
+                heading_tag: 'h2',
+                loading: card_loading,
+                sizes: sizes
+              -%}
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- elsif blog.articles.size == 0 -%}
+        <p class="vt-blog__empty vt-paragraph-medium">
+          {{ 'blog.no_articles' | t }}
+          {%- if is_tagged %}
+            <a href="{{ blog.url }}">{{ 'blog.view_all' | t }}</a>
+          {%- endif -%}
+        </p>
+      {%- endif -%}
+
+      {% content_for 'block', type: '_pagination', id: 'vt-pagination', paginate: paginate %}
+    {%- endpaginate -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .vt-blog__header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .vt-blog__title,
+  .vt-blog__description p {
+    margin: 0;
+  }
+
+  /* ---- Topics ------------------------------------------------------------ */
+  .vt-blog__topics {
+    display: flex;
+    justify-content: center;
+    /* Phones: the topics scroll sideways instead of wrapping */
+    margin-inline: calc(var(--vt-section-padding-inline-start, 1.25rem) * -1) calc(var(--vt-section-padding-inline-end, 1.25rem) * -1);
+    padding-inline: var(--vt-section-padding-inline-start, 1.25rem) var(--vt-section-padding-inline-end, 1.25rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .vt-blog__topics::-webkit-scrollbar {
+    display: none;
+  }
+
+  .vt-blog__topic-list {
+    display: flex;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+    border-block-end: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  }
+
+  .vt-blog__topic {
+    position: relative;
+    display: block;
+    padding: 0.75rem 1.25rem;
+    color: inherit;
+    font-weight: 600;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  /* Current topic: a thick line in the secondary color over the list's line */
+  .vt-blog__topic::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -1px;
+    height: 2px;
+    background-color: var(--vt-color-secondary);
+    transform: scaleX(0);
+    transition: transform 0.25s ease;
+  }
+
+  .vt-blog__topic[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  @media (hover: hover) {
+    .vt-blog__topic:hover::after {
+      transform: scaleX(1);
+    }
+  }
+
+  .vt-blog__topic:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: -2px;
+  }
+
+  /* ---- Grid ---------------------------------------------------------------- */
+  .vt-blog__grid {
+    gap: calc(var(--vt-blog-gap) * 1.5) var(--vt-blog-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-blog__item {
+    display: flex;
+    min-width: 0;
+  }
+
+  .vt-blog__empty {
+    margin: 0;
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-blog__topic,
+    .vt-blog__topic::after {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.blog",
-  "settings": []
+  "tag": "section",
+  "class": "section-blog",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Intro text",
+      "default": "<p>Stories, ideas and news from our team.</p>",
+      "info": "Shown under the blog's title. Rename the blog in Online Store > Blog posts > Manage blogs."
+    },
+    {
+      "type": "header",
+      "content": "Featured article"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_featured",
+      "label": "Feature the newest article",
+      "default": true,
+      "info": "Large, on the first page. Not repeated in the list below, and hidden while a topic is selected."
+    },
+    {
+      "type": "select",
+      "id": "featured_ratio_desktop",
+      "label": "Image shape (desktop)",
+      "options": [
+        {
+          "value": "16/9",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "21/9",
+          "label": "Ultra wide (21:9)"
+        },
+        {
+          "value": "3/2",
+          "label": "Landscape (3:2)"
+        },
+        {
+          "value": "4/3",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "16/9",
+      "visible_if": "{{ section.settings.show_featured }}"
+    },
+    {
+      "type": "select",
+      "id": "featured_ratio_mobile",
+      "label": "Image shape (mobile)",
+      "options": [
+        {
+          "value": "4/5",
+          "label": "Portrait (4:5)"
+        },
+        {
+          "value": "3/4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "1/1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "4/3",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "4/5",
+      "visible_if": "{{ section.settings.show_featured }}"
+    },
+    {
+      "type": "header",
+      "content": "Topics"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_topics",
+      "label": "Show topics",
+      "default": true,
+      "info": "Links to the tags of the blog's articles, to show one topic at a time."
+    },
+    {
+      "type": "header",
+      "content": "Articles"
+    },
+    {
+      "type": "paragraph",
+      "content": "Card image, title, date and \"Read more\": [Theme settings > Blog cards](/editor?context=theme&category=blog%20cards)."
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Articles per page",
+      "min": 3,
+      "max": 24,
+      "step": 1,
+      "default": 10,
+      "info": "On the first page this includes the featured article."
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Columns (tablet)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Space between articles (desktop)",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 28,
+      "info": "Rows get one and a half times this space."
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Space between articles (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 56,
+      "label": "Space between parts (desktop)",
+      "info": "Between the header, featured article, topics and articles."
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 32,
+      "label": "Space between parts (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 40,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ]
 }
 {% endschema %}

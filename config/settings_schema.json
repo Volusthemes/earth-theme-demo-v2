@@ -2418,6 +2418,165 @@
 		]
 	},
 	{
+		"name": "Blog cards",
+		"settings": [
+			{
+				"type": "paragraph",
+				"content": "Article cards on the blog page and in other sections that list articles."
+			},
+			{
+				"type": "header",
+				"content": "Image"
+			},
+			{
+				"type": "select",
+				"id": "blog_card_image_ratio",
+				"label": "Image ratio",
+				"options": [
+					{
+						"value": "adapt",
+						"label": "Adapt to image"
+					},
+					{
+						"value": "1/1",
+						"label": "Square (1:1)"
+					},
+					{
+						"value": "4/3",
+						"label": "Landscape (4:3)"
+					},
+					{
+						"value": "3/2",
+						"label": "Landscape (3:2)"
+					},
+					{
+						"value": "16/9",
+						"label": "Wide (16:9)"
+					},
+					{
+						"value": "4/5",
+						"label": "Portrait (4:5)"
+					},
+					{
+						"value": "3/4",
+						"label": "Portrait (3:4)"
+					}
+				],
+				"default": "4/3"
+			},
+			{
+				"type": "range",
+				"id": "blog_card_image_radius",
+				"label": "Image radius",
+				"min": 0,
+				"max": 24,
+				"step": 2,
+				"unit": "px",
+				"default": 0
+			},
+			{
+				"type": "header",
+				"content": "Topic badge"
+			},
+			{
+				"type": "checkbox",
+				"id": "blog_card_show_tag",
+				"label": "Show topic on image",
+				"default": true,
+				"info": "The article's first tag."
+			},
+			{
+				"type": "select",
+				"id": "blog_card_tag_style",
+				"label": "Badge style",
+				"options": [
+					{
+						"value": "light",
+						"label": "Light"
+					},
+					{
+						"value": "accent",
+						"label": "Accent"
+					},
+					{
+						"value": "dark",
+						"label": "Dark"
+					}
+				],
+				"default": "light",
+				"visible_if": "{{ settings.blog_card_show_tag }}"
+			},
+			{
+				"type": "header",
+				"content": "Article information"
+			},
+			{
+				"type": "select",
+				"id": "blog_card_heading_size",
+				"label": "Title size",
+				"options": [
+					{
+						"value": "vt-heading-h3",
+						"label": "Heading 3"
+					},
+					{
+						"value": "vt-heading-h4",
+						"label": "Heading 4"
+					},
+					{
+						"value": "vt-heading-h5",
+						"label": "Heading 5"
+					}
+				],
+				"default": "vt-heading-h4"
+			},
+			{
+				"type": "select",
+				"id": "blog_card_text_alignment",
+				"label": "Text alignment",
+				"options": [
+					{
+						"value": "left",
+						"label": "Left"
+					},
+					{
+						"value": "center",
+						"label": "Center"
+					}
+				],
+				"default": "left"
+			},
+			{
+				"type": "checkbox",
+				"id": "blog_card_show_date",
+				"label": "Show date",
+				"default": true
+			},
+			{
+				"type": "checkbox",
+				"id": "blog_card_show_author",
+				"label": "Show author",
+				"default": false
+			},
+			{
+				"type": "range",
+				"id": "blog_card_excerpt_lines",
+				"label": "Excerpt lines",
+				"min": 1,
+				"max": 5,
+				"step": 1,
+				"default": 2,
+				"info": "Lines of the article's excerpt. Longer text ends with an ellipsis."
+			},
+			{
+				"type": "checkbox",
+				"id": "blog_card_show_read_more",
+				"label": "Show \"Read more\" link",
+				"default": true
+			}
+		]
+	},
+	{
 		"name": "Social media",
 		"settings": [
 			{

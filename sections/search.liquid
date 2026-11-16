@@ -44,7 +44,8 @@
           </div>
         {% endfor %}
 
-        {{ paginate | default_pagination }}
+        {%- assign vt_pagination_label = 'search.pagination_label' | t -%}
+        {% content_for 'block', type: '_pagination', id: 'vt-pagination', paginate: paginate, aria_label: vt_pagination_label %}
       {% endpaginate %}
     </div>
   {% endif %}
@@ -55,9 +56,8 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
+  /* The pagination spans the whole row under the results */
+  .search-results .vt-pagination {
     grid-column: 1 / -1;
   }
 {% endstylesheet %}

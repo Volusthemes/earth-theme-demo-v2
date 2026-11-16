@@ -14,17 +14,59 @@
             "disabled": true,
             "settings": {}
         },
+        "divider_section": {
+            "type": "custom-section",
+            "blocks": {
+                "divider_block": {
+                    "type": "divider",
+                    "settings": {
+                        "variant": "horizontal",
+                        "style": "solid",
+                        "thickness": 1,
+                        "color_source": "inherit",
+                        "margin_top_desktop": 0,
+                        "margin_bottom_desktop": 0,
+                        "margin_top_mobile": 0,
+                        "margin_bottom_mobile": 0,
+                        "animation_type": "reveal",
+                        "animation_direction": "from-left",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.2,
+                        "animation_easing": "ease-out-sine",
+                        "animation_blur_intensity": 5
+                    }
+                }
+            },
+            "block_order": [
+                "divider_block"
+            ],
+            "settings": {
+                "gap": 0,
+                "gap_mobile": 0,
+                "background_style": "solid",
+                "padding_top_desktop": 0,
+                "padding_bottom_desktop": 0,
+                "padding_left_desktop": 0,
+                "padding_right_desktop": 0,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 0,
+                "padding_bottom_mobile": 0,
+                "padding_left_mobile": 0,
+                "padding_right_mobile": 0,
+                "make_section_page_width": false
+            }
+        },
         "contact_details_section": {
             "type": "multicolumn",
             "settings": {
                 "gap": 0,
                 "gap_mobile": 0,
-                "padding_top_desktop": 60,
+                "padding_top_desktop": 0,
                 "padding_bottom_desktop": 110,
                 "padding_left_desktop": 34,
                 "padding_right_desktop": 34,
                 "enable_custom_mobile_padding": true,
-                "padding_top_mobile": 48,
+                "padding_top_mobile": 40,
                 "padding_bottom_mobile": 80,
                 "padding_left_mobile": 20,
                 "padding_right_mobile": 20,
@@ -115,9 +157,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "(555) 123-4567",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -133,9 +175,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "(222) 123-4567",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -213,9 +255,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "hello@earthecoshop.com",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -231,9 +273,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "sale@earthecoshop.com",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -311,9 +353,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "Monday–Friday",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -328,9 +370,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "9:00 AM–6:00 PM EST",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -407,9 +449,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "1234 Palm Boulevard,",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -424,9 +466,9 @@
                                             "type": "text-link",
                                             "settings": {
                                                 "label": "Miami, United States",
-                                                "text_style": "vt-paragraph-large",
+                                                "text_style": "vt-paragraph-medium",
                                                 "underline": "none",
-                                                "hover_effect": "color",
+                                                "hover_effect": "default",
                                                 "uppercase": false,
                                                 "open_in_new_tab": false,
                                                 "animation_type": "slide",
@@ -478,11 +520,11 @@
                 "make_section_page_width": true,
                 "gap": 40,
                 "gap_mobile": 24,
-                "padding_top_desktop": 40,
+                "padding_top_desktop": 60,
                 "padding_bottom_desktop": 0,
-                "padding_top_mobile": 20,
+                "padding_top_mobile": 40,
                 "padding_bottom_mobile": 0
-            },
+            },            
             "blocks": {
                 "breadcrumbs": {
                     "type": "breadcrumbs",
@@ -657,7 +699,7 @@
                             "type": "icons",
                             "settings": {
                                 "icon": "leaf",
-                                "icon_size_desktop": 48,
+                                "icon_size_desktop": 40,
                                 "icon_size_mobile": 36,
                                 "show_box": false,
                                 "icon_color": "{{ settings.color_palette.secondary }}",
@@ -714,6 +756,7 @@
     },
     "order": [
         "main",
+        "divider_section",
         "contact_header_section",
         "contact_form_section",
         "contact_details_section"

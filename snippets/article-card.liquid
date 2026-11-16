@@ -1,0 +1,355 @@
+{%- doc -%}
+  Renders one blog article as a card: image with its first tag as a badge, date,
+  title, excerpt and a "Read more" link. The featured style puts the date, title
+  and excerpt over the image instead, and the whole card is one link.
+
+  The look is shared by every card in the theme: Theme settings > Blog cards
+  (image ratio and radius, badge, title size, alignment, date, author, excerpt
+  lines, "Read more"). Its CSS lives here, so any section can render the card.
+
+  The title is the link that names the article. The image link and "Read more"
+  lead to the same page: the image link is skipped by keyboard and screen readers,
+  and "Read more" says which article it opens.
+
+  Theme Store: shows the full title linked to the article, the image, and
+  excerpt_or_content.
+
+  @param {object} article - The article to render
+  @param {boolean} [featured] - Large card with the text over the image
+  @param {string} [heading_tag] - Tag for the title. Defaults to h2.
+  @param {string} [loading] - Image loading: lazy (default) or eager
+  @param {string} [fetchpriority] - Image fetch priority: auto (default) or high
+  @param {string} [sizes] - The image sizes attribute
+
+  @example
+  {% render 'article-card', article: article, sizes: '(min-width: 990px) 33vw, 100vw' %}
+{%- enddoc -%}
+
+{%- liquid
+  assign heading_tag = heading_tag | default: 'h2'
+  assign loading = loading | default: 'lazy'
+  assign fetchpriority = fetchpriority | default: 'auto'
+  assign sizes = sizes | default: '100vw'
+
+  # A missing param is nil, not false: compare with true so the normal card is the default
+  assign is_featured = false
+  if featured == true
+    assign is_featured = true
+  endif
+
+  assign heading_class = settings.blog_card_heading_size
+  assign card_class = 'vt-article-card vt-article-card--' | append: settings.blog_card_text_alignment
+  if is_featured
+    assign heading_class = 'vt-heading-h2'
+    assign card_class = 'vt-article-card vt-article-card--featured'
+  elsif settings.blog_card_image_ratio == 'adapt'
+    assign card_class = card_class | append: ' vt-article-card--adapt'
+  endif
+
+  # Theme Store: every article shows its excerpt_or_content
+  assign excerpt = article.excerpt_or_content | strip_html | strip | truncatewords: 40
+-%}
+
+<article class="{{ card_class }}">
+  <div class="vt-article-card__media">
+    {%- unless is_featured -%}
+      <a class="vt-article-card__image-link" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
+    {%- endunless -%}
+    {%- if article.image -%}
+      {{
+        article.image
+        | image_url: width: 2000
+        | image_tag:
+          widths: '360, 535, 750, 940, 1080, 1296, 1512, 1728, 2000',
+          sizes: sizes,
+          loading: loading,
+          fetchpriority: fetchpriority,
+          class: 'vt-article-card__image',
+          alt: article.image.alt
+      }}
+    {%- else -%}
+      {{ 'image' | placeholder_svg_tag: 'vt-article-card__image vt-article-card__placeholder' }}
+    {%- endif -%}
+    {%- unless is_featured -%}
+      </a>
+    {%- endunless -%}
+
+    {%- if settings.blog_card_show_tag and article.tags.size > 0 -%}
+      <span class="vt-badge vt-badge--width-fit vt-paragraph-small vt-article-card__tag vt-article-card__tag--{{ settings.blog_card_tag_style }}">
+        {{- article.tags.first | escape -}}
+      </span>
+    {%- endif -%}
+  </div>
+
+  <div class="vt-article-card__content">
+    {%- if settings.blog_card_show_date or settings.blog_card_show_author -%}
+      <p class="vt-article-card__meta vt-paragraph-small">
+        {%- if settings.blog_card_show_date -%}
+          {{ article.published_at | time_tag: format: 'date' }}
+        {%- endif -%}
+        {%- if settings.blog_card_show_author and article.author != blank -%}
+          {%- if settings.blog_card_show_date %} · {% endif -%}
+          <span>{{ article.author | escape }}</span>
+        {%- endif -%}
+      </p>
+    {%- endif -%}
+
+    <{{ heading_tag }} class="vt-article-card__title vt-heading {{ heading_class }}">
+      {%- comment -%}
+        Hover follows Theme settings > Typography > Link hover effect (.vt-link, .vt-link-label).
+        On the featured card this link covers the whole card (::after), so hovering
+        anywhere on it plays the effect on the title.
+      {%- endcomment -%}
+      <a class="vt-article-card__link vt-link" href="{{ article.url }}">
+        <span class="vt-link-label">{{ article.title | escape }}</span>
+      </a>
+    </{{ heading_tag }}>
+
+    {%- if excerpt != blank -%}
+      {%- comment -%} The wrapper lets the featured excerpt open to its real height (grid rows 0fr → 1fr) {%- endcomment -%}
+      <div class="vt-article-card__excerpt-wrap">
+        <div class="vt-article-card__excerpt-inner">
+          <p class="vt-article-card__excerpt vt-paragraph-medium">{{ excerpt | escape }}</p>
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- if settings.blog_card_show_read_more and is_featured == false -%}
+      <a class="vt-button vt-button--link vt-article-card__more" href="{{ article.url }}">
+        <span class="vt-button-label">{{ 'blog.read_more' | t }}</span>
+        <span class="vt-visually-hidden">{{ 'blog.read_more_about' | t: title: article.title }}</span>
+        <span class="vt-button-icon vt-button__arrow" aria-hidden="true">
+          {%- render 'icons', icon: 'arrow-next-2' -%}
+        </span>
+      </a>
+    {%- endif -%}
+  </div>
+</article>
+
+{% stylesheet %}
+  /* Variables: snippets/css-variables.liquid (Theme settings > Blog cards) */
+  .vt-article-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .vt-article-card__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--vt-blog-card-ratio, 4 / 3);
+    border-radius: var(--vt-blog-card-radius, 0);
+    background-color: color-mix(in srgb, currentColor 6%, transparent);
+  }
+
+  .vt-article-card__image-link {
+    display: block;
+    height: 100%;
+  }
+
+  .vt-article-card__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--vt-image-zoom-duration) var(--vt-image-zoom-easing);
+    backface-visibility: hidden;
+  }
+
+  /* Adapt to image: the image keeps its own shape */
+  .vt-article-card--adapt .vt-article-card__image {
+    height: auto;
+  }
+
+  .vt-article-card--adapt .vt-article-card__placeholder {
+    aspect-ratio: 4 / 3;
+  }
+
+  .vt-article-card__placeholder {
+    fill: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  /* Zoom on hover: shared values in theme.css (--vt-image-zoom-*), on with
+     Theme settings > Animations > "Enable image hover effects" (body.vt-image-hover) */
+  @media (hover: hover) {
+    .vt-image-hover .vt-article-card:hover .vt-article-card__image {
+      transform: scale(var(--vt-image-zoom-scale));
+    }
+  }
+
+  /* ---- Topic badge ------------------------------------------------------- */
+  .vt-article-card__tag {
+    --vt-badge-radius: 3.125rem;
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 1rem;
+    inset-inline-start: 1rem;
+    max-width: calc(100% - 2rem);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+
+  .vt-article-card__tag--light {
+    --vt-badge-bg: var(--vt-background-color);
+    --vt-badge-color: var(--vt-foreground-color);
+  }
+
+  .vt-article-card__tag--accent {
+    --vt-badge-bg: var(--vt-color-accent);
+    --vt-badge-color: var(--vt-foreground-color);
+  }
+
+  .vt-article-card__tag--dark {
+    --vt-badge-bg: var(--vt-foreground-color);
+    --vt-badge-color: var(--vt-background-color);
+  }
+
+  /* ---- Text -------------------------------------------------------------- */
+  .vt-article-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding-block-start: 1.25rem;
+  }
+
+  .vt-article-card--center .vt-article-card__content {
+    align-items: center;
+    text-align: center;
+  }
+
+  .vt-article-card__meta,
+  .vt-article-card__title,
+  .vt-article-card__excerpt {
+    margin: 0;
+  }
+
+  .vt-article-card__meta {
+    color: var(--vt-section-paragraph-color, var(--vt-color-primary));
+  }
+
+  .vt-article-card__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Excerpt: the number of lines set in Theme settings, then an ellipsis */
+  .vt-article-card__excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: var(--vt-blog-card-excerpt-lines, 2);
+    -webkit-box-orient: vertical;
+  }
+
+  .vt-article-card__more {
+    margin-block-start: 0.75rem;
+  }
+
+  /* ---- Featured: text over the image ------------------------------------- */
+  /* Its shape comes from the section (--vt-blog-featured-ratio*) */
+  .vt-article-card--featured .vt-article-card__media {
+    aspect-ratio: var(--vt-blog-featured-ratio-mobile, 4 / 5);
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-article-card--featured .vt-article-card__media {
+      aspect-ratio: var(--vt-blog-featured-ratio, 16 / 9);
+    }
+  }
+
+  /* Dark fade under the text, so light text stays readable on any photo */
+  .vt-article-card--featured .vt-article-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(0 0 0 / 0.6) 0%, rgb(0 0 0 / 0.25) 35%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .vt-article-card--featured .vt-article-card__content {
+    position: absolute;
+    z-index: 1;
+    inset-inline: 0;
+    inset-block-end: 0;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    color: var(--vt-background-color);
+  }
+
+  .vt-article-card--featured .vt-article-card__meta,
+  .vt-article-card--featured .vt-article-card__title {
+    color: inherit;
+  }
+
+  .vt-article-card--featured .vt-article-card__excerpt {
+    max-width: 40rem;
+    -webkit-line-clamp: 2;
+  }
+
+  /*
+    Desktop with a mouse: the featured excerpt opens on hover, and on keyboard
+    focus. Its row grows from 0fr to 1fr, so it opens to its real height and the
+    title above moves up evenly. It stays in the page for screen readers and
+    search engines. Touch screens and phones always show it.
+  */
+  @media screen and (min-width: 750px) and (hover: hover) {
+    .vt-article-card--featured .vt-article-card__excerpt-wrap {
+      --vt-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
+      display: grid;
+      grid-template-rows: 0fr;
+      /* The space above comes from the excerpt itself, so a closed row takes none */
+      margin-block-start: -0.5rem;
+      transition: grid-template-rows 0.55s var(--vt-reveal-ease);
+    }
+
+    .vt-article-card--featured .vt-article-card__excerpt-inner {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .vt-article-card--featured .vt-article-card__excerpt {
+      padding-block-start: 0.5rem;
+      opacity: 0;
+      transform: translateY(0.75rem);
+      transition:
+        opacity 0.35s ease,
+        transform 0.55s var(--vt-reveal-ease);
+    }
+
+    .vt-article-card--featured:is(:hover, :focus-within) .vt-article-card__excerpt-wrap {
+      grid-template-rows: 1fr;
+    }
+
+    /* The text fades in once its row has started to open */
+    .vt-article-card--featured:is(:hover, :focus-within) .vt-article-card__excerpt {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.08s;
+    }
+  }
+
+  /* The title link covers the whole featured card */
+  .vt-article-card--featured .vt-article-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .vt-article-card--featured .vt-article-card__link:focus-visible {
+    outline: none;
+  }
+
+  .vt-article-card--featured:has(.vt-article-card__link:focus-visible) {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-article-card--featured .vt-article-card__excerpt-wrap,
+    .vt-article-card--featured .vt-article-card__excerpt {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

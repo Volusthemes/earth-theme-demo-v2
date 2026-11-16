@@ -1365,7 +1365,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "icon_color": "{{ settings.color_palette.secondary }}",
-                                        "icon_size_desktop": 48,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 40,
                                         "show_box": false,
                                         "animation_type": "slide",
@@ -2119,7 +2119,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "icon_color": "{{ settings.color_palette.secondary }}",
-                                        "icon_size_desktop": 32,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
                                         "box_bg_color": "{{ settings.color_palette.background }}",
@@ -2139,7 +2139,7 @@
                                     "settings": {
                                         "icon": "leaf",
                                         "icon_color": "{{ settings.color_palette.secondary }}",
-                                        "icon_size_desktop": 32,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 24,
                                         "show_box": false,
                                         "box_bg_color": "{{ settings.color_palette.background }}",
@@ -3323,7 +3323,7 @@
                     },
                     "block_order": [
                         "timeline-intro_icons_1",
-                        "timeline-intro_heading_2"                        
+                        "timeline-intro_heading_2"
                     ]
                 },
                 "timeline-badges": {
@@ -4148,7 +4148,7 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_size_desktop": 48,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 36,
                                         "show_box": false,
                                         "icon_color": "{{ settings.color_palette.secondary }}",
@@ -4178,7 +4178,7 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_size_desktop": 48,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 36,
                                         "show_box": false,
                                         "icon_color": "{{ settings.color_palette.secondary }}",
@@ -4216,7 +4216,7 @@
                             "type": "button",
                             "settings": {
                                 "button_label": "Explore journal",
-                                "button_link": "/blogs/news",
+                                "button_link": "/blogs/journal",
                                 "open_in_new_tab": false,
                                 "button_style": "outline",
                                 "animation_type": "slide",

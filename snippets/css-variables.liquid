@@ -569,6 +569,15 @@
 
         /*
         * ------------------------------------------------------------
+        * BLOG CARDS (Theme settings > Blog cards, snippets/article-card.liquid)
+        * ------------------------------------------------------------
+        */
+        --vt-blog-card-ratio: {% if settings.blog_card_image_ratio == 'adapt' %}auto{% else %}{{ settings.blog_card_image_ratio }}{% endif %};
+        --vt-blog-card-radius: {{ settings.blog_card_image_radius }}px;
+        --vt-blog-card-excerpt-lines: {{ settings.blog_card_excerpt_lines }};
+
+        /*
+        * ------------------------------------------------------------
         * INPUTS (Theme settings > Inputs, used by .vt-input in theme.css)
         * Empty colors follow the text color of the section around the field
         * ------------------------------------------------------------
@@ -577,7 +586,7 @@
         {%- liquid
           assign input_bg = 'transparent'
           if settings.input_style == 'solid'
-            assign input_bg = 'color-mix(in srgb, currentColor 5%, transparent)'
+            assign input_bg = 'color-mix(in srgb, currentColor 8%, transparent)'
           endif
           assign input_border_color = settings.input_border | default: 'currentColor'
           assign input_border_x = settings.input_border_width | append: 'px'

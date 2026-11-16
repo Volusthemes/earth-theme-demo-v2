@@ -43,6 +43,30 @@
   endif
 
   assign subject_options = section.settings.subject_options | newline_to_br | split: '<br />'
+
+  # Field names: shown above the field, inside it moving up while typing (floating),
+  # or only to screen readers (hidden). The placeholder repeats the name unless the
+  # name sits above the field, where it gives an example instead.
+  assign label_style = section.settings.label_style
+  assign field_class = 'vt-contact-form__field vt-field vt-field--' | append: label_style
+  assign label_class = 'vt-field__label'
+  if label_style == 'hidden'
+    assign label_class = 'vt-visually-hidden'
+  endif
+
+  if label_style == 'above'
+    assign placeholder_name = 'contact_form.placeholders.name' | t
+    assign placeholder_email = 'contact_form.placeholders.email' | t
+    assign placeholder_phone = 'contact_form.placeholders.phone' | t
+    assign placeholder_subject = 'contact_form.placeholders.subject' | t
+    assign placeholder_message = 'contact_form.placeholders.message' | t
+  else
+    assign placeholder_name = 'contact_form.name' | t
+    assign placeholder_email = 'contact_form.email' | t
+    assign placeholder_phone = 'contact_form.phone' | t
+    assign placeholder_subject = 'contact_form.subject' | t
+    assign placeholder_message = 'contact_form.message' | t
+  endif
 -%}
 
 {% render 'section-styles', section: section %}
@@ -86,8 +110,8 @@
           {%- endif -%}
 
           <div class="vt-contact-form__fields">
-            <div class="vt-contact-form__field">
-              <label class="vt-visually-hidden" for="{{ form_id }}-name">{{ 'contact_form.name' | t }}</label>
+            <div class="{{ field_class }}">
+              <label class="{{ label_class }}" for="{{ form_id }}-name">{{ 'contact_form.name' | t }}</label>
               <input
                 class="vt-input"
                 type="text"
@@ -95,13 +119,14 @@
                 name="contact[{{ 'contact_form.name' | t }}]"
                 value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}"
                 autocomplete="name"
-                placeholder="{{ 'contact_form.name' | t }}"
+                placeholder="{{ placeholder_name }}"
               >
             </div>
 
-            <div class="vt-contact-form__field">
-              <label class="vt-visually-hidden" for="{{ form_id }}-email">
-                {{- 'contact_form.email' | t }} ({{ 'contact_form.required' | t }})
+            <div class="{{ field_class }}">
+              <label class="{{ label_class }}" for="{{ form_id }}-email">
+                {{- 'contact_form.email' | t -}}
+                <span class="vt-field__required" aria-hidden="true">*</span>
               </label>
               <input
                 class="vt-input"
@@ -112,7 +137,7 @@
                 autocomplete="email"
                 autocapitalize="off"
                 spellcheck="false"
-                placeholder="{{ 'contact_form.email' | t }}"
+                placeholder="{{ placeholder_email }}"
                 required
                 {% if form.errors contains 'email' %}
                   aria-invalid="true"
@@ -122,8 +147,8 @@
             </div>
 
             {%- if section.settings.show_phone -%}
-              <div class="vt-contact-form__field vt-contact-form__field--full">
-                <label class="vt-visually-hidden" for="{{ form_id }}-phone">{{ 'contact_form.phone' | t }}</label>
+              <div class="{{ field_class }} vt-contact-form__field--full">
+                <label class="{{ label_class }}" for="{{ form_id }}-phone">{{ 'contact_form.phone' | t }}</label>
                 <input
                   class="vt-input"
                   type="tel"
@@ -132,21 +157,21 @@
                   value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}"
                   autocomplete="tel"
                   pattern="[0-9\-\+\s\(\)\.]*"
-                  placeholder="{{ 'contact_form.phone' | t }}"
+                  placeholder="{{ placeholder_phone }}"
                 >
               </div>
             {%- endif -%}
 
             {%- if section.settings.show_subject and section.settings.subject_options != blank -%}
-              <div class="vt-contact-form__field vt-contact-form__field--full">
-                <label class="vt-visually-hidden" for="{{ form_id }}-subject">{{ 'contact_form.subject' | t }}</label>
+              <div class="{{ field_class }} vt-contact-form__field--full">
+                <label class="{{ label_class }}" for="{{ form_id }}-subject">{{ 'contact_form.subject' | t }}</label>
                 <span class="vt-select">
                   <select
                     class="vt-input"
                     id="{{ form_id }}-subject"
                     name="contact[{{ 'contact_form.subject_label' | t }}]"
                   >
-                    <option value="" selected>{{ 'contact_form.subject' | t }}</option>
+                    <option value="" selected>{{ placeholder_subject }}</option>
                     {%- for option in subject_options -%}
                       {%- assign option_text = option | strip -%}
                       {%- if option_text != blank -%}
@@ -154,18 +179,19 @@
                       {%- endif -%}
                     {%- endfor -%}
                   </select>
+                  <span class="vt-select__icon" aria-hidden="true">{% render 'icons', icon: 'dropdown' %}</span>
                 </span>
               </div>
             {%- endif -%}
 
-            <div class="vt-contact-form__field vt-contact-form__field--full">
-              <label class="vt-visually-hidden" for="{{ form_id }}-message">{{ 'contact_form.message' | t }}</label>
+            <div class="{{ field_class }} vt-contact-form__field--full">
+              <label class="{{ label_class }}" for="{{ form_id }}-message">{{ 'contact_form.message' | t }}</label>
               <textarea
                 class="vt-input"
                 id="{{ form_id }}-message"
                 name="contact[body]"
                 rows="5"
-                placeholder="{{ 'contact_form.message' | t }}"
+                placeholder="{{ placeholder_message }}"
               >
                 {{- form.body -}}
               </textarea>
@@ -270,6 +296,9 @@
     display: flex;
     flex-direction: column;
     gap: var(--vt-contact-field-gap);
+    /* After sending, the page returns to #ContactForm-…: the message at the top of
+       the form stays clear of the sticky header */
+    scroll-margin-block-start: calc(var(--vt-header-height, 0px) + 1.5rem);
   }
 
   .vt-contact-form__fields {
@@ -288,10 +317,6 @@
     }
   }
 
-  .vt-contact-form__field {
-    display: flex;
-    flex-direction: column;
-  }
 
   .vt-contact-form__message {
     margin: 0;
@@ -369,6 +394,27 @@
       "content": "Form"
     },
     {
+      "type": "select",
+      "id": "label_style",
+      "label": "Field names",
+      "options": [
+        {
+          "value": "hidden",
+          "label": "Inside the field"
+        },
+        {
+          "value": "floating",
+          "label": "Inside, moving up while typing"
+        },
+        {
+          "value": "above",
+          "label": "Above the field"
+        }
+      ],
+      "default": "hidden",
+      "info": "Inside the field, the name disappears once typing starts. Moving up keeps it in view. Above the field adds an example inside each field."
+    },
+    {
       "type": "checkbox",
       "id": "show_phone",
       "label": "Show phone field",
@@ -427,7 +473,7 @@
     {
       "type": "range",
       "id": "field_gap_desktop",
-      "label": "Space between fields (desktop)",
+      "label": "Gap fields (desktop)",
       "min": 8,
       "max": 48,
       "step": 2,
@@ -437,7 +483,7 @@
     {
       "type": "range",
       "id": "field_gap_mobile",
-      "label": "Space between fields (mobile)",
+      "label": "Gap fields (mobile)",
       "min": 8,
       "max": 40,
       "step": 2,
@@ -446,7 +492,7 @@
     },
     {
       "type": "paragraph",
-      "content": "Field height, border and colors: Theme settings > Inputs."
+      "content": "Field height, border and colors: [Theme settings > Inputs](/editor?context=theme&category=inputs)."
     },
     {
       "type": "header",
@@ -581,7 +627,7 @@
       "step": 2,
       "unit": "px",
       "default": 32,
-      "label": "Space between form and image (desktop)"
+      "label": "Gap (desktop)"
     },
     {
       "type": "range",
@@ -591,7 +637,7 @@
       "step": 2,
       "unit": "px",
       "default": 32,
-      "label": "Space between form and image (mobile)"
+      "label": "Gap (mobile)"
     },
     {
       "type": "header",
@@ -784,7 +830,7 @@
               "type": "icons",
               "settings": {
                 "icon": "leaf",
-                "icon_size_desktop": 48,
+                "icon_size_desktop": 40,
                 "icon_size_mobile": 36,
                 "show_box": false,
                 "color_style": "secondary",

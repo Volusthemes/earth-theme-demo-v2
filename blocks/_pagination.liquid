@@ -10,6 +10,7 @@
 
   @param {object} paginate - The paginate object from the parent section
   @param {string} [aria_label] - Accessible name for the nav landmark, e.g. "Collections pagination". Defaults to "Pagination".
+  @param {string} [anchor] - ID the new page scrolls to, e.g. comments (without #)
 
   @example
   {%- paginate collection.products by 24 -%}
@@ -115,7 +116,9 @@
     class: vt_class_list,
     attributes: block.shopify_attributes,
     aria_label: aria_label,
-    icon: vt_s.icon
+    icon: vt_s.icon,
+    show_labels: vt_s.show_labels,
+    anchor: anchor
   %}
 {%- endif -%}
 
@@ -133,9 +136,18 @@
       "id": "alignment",
       "label": "t:blocks.pagination.settings.alignment.label",
       "options": [
-        { "value": "flex-start", "label": "t:blocks.pagination.settings.alignment.options__1.label" },
-        { "value": "center", "label": "t:blocks.pagination.settings.alignment.options__2.label" },
-        { "value": "flex-end", "label": "t:blocks.pagination.settings.alignment.options__3.label" }
+        {
+          "value": "flex-start",
+          "label": "t:blocks.pagination.settings.alignment.options__1.label"
+        },
+        {
+          "value": "center",
+          "label": "t:blocks.pagination.settings.alignment.options__2.label"
+        },
+        {
+          "value": "flex-end",
+          "label": "t:blocks.pagination.settings.alignment.options__3.label"
+        }
       ],
       "default": "center"
     },
@@ -144,20 +156,45 @@
       "id": "icon",
       "label": "t:blocks.pagination.settings.icon.label",
       "options": [
-        { "value": "chevron", "label": "t:blocks.pagination.settings.icon.options__1.label" },
-        { "value": "arrow", "label": "t:blocks.pagination.settings.icon.options__2.label" }
+        {
+          "value": "chevron",
+          "label": "t:blocks.pagination.settings.icon.options__1.label"
+        },
+        {
+          "value": "arrow",
+          "label": "t:blocks.pagination.settings.icon.options__2.label"
+        }
       ],
       "default": "chevron"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Previous and Next text",
+      "default": true,
+      "info": "The unavailable one is left out, for example Previous on the first page."
     },
     {
       "type": "select",
       "id": "text_size",
       "label": "t:blocks.pagination.settings.text_size.label",
       "options": [
-        { "value": "vt-paragraph-extra-small", "label": "t:blocks.pagination.settings.text_size.options__1.label" },
-        { "value": "vt-paragraph-small", "label": "t:blocks.pagination.settings.text_size.options__2.label" },
-        { "value": "vt-paragraph-medium", "label": "t:blocks.pagination.settings.text_size.options__3.label" },
-        { "value": "vt-paragraph-large", "label": "t:blocks.pagination.settings.text_size.options__4.label" }
+        {
+          "value": "vt-paragraph-extra-small",
+          "label": "t:blocks.pagination.settings.text_size.options__1.label"
+        },
+        {
+          "value": "vt-paragraph-small",
+          "label": "t:blocks.pagination.settings.text_size.options__2.label"
+        },
+        {
+          "value": "vt-paragraph-medium",
+          "label": "t:blocks.pagination.settings.text_size.options__3.label"
+        },
+        {
+          "value": "vt-paragraph-large",
+          "label": "t:blocks.pagination.settings.text_size.options__4.label"
+        }
       ],
       "default": "vt-paragraph-medium"
     },
@@ -214,7 +251,8 @@
       "max": 40,
       "step": 1,
       "unit": "px",
-      "default": 6
+      "default": 40,
+      "info": "40px makes round page numbers."
     },
     {
       "type": "range",
@@ -224,7 +262,7 @@
       "max": 4,
       "step": 1,
       "unit": "px",
-      "default": 0
+      "default": 1
     },
     {
       "type": "header",
@@ -304,7 +342,8 @@
       "type": "color",
       "id": "border_color",
       "label": "t:blocks.pagination.settings.border_color.label",
-      "visible_if": "{{ block.settings.border_width > 0 }}"
+      "visible_if": "{{ block.settings.border_width > 0 }}",
+      "info": "Leave empty for a light shade of the text color."
     },
     {
       "type": "color",
@@ -335,11 +374,26 @@
       "id": "animation_type",
       "info": "Turned off in the first section of a page, so it loads faster.",
       "options": [
-        { "value": "none", "label": "t:blocks.heading.settings.animation_type.options__1.label" },
-        { "value": "fade", "label": "t:blocks.heading.settings.animation_type.options__2.label" },
-        { "value": "slide", "label": "t:blocks.heading.settings.animation_type.options__3.label" },
-        { "value": "reveal", "label": "t:blocks.heading.settings.animation_type.options__4.label" },
-        { "value": "blur", "label": "t:blocks.heading.settings.animation_type.options__5.label" }
+        {
+          "value": "none",
+          "label": "t:blocks.heading.settings.animation_type.options__1.label"
+        },
+        {
+          "value": "fade",
+          "label": "t:blocks.heading.settings.animation_type.options__2.label"
+        },
+        {
+          "value": "slide",
+          "label": "t:blocks.heading.settings.animation_type.options__3.label"
+        },
+        {
+          "value": "reveal",
+          "label": "t:blocks.heading.settings.animation_type.options__4.label"
+        },
+        {
+          "value": "blur",
+          "label": "t:blocks.heading.settings.animation_type.options__5.label"
+        }
       ],
       "default": "none",
       "label": "t:blocks.heading.settings.animation_type.label"
@@ -348,10 +402,22 @@
       "type": "select",
       "id": "animation_direction",
       "options": [
-        { "value": "from-left", "label": "t:blocks.heading.settings.animation_direction.options__1.label" },
-        { "value": "from-right", "label": "t:blocks.heading.settings.animation_direction.options__2.label" },
-        { "value": "from-top", "label": "t:blocks.heading.settings.animation_direction.options__3.label" },
-        { "value": "from-bottom", "label": "t:blocks.heading.settings.animation_direction.options__4.label" }
+        {
+          "value": "from-left",
+          "label": "t:blocks.heading.settings.animation_direction.options__1.label"
+        },
+        {
+          "value": "from-right",
+          "label": "t:blocks.heading.settings.animation_direction.options__2.label"
+        },
+        {
+          "value": "from-top",
+          "label": "t:blocks.heading.settings.animation_direction.options__3.label"
+        },
+        {
+          "value": "from-bottom",
+          "label": "t:blocks.heading.settings.animation_direction.options__4.label"
+        }
       ],
       "default": "from-bottom",
       "label": "t:blocks.heading.settings.animation_direction.label",
@@ -383,13 +449,34 @@
       "type": "select",
       "id": "animation_easing",
       "options": [
-        { "value": "linear", "label": "t:blocks.heading.settings.animation_easing.options__1.label" },
-        { "value": "ease-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__2.label" },
-        { "value": "ease-in-sine", "label": "t:blocks.heading.settings.animation_easing.options__3.label" },
-        { "value": "ease-in-out-sine", "label": "t:blocks.heading.settings.animation_easing.options__4.label" },
-        { "value": "ease-in-cubic", "label": "t:blocks.heading.settings.animation_easing.options__5.label" },
-        { "value": "ease-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__6.label" },
-        { "value": "ease-in-out-cubic", "label": "t:blocks.heading.settings.animation_easing.options__7.label" }
+        {
+          "value": "linear",
+          "label": "t:blocks.heading.settings.animation_easing.options__1.label"
+        },
+        {
+          "value": "ease-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__2.label"
+        },
+        {
+          "value": "ease-in-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__3.label"
+        },
+        {
+          "value": "ease-in-out-sine",
+          "label": "t:blocks.heading.settings.animation_easing.options__4.label"
+        },
+        {
+          "value": "ease-in-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__5.label"
+        },
+        {
+          "value": "ease-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__6.label"
+        },
+        {
+          "value": "ease-in-out-cubic",
+          "label": "t:blocks.heading.settings.animation_easing.options__7.label"
+        }
       ],
       "default": "ease-out-sine",
       "label": "t:blocks.heading.settings.animation_easing.label",

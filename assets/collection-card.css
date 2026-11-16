@@ -139,12 +139,16 @@
   object-fit: cover;
 }
 
+/* Zoom on hover: shared values in theme.css (--vt-image-zoom-*) */
 .vt-collection-card__item--hover .vt-collection-card__image {
-  transition: transform 0.5s ease;
+  transition: transform var(--vt-image-zoom-duration) var(--vt-image-zoom-easing);
+  backface-visibility: hidden;
 }
 
-.vt-collection-card__item--hover:hover .vt-collection-card__image {
-  transform: scale(1.1);
+@media (hover: hover) {
+  .vt-collection-card__item--hover:hover .vt-collection-card__image {
+    transform: scale(var(--vt-image-zoom-scale));
+  }
 }
 
 .vt-collection-card__overlay {

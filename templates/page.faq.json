@@ -181,7 +181,7 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_size_desktop": 48,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 36,
                                         "show_box": false,
                                         "icon_color": "{{ settings.color_palette.secondary }}",
@@ -211,7 +211,7 @@
                                     "type": "icons",
                                     "settings": {
                                         "icon": "leaf",
-                                        "icon_size_desktop": 48,
+                                        "icon_size_desktop": 40,
                                         "icon_size_mobile": 36,
                                         "show_box": false,
                                         "icon_color": "{{ settings.color_palette.secondary }}",
@@ -333,7 +333,7 @@
                                     "type": "paragraph",
                                     "settings": {
                                         "text": "<p>Ask about orders, sizing, care, or anything Earth-related today.</p>",
-                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_size": "vt-paragraph-medium",
                                         "paragraph_alignment": "text-center",
                                         "paragraph_width": "fit",
                                         "enable_max_width": true,
@@ -425,7 +425,7 @@
                                     "type": "paragraph",
                                     "settings": {
                                         "text": "<p>Send your questions anytime, and our team will reply soon.</p>",
-                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_size": "vt-paragraph-medium",
                                         "paragraph_alignment": "text-center",
                                         "paragraph_width": "fit",
                                         "enable_max_width": true,
@@ -517,7 +517,7 @@
                                     "type": "paragraph",
                                     "settings": {
                                         "text": "<p>Choose a time to speak with our team personally.</p>",
-                                        "paragraph_size": "vt-paragraph-large",
+                                        "paragraph_size": "vt-paragraph-medium",
                                         "paragraph_alignment": "text-center",
                                         "paragraph_width": "fit",
                                         "enable_max_width": true,
@@ -792,7 +792,7 @@
                         },
                         "topics_content": {
                             "type": "stack",
-                            "name": "Topics",                            
+                            "name": "Topics",
                             "settings": {
                                 "layout_direction_desktop": "vt-stack--vertical",
                                 "layout_direction_tablet": "vt-stack--vertical",
@@ -806,7 +806,7 @@
                                 "gap_desktop": 80,
                                 "gap_mobile": 56,
                                 "enable_padding": false
-                            },                            
+                            },
                             "blocks": {
                                 "orders": {
                                     "type": "faq-topic",
@@ -849,7 +849,7 @@
                                                     "type": "_accordion-item",
                                                     "settings": {
                                                         "heading": "How do I know my order has been confirmed?",
-                                                        "heading_size": "vt-heading-h5",                                                        
+                                                        "heading_size": "vt-heading-h5",
                                                         "heading_tag": "h3"
                                                     },
                                                     "blocks": {

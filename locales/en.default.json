@@ -63,7 +63,14 @@
     "back_to_shopping": "Back to shopping"
   },
   "blog": {
+    "all_topics": "All",
+    "topics_label": "Article topics",
+    "read_more": "Read more",
+    "read_more_about": "about {{ title }}",
+    "no_articles": "There are no articles here yet. Check back soon.",
+    "view_all": "View all articles",
     "article_comments": "Comments",
+    "comments_pagination_label": "Comments pages",
     "article_metadata_html": "{{ date }} by {{ author }}",
     "comment_form_body": "Comment",
     "comment_form_email": "Email",
@@ -113,6 +120,7 @@
   "search": {
     "title": "Search",
     "placeholder": "Search articles, pages, or products",
+    "pagination_label": "Search results pages",
     "submit": "Search",
     "no_results_html": "No results found for {{ terms }}",
     "results_for_html": "{{ count }} results found for {{ terms }}"
@@ -174,9 +182,15 @@
     "subject": "What can we help with?",
     "subject_label": "Topic",
     "message": "Message",
-    "required": "required",
     "success": "Thanks for your message. We’ll get back to you as soon as we can.",
-    "error": "Please check the following:"
+    "error": "Please check the following:",
+    "placeholders": {
+      "name": "Your full name",
+      "email": "name@example.com",
+      "phone": "Your phone number",
+      "subject": "Choose a topic",
+      "message": "How can we help?"
+    }
   },
   "content": {
     "topic_menu_empty": "Add Topic with anchor blocks to this section to fill the menu.",

@@ -12,6 +12,8 @@
   @param {string} [attributes] - Extra HTML attributes for the nav element, such as block.shopify_attributes
   @param {string} [aria_label] - Accessible name for the nav landmark. Defaults to "Pagination".
   @param {string} [icon] - Arrow icon style: chevron (default) | arrow
+  @param {string} [anchor] - ID to scroll to on the new page, e.g. comments (without #)
+  @param {boolean} [show_labels] - Show "Previous" and "Next" next to the arrows. The unavailable one is then left out.
 
   @example
   {%- paginate collection.products by 24 -%}
@@ -33,6 +35,17 @@
         assign vt_icon_path = 'M6 3l5 5-5 5'
     endcase
 
+    assign vt_nav_class = 'vt-pagination'
+    if show_labels == true
+      assign vt_nav_class = vt_nav_class | append: ' vt-pagination--labels'
+    endif
+
+    # The new page opens at this part of the page, e.g. the comments
+    assign vt_anchor = ''
+    if anchor != blank
+      assign vt_anchor = '#' | append: anchor
+    endif
+
     assign vt_current_page = paginate.current_page
     assign vt_last_visible = 0
     assign vt_after_gap = false
@@ -42,7 +55,7 @@
     {% if id != blank %}
       id="{{ id }}"
     {% endif %}
-    class="vt-pagination {{ class }}"
+    class="{{ vt_nav_class }} {{ class }}"
     aria-label="{{ aria_label | escape }}"
     {{ attributes }}
   >
@@ -53,11 +66,16 @@
         {%- if paginate.previous -%}
           <a
             class="vt-pagination__link vt-pagination__link--arrow"
-            href="{{ paginate.previous.url }}"
+            href="{{ paginate.previous.url }}{{ vt_anchor }}"
             rel="prev"
-            aria-label="{{ 'content.pagination.previous' | t }}"
+            {% unless show_labels == true %}
+              aria-label="{{ 'content.pagination.previous' | t }}"
+            {% endunless %}
           >
             <svg class="vt-pagination__icon vt-pagination__icon--previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
+            {%- if show_labels == true -%}
+              <span class="vt-pagination__label">{{ 'content.pagination.previous' | t }}</span>
+            {%- endif -%}
           </a>
         {%- else -%}
           <span class="vt-pagination__link vt-pagination__link--arrow vt-pagination__link--disabled">
@@ -117,7 +135,7 @@
           {%- elsif part.is_link -%}
             <a
               class="vt-pagination__link"
-              href="{{ part.url }}"
+              href="{{ part.url }}{{ vt_anchor }}"
               aria-label="{{ 'content.pagination.page' | t: page: part.title }}"
             >
               {{- part.title -}}
@@ -136,10 +154,15 @@
         {%- if paginate.next -%}
           <a
             class="vt-pagination__link vt-pagination__link--arrow"
-            href="{{ paginate.next.url }}"
+            href="{{ paginate.next.url }}{{ vt_anchor }}"
             rel="next"
-            aria-label="{{ 'content.pagination.next' | t }}"
+            {% unless show_labels == true %}
+              aria-label="{{ 'content.pagination.next' | t }}"
+            {% endunless %}
           >
+            {%- if show_labels == true -%}
+              <span class="vt-pagination__label">{{ 'content.pagination.next' | t }}</span>
+            {%- endif -%}
             <svg class="vt-pagination__icon vt-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
           </a>
         {%- else -%}
@@ -193,7 +216,8 @@
     /* min-width (not width) so 3-digit page numbers still fit */
     min-inline-size: max(1.5rem, var(--vt-pagination-size, 2.5rem));
     padding-inline: 0.25em;
-    border: var(--vt-pagination-border-width, 0) solid var(--vt-pagination-border-color, transparent);
+    border: var(--vt-pagination-border-width, 0) solid
+      var(--vt-pagination-border-color, color-mix(in srgb, currentColor 25%, transparent));
     border-radius: var(--vt-pagination-radius, 0.375rem);
     font-variant-numeric: tabular-nums;
     text-decoration: none;
@@ -216,7 +240,10 @@
         --vt-pagination-hover-bg,
         color-mix(in srgb, currentColor 10%, transparent)
       );
-      border-color: var(--vt-pagination-hover-bg, var(--vt-pagination-border-color, transparent));
+      border-color: var(
+        --vt-pagination-hover-bg,
+        var(--vt-pagination-border-color, color-mix(in srgb, currentColor 25%, transparent))
+      );
       color: var(--vt-pagination-hover-color, inherit);
     }
   }
@@ -236,6 +263,29 @@
   .vt-pagination__link--disabled {
     opacity: 0.3;
     cursor: not-allowed;
+  }
+
+  /* Previous / Next with text: a plain link next to the round page numbers */
+  .vt-pagination--labels .vt-pagination__link--arrow {
+    gap: 0.375rem;
+    padding-inline: 0.5rem;
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  @media (hover: hover) {
+    .vt-pagination--labels a.vt-pagination__link--arrow:hover {
+      border-color: transparent;
+      background-color: transparent;
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
+  /* With text the unavailable arrow is left out instead of shown faded */
+  .vt-pagination--labels .vt-pagination__item:has(> .vt-pagination__link--disabled) {
+    display: none;
   }
 
   .vt-pagination__icon {
