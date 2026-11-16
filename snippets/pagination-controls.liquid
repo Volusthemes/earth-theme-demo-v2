@@ -65,7 +65,7 @@
       <li class="vt-pagination__item" {% unless paginate.previous %}aria-hidden="true"{% endunless %}>
         {%- if paginate.previous -%}
           <a
-            class="vt-pagination__link vt-pagination__link--arrow"
+            class="vt-pagination__link vt-pagination__link--arrow{% if show_labels == true %} vt-link{% endif %}"
             href="{{ paginate.previous.url }}{{ vt_anchor }}"
             rel="prev"
             {% unless show_labels == true %}
@@ -74,7 +74,7 @@
           >
             <svg class="vt-pagination__icon vt-pagination__icon--previous" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
             {%- if show_labels == true -%}
-              <span class="vt-pagination__label">{{ 'content.pagination.previous' | t }}</span>
+              <span class="vt-pagination__label vt-link-label">{{ 'content.pagination.previous' | t }}</span>
             {%- endif -%}
           </a>
         {%- else -%}
@@ -96,6 +96,13 @@
             assign vt_page = part.title | plus: 0
           else
             assign vt_page = vt_current_page
+          endif
+
+          # The current page is found by its number, not only by is_link: some
+          # previews (the theme editor) can hand it over as a link
+          assign vt_is_current = false
+          if vt_is_gap == false and vt_page == vt_current_page
+            assign vt_is_current = true
           endif
 
           # On mobile keep only the first, last and direct neighbors of the current page
@@ -132,7 +139,7 @@
         <li class="{{ vt_item_class }}" {% if vt_is_gap %}aria-hidden="true"{% endif %}>
           {%- if vt_is_gap -%}
             <span class="vt-pagination__gap">&hellip;</span>
-          {%- elsif part.is_link -%}
+          {%- elsif part.is_link and vt_is_current == false -%}
             <a
               class="vt-pagination__link"
               href="{{ part.url }}{{ vt_anchor }}"
@@ -153,7 +160,7 @@
       <li class="vt-pagination__item" {% unless paginate.next %}aria-hidden="true"{% endunless %}>
         {%- if paginate.next -%}
           <a
-            class="vt-pagination__link vt-pagination__link--arrow"
+            class="vt-pagination__link vt-pagination__link--arrow{% if show_labels == true %} vt-link{% endif %}"
             href="{{ paginate.next.url }}{{ vt_anchor }}"
             rel="next"
             {% unless show_labels == true %}
@@ -161,7 +168,7 @@
             {% endunless %}
           >
             {%- if show_labels == true -%}
-              <span class="vt-pagination__label">{{ 'content.pagination.next' | t }}</span>
+              <span class="vt-pagination__label vt-link-label">{{ 'content.pagination.next' | t }}</span>
             {%- endif -%}
             <svg class="vt-pagination__icon vt-pagination__icon--next" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="{{ vt_icon_path }}"/></svg>
           </a>
@@ -217,7 +224,7 @@
     min-inline-size: max(1.5rem, var(--vt-pagination-size, 2.5rem));
     padding-inline: 0.25em;
     border: var(--vt-pagination-border-width, 0) solid
-      var(--vt-pagination-border-color, color-mix(in srgb, currentColor 25%, transparent));
+      var(--vt-pagination-border-color, color-mix(in srgb, currentColor 10%, transparent));
     border-radius: var(--vt-pagination-radius, 0.375rem);
     font-variant-numeric: tabular-nums;
     text-decoration: none;
@@ -233,18 +240,14 @@
     user-select: none;
   }
 
-  /* Hover only on real pointers, so touch devices never keep a "stuck" hover */
+  /* Hover only on real pointers, so touch devices never keep a "stuck" hover.
+     Defaults: the palette's secondary color behind the foreground color; the
+     block's Hover background / Hover text settings replace them. */
   @media (hover: hover) {
     a.vt-pagination__link:hover {
-      background-color: var(
-        --vt-pagination-hover-bg,
-        color-mix(in srgb, currentColor 10%, transparent)
-      );
-      border-color: var(
-        --vt-pagination-hover-bg,
-        var(--vt-pagination-border-color, color-mix(in srgb, currentColor 25%, transparent))
-      );
-      color: var(--vt-pagination-hover-color, inherit);
+      background-color: var(--vt-pagination-hover-bg, var(--vt-color-secondary, currentColor));
+      border-color: var(--vt-pagination-hover-bg, var(--vt-color-secondary, currentColor));
+      color: var(--vt-pagination-hover-color, var(--vt-foreground-color, inherit));
     }
   }
 
@@ -273,13 +276,13 @@
     background-color: transparent;
   }
 
+  /* Hover: the text follows Theme settings > Typography > Link hover effect
+     (.vt-link / .vt-link-label in theme.css), like the other links */
   @media (hover: hover) {
     .vt-pagination--labels a.vt-pagination__link--arrow:hover {
       border-color: transparent;
       background-color: transparent;
       color: inherit;
-      text-decoration: underline;
-      text-underline-offset: 0.2em;
     }
   }
 

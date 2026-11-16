@@ -64,10 +64,28 @@
     endif
   -%}
 
+  {%- liquid
+    # Colors: the picked color, or the palette default. Always a real value: in the
+    # theme editor an empty color setting isn't always blank (or comes back fully
+    # transparent), and an empty custom property would also cancel the CSS fallback.
+    assign vt_color_keys = 'text_color,border_color,hover_background,hover_text_color,active_background,active_text_color' | split: ','
+    assign vt_color_props = 'color,border-color,hover-bg,hover-color,active-bg,active-color' | split: ','
+    assign vt_color_defaults = 'var(--vt-foreground-color)|color-mix(in srgb, currentColor 25%, transparent)|var(--vt-color-secondary)|var(--vt-foreground-color)|var(--vt-foreground-color)|var(--vt-background-color)' | split: '|'
+    assign vt_color_css = ''
+    for vt_key in vt_color_keys
+      assign vt_color = vt_s[vt_key]
+      assign vt_color_value = vt_color | append: '' | strip
+      if vt_color_value == '' or vt_color.alpha == 0
+        assign vt_color_value = vt_color_defaults[forloop.index0]
+      endif
+      assign vt_color_css = vt_color_css | append: ' --vt-pagination-' | append: vt_color_props[forloop.index0] | append: ': ' | append: vt_color_value | append: ';'
+    endfor
+  -%}
+
   {%- comment -%}
     Sizes and spacing are written once as mobile -> desktop fluid values,
-    so no breakpoint media queries are needed. Colors are only output when
-    set, otherwise the snippet falls back to the color palette.
+    so no breakpoint media queries are needed. Colors are always output: the
+    picked color or the palette default (vt_color_css above).
   {%- endcomment -%}
   {%- style -%}
     #{{ vt_id }} {
@@ -79,24 +97,7 @@
       --vt-pagination-padding-block-end: {% render 'fluid-clamp', min_px: vt_s.padding_bottom_mobile, max_px: vt_s.padding_bottom_desktop %};
       --vt-pagination-radius: {% render 'fluid-clamp', min_px: vt_s.border_radius, max_px: vt_s.border_radius %};
       --vt-pagination-border-width: {% render 'fluid-clamp', min_px: vt_s.border_width, max_px: vt_s.border_width %};
-      {%- if vt_s.text_color != blank %}
-        --vt-pagination-color: {{ vt_s.text_color }};
-      {%- endif -%}
-      {%- if vt_s.border_color != blank %}
-        --vt-pagination-border-color: {{ vt_s.border_color }};
-      {%- endif -%}
-      {%- if vt_s.hover_background != blank %}
-        --vt-pagination-hover-bg: {{ vt_s.hover_background }};
-      {%- endif -%}
-      {%- if vt_s.hover_text_color != blank %}
-        --vt-pagination-hover-color: {{ vt_s.hover_text_color }};
-      {%- endif -%}
-      {%- if vt_s.active_background != blank %}
-        --vt-pagination-active-bg: {{ vt_s.active_background }};
-      {%- endif -%}
-      {%- if vt_s.active_text_color != blank %}
-        --vt-pagination-active-color: {{ vt_s.active_text_color }};
-      {%- endif -%}
+      {{- vt_color_css }}
       {%- if vt_anim_classes != blank %}
         --vt-duration: {{ vt_s.animation_duration }}s;
         --vt-delay: {{ vt_s.animation_delay }}s;
@@ -296,7 +297,7 @@
       "max": 120,
       "step": 2,
       "unit": "px",
-      "default": 48
+      "default": 0
     },
     {
       "type": "range",
@@ -306,7 +307,7 @@
       "max": 120,
       "step": 2,
       "unit": "px",
-      "default": 32
+      "default": 0      
     },
     {
       "type": "range",
@@ -348,22 +349,26 @@
     {
       "type": "color",
       "id": "hover_background",
-      "label": "t:blocks.pagination.settings.hover_background.label"
+      "label": "t:blocks.pagination.settings.hover_background.label",
+      "info": "Leave empty for the color palette's secondary color."
     },
     {
       "type": "color",
       "id": "hover_text_color",
-      "label": "t:blocks.pagination.settings.hover_text_color.label"
+      "label": "t:blocks.pagination.settings.hover_text_color.label",
+      "info": "Leave empty for the color palette's foreground color."
     },
     {
       "type": "color",
       "id": "active_background",
-      "label": "t:blocks.pagination.settings.active_background.label"
+      "label": "t:blocks.pagination.settings.active_background.label",
+      "info": "Leave empty for the color palette's foreground color."
     },
     {
       "type": "color",
       "id": "active_text_color",
-      "label": "t:blocks.pagination.settings.active_text_color.label"
+      "label": "t:blocks.pagination.settings.active_text_color.label",
+      "info": "Leave empty for the color palette's background color."
     },
     {
       "type": "header",

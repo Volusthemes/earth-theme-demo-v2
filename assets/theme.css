@@ -1259,7 +1259,7 @@ body {
   min-height: 2.25rem;
   white-space: nowrap;
   list-style: none;
-  cursor: pointer;
+  cursor: pointer;      
 }
 
 .vt-localization__summary::-webkit-details-marker {

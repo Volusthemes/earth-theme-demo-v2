@@ -23,7 +23,7 @@
                 "columns_tablet": "2",
                 "columns_mobile": "1",
                 "gap_mobile": 32,
-                "gap": 56,
+                "gap": 64,
                 "color_style": "default",
                 "background_style": "solid",
                 "background_color": "{{ settings.color_palette.background }}",
