@@ -23,10 +23,29 @@
     assign inner_classes = inner_classes | append: ' vt-page-width'
   endif
 
+  # Header alignment: Tailwind utilities (assets/tailwind.css), like the alignment of
+  # the Heading and Paragraph blocks. The breadcrumbs, title and intro move together.
+  case section.settings.header_alignment
+    when 'center'
+      assign header_align_class = 'items-center text-center'
+    when 'right'
+      assign header_align_class = 'items-end text-right'
+    else
+      assign header_align_class = 'items-start text-left'
+  endcase
+
   assign is_tagged = false
   if current_tags.size > 0
     assign is_tagged = true
   endif
+
+  # Without a featured article on topic pages, a topic opens at the topics row
+  # (#BlogTopics-…), so the row doesn't jump up when the large article above it
+  # goes away. With one, the layout stays the same and the page opens at the top.
+  assign topic_anchor = ''
+  unless section.settings.show_featured and section.settings.featured_on_topics
+    assign topic_anchor = '#BlogTopics-' | append: section.id
+  endunless
 
   # Columns: Tailwind grid classes per screen size (assets/tailwind.css)
   assign columns_desktop = section.settings.columns_desktop | plus: 0
@@ -35,6 +54,10 @@
   assign grid_class = 'vt-blog__grid grid grid-cols-' | append: columns_mobile
   assign grid_class = grid_class | append: ' md:grid-cols-' | append: columns_tablet
   assign grid_class = grid_class | append: ' lg:grid-cols-' | append: columns_desktop
+  # Two columns on a phone: a smaller card so titles and text fit the narrow column
+  if columns_mobile > 1
+    assign grid_class = grid_class | append: ' vt-blog__grid--compact-mobile'
+  endif
 
   # Image width hint for the browser, from the columns at each size
   assign sizes = '(min-width: 990px) calc((min(100vw, 1440px) - 4rem) / ' | append: columns_desktop | append: '), (min-width: 750px) calc((100vw - 3rem) / ' | append: columns_tablet | append: '), calc((100vw - 2.5rem) / ' | append: columns_mobile | append: ')'
@@ -50,9 +73,10 @@
       --vt-blog-featured-ratio: {{ section.settings.featured_ratio_desktop }};
       --vt-blog-featured-ratio-mobile: {{ section.settings.featured_ratio_mobile }};
       --vt-blog-gap: {% render 'fluid-clamp', min_px: section.settings.grid_gap_mobile, max_px: section.settings.grid_gap_desktop %};
+      --vt-blog-row-gap-scale: {% if settings.blog_card_style == 'overlay' %}1{% else %}1.5{% endif %};
     "
   >
-    <header class="vt-blog__header">
+    <header class="vt-blog__header {{ header_align_class }}">
       {%- if section.settings.show_breadcrumbs -%}
         {% content_for 'block', type: 'breadcrumbs', id: 'blog-breadcrumbs' %}
       {%- endif -%}
@@ -67,7 +91,11 @@
         # The newest article is featured on the first page, and skipped in the grid there
         assign show_featured = false
         assign grid_offset = 0
-        if section.settings.show_featured and paginate.current_page == 1 and is_tagged == false and blog.articles.size > 0
+        assign featured_here = true
+        if is_tagged and section.settings.featured_on_topics == false
+          assign featured_here = false
+        endif
+        if section.settings.show_featured and featured_here and paginate.current_page == 1 and blog.articles.size > 0
           assign show_featured = true
           assign grid_offset = 1
         endif
@@ -92,12 +120,21 @@
       {%- endif -%}
 
       {%- if section.settings.show_topics and blog.all_tags.size > 0 -%}
-        <nav class="vt-blog__topics" aria-label="{{ 'blog.topics_label' | t }}">
+        {%- comment -%}
+          Swipes sideways when the topics don't fit, with the edges faded where more
+          topics are hidden (.vt-tabs-scroller in theme.css, assets/theme-tabs-scroller.js)
+        {%- endcomment -%}
+        <nav
+          id="BlogTopics-{{ section.id }}"
+          class="vt-blog__topics vt-tabs-scroller"
+          aria-label="{{ 'blog.topics_label' | t }}"
+          data-tabs-scroller
+        >
           <ul class="vt-blog__topic-list" role="list">
             <li>
               <a
                 class="vt-blog__topic vt-paragraph-medium"
-                href="{{ blog.url }}"
+                href="{{ blog.url }}{{ topic_anchor }}"
                 {% unless is_tagged %}
                   aria-current="page"
                 {% endunless %}
@@ -109,7 +146,7 @@
               <li>
                 <a
                   class="vt-blog__topic vt-paragraph-medium"
-                  href="{{ blog.url }}/tagged/{{ tag | handle }}"
+                  href="{{ blog.url }}/tagged/{{ tag | handle }}{{ topic_anchor }}"
                   {% if current_tags contains tag %}
                     aria-current="page"
                   {% endif %}
@@ -120,10 +157,40 @@
             {%- endfor -%}
           </ul>
         </nav>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const scroller = document.getElementById('BlogTopics-{{ section.id }}');
+            const tabs = window.vtTabsScroller?.init(scroller, scroller?.querySelector('ul'));
+            // Opens with the current topic in view, e.g. one past the edge of a phone screen
+            tabs?.scrollIntoView(scroller?.querySelector('[aria-current="page"]'));
+
+            // After a topic is chosen, the articles slide in one after another, like the
+            // products tab carousel. Only for a shopper's click, not a direct visit.
+            const key = 'vt-blog-topic-switch';
+            scroller?.addEventListener('click', (event) => {
+              if (!event.target.closest('a')) return;
+              try { sessionStorage.setItem(key, '1'); } catch (error) {}
+            });
+            let switched = false;
+            try {
+              switched = sessionStorage.getItem(key) === '1';
+              sessionStorage.removeItem(key);
+            } catch (error) {}
+            if (!switched) return;
+
+            const section = scroller.closest('.vt-blog');
+            const featured = section.querySelector('.vt-article-card--featured');
+            const items = [...section.querySelectorAll('[data-blog-grid] > li')];
+            [featured, ...items].filter(Boolean).forEach((element, index) => {
+              element.style.setProperty('--vt-stagger', Math.min(index, 8));
+            });
+            section.classList.add('is-topic-switching');
+          });
+        </script>
       {%- endif -%}
 
       {%- if blog.articles.size > grid_offset -%}
-        <ul class="{{ grid_class }}" role="list">
+        <ul class="{{ grid_class }}" role="list" data-blog-grid>
           {%- for article in blog.articles offset: grid_offset -%}
             {%- liquid
               assign card_loading = 'lazy'
@@ -145,7 +212,7 @@
         <p class="vt-blog__empty vt-paragraph-medium">
           {{ 'blog.no_articles' | t }}
           {%- if is_tagged %}
-            <a href="{{ blog.url }}">{{ 'blog.view_all' | t }}</a>
+            <a href="{{ blog.url }}{{ topic_anchor }}">{{ 'blog.view_all' | t }}</a>
           {%- endif -%}
         </p>
       {%- endif -%}
@@ -156,10 +223,11 @@
 </div>
 
 {% stylesheet %}
+  /* Alignment: Tailwind utilities from the Alignment setting (header_align_class).
+     No align-items / text-align here: this unlayered rule would beat them. */
   .vt-blog__header {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 1rem;
   }
 
@@ -169,22 +237,17 @@
   }
 
   /* ---- Topics ------------------------------------------------------------ */
+  /* Swipe, hidden scrollbar and edge fade: .vt-tabs-scroller (theme.css). The row
+     runs to the screen edges so the fade sits at the edge, and the list is centered
+     while it fits */
   .vt-blog__topics {
-    display: flex;
-    justify-content: center;
-    /* Phones: the topics scroll sideways instead of wrapping */
     margin-inline: calc(var(--vt-section-padding-inline-start, 1.25rem) * -1) calc(var(--vt-section-padding-inline-end, 1.25rem) * -1);
     padding-inline: var(--vt-section-padding-inline-start, 1.25rem) var(--vt-section-padding-inline-end, 1.25rem);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .vt-blog__topics::-webkit-scrollbar {
-    display: none;
   }
 
   .vt-blog__topic-list {
     display: flex;
+    width: max-content;
     margin: 0 auto;
     padding: 0;
     list-style: none;
@@ -211,6 +274,7 @@
     height: 0.0938rem;
     background-color: var(--vt-color-secondary);
     transform: scaleX(0);
+    transform-origin: left center;
     transition: transform 0.25s ease;
   }
 
@@ -224,6 +288,35 @@
     }
   }
 
+  /* Opened from a topic link (#BlogTopics-…): clear of the sticky header */
+  .vt-blog__topics {
+    scroll-margin-block-start: calc(var(--vt-header-height, 0px) + 1rem);
+  }
+
+  /* After a topic is chosen (class set by the script under the topics):
+     the underline grows in, then the articles slide in one after another */
+  .vt-blog.is-topic-switching .vt-blog__topic[aria-current='page']::after {
+    animation: vt-blog-topic-line-in 0.45s cubic-bezier(0.61, 1, 0.88, 1) backwards;
+  }
+
+  @keyframes vt-blog-topic-line-in {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  .vt-blog.is-topic-switching :is(.vt-blog__item, .vt-article-card--featured) {
+    --vt-offset: 1.25rem;
+    animation: vt-tab-switch-in 0.45s cubic-bezier(0.61, 1, 0.88, 1) calc(var(--vt-stagger, 0) * 70ms + 0.1s) backwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-blog.is-topic-switching .vt-blog__topic[aria-current='page']::after,
+    .vt-blog.is-topic-switching :is(.vt-blog__item, .vt-article-card--featured) {
+      animation: none;
+    }
+  }
+
   .vt-blog__topic:focus-visible {
     outline: 2px solid currentColor;
     outline-offset: -2px;
@@ -231,7 +324,9 @@
 
   /* ---- Grid ---------------------------------------------------------------- */
   .vt-blog__grid {
-    gap: calc(var(--vt-blog-gap) * 1.5) var(--vt-blog-gap);
+    /* Rows: 1.5× the column space under Standard cards, whose text sits below the
+       image; the same space for Overlay cards, which are image blocks */
+    gap: calc(var(--vt-blog-gap) * var(--vt-blog-row-gap-scale, 1.5)) var(--vt-blog-gap);
     margin: 0;
     padding: 0;
     list-style: none;
@@ -240,6 +335,48 @@
   .vt-blog__item {
     display: flex;
     min-width: 0;
+  }
+
+  /* Two columns on a phone: each card is about 160px wide, so its text steps down */
+  @media screen and (max-width: 749.98px) {
+    .vt-blog__grid--compact-mobile .vt-article-card__content {
+      gap: 0.375rem;
+      padding-block-start: 0.875rem;
+    }
+
+    .vt-blog__grid--compact-mobile .vt-article-card__title {
+      font-size: clamp(1rem, 4.4vw, 1.25rem);
+      line-height: 1.25;
+    }
+
+    .vt-blog__grid--compact-mobile .vt-article-card__meta.vt-paragraph-small {
+      font-size: 0.75rem;
+    }
+
+    .vt-blog__grid--compact-mobile .vt-article-card__excerpt.vt-paragraph-medium {
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .vt-blog__grid--compact-mobile .vt-article-card__tag {
+      inset-block-start: 0.5rem;
+      inset-inline-start: 0.5rem;
+      max-width: calc(100% - 1rem);
+      padding: 0.25rem 0.625rem;
+      font-size: 0.75rem;
+    }
+
+    /* The button's own size variable (theme.css .vt-button), so its label follows */
+    .vt-blog__grid--compact-mobile .vt-article-card__more {
+      --vt-button-size: 0.8125rem;
+      margin-block-start: 0.375rem;
+      gap: 0.5rem;
+    }
+
+    .vt-blog__grid--compact-mobile .vt-article-card__more .vt-button-icon {
+      width: 1.375rem;
+      height: 1.375rem;
+    }
   }
 
   .vt-blog__empty {
@@ -266,6 +403,27 @@
       "content": "Header"
     },
     {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "info": "Breadcrumbs, the blog's title and the intro text."
+    },
+    {
       "type": "checkbox",
       "id": "show_breadcrumbs",
       "label": "Show breadcrumbs",
@@ -276,7 +434,7 @@
       "id": "description",
       "label": "Intro text",
       "default": "<p>Stories, ideas and news from our team.</p>",
-      "info": "Shown under the blog's title. Rename the blog in Online Store > Blog posts > Manage blogs."
+      "info": "Shown under the blog's title. Rename the blog in [Online Store > Blog posts > Manage blogs](/admin/blogs)."
     },
     {
       "type": "header",
@@ -287,12 +445,20 @@
       "id": "show_featured",
       "label": "Feature the newest article",
       "default": true,
-      "info": "Large, on the first page. Not repeated in the list below, and hidden while a topic is selected."
+      "info": "Large, on the first page. Not repeated in the list below."
+    },
+    {
+      "type": "checkbox",
+      "id": "featured_on_topics",
+      "label": "Feature on topic pages too",
+      "default": true,
+      "info": "Shows the newest article of the chosen topic. When off, a topic opens at the topics, with its articles right below.",
+      "visible_if": "{{ section.settings.show_featured }}"
     },
     {
       "type": "select",
       "id": "featured_ratio_desktop",
-      "label": "Image shape (desktop)",
+      "label": "Image size (desktop)",
       "options": [
         {
           "value": "16/9",
@@ -317,7 +483,7 @@
     {
       "type": "select",
       "id": "featured_ratio_mobile",
-      "label": "Image shape (mobile)",
+      "label": "Image size (mobile)",
       "options": [
         {
           "value": "4/5",
@@ -427,18 +593,18 @@
     {
       "type": "range",
       "id": "grid_gap_desktop",
-      "label": "Space between articles (desktop)",
+      "label": "Gap articles (desktop)",
       "min": 0,
       "max": 64,
       "step": 4,
       "unit": "px",
       "default": 28,
-      "info": "Rows get one and a half times this space."
+      "info": "Between columns. Rows get one and a half times this space with Standard cards, and the same space with Overlay cards."
     },
     {
       "type": "range",
       "id": "grid_gap_mobile",
-      "label": "Space between articles (mobile)",
+      "label": "Gap articles (mobile)",
       "min": 0,
       "max": 40,
       "step": 2,
@@ -456,8 +622,8 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "default": 56,
-      "label": "Space between parts (desktop)",
+      "default": 64,
+      "label": "Gap parts (desktop)",
       "info": "Between the header, featured article, topics and articles."
     },
     {
@@ -467,8 +633,8 @@
       "max": 100,
       "step": 2,
       "unit": "px",
-      "default": 32,
-      "label": "Space between parts (mobile)"
+      "default": 40,
+      "label": "Gap parts (mobile)"
     },
     {
       "type": "header",

@@ -261,6 +261,36 @@ body {
   transform-origin: right;
 }
 
+/* Labels that can wrap onto several lines (e.g. article titles): .vt-link-label--wrap.
+   The underline is a background on the inline text, so it follows each line instead of
+   spanning the whole block under the last one. It slides in left to right across the
+   lines and leaves to the right, like the single-line underline above. */
+.vt-link-hover--underline .vt-link-label--wrap {
+  display: inline;
+  background-image: linear-gradient(var(--vt-link-hover-color, currentColor), var(--vt-link-hover-color, currentColor));
+  background-repeat: no-repeat;
+  background-position: 100% calc(100% - var(--vt-link-underline-offset));
+  background-size: 0% var(--vt-link-underline-thickness);
+  transition: background-size var(--vt-link-transition);
+}
+
+.vt-link-hover--underline .vt-link-label--wrap::after {
+  content: none;
+}
+
+.vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label--wrap {
+  background-position: 0 calc(100% - var(--vt-link-underline-offset));
+  background-size: 100% var(--vt-link-underline-thickness);
+}
+
+[dir='rtl'] .vt-link-hover--underline .vt-link-label--wrap {
+  background-position: 0 calc(100% - var(--vt-link-underline-offset));
+}
+
+[dir='rtl'] .vt-link-hover--underline .vt-link:is(:hover, :focus-visible) .vt-link-label--wrap {
+  background-position: 100% calc(100% - var(--vt-link-underline-offset));
+}
+
 /* The current page keeps its underline whichever effect is chosen */
 .vt-link:is([aria-current='page'], [aria-current='true']) .vt-link-label::after {
   transform: none;
@@ -1692,5 +1722,19 @@ textarea.vt-input {
 @media (prefers-reduced-motion: reduce) {
   :root {
     --vt-image-zoom-duration: 0s;
+  }
+}
+
+/* Content arriving after a tab is chosen: products in the products tab carousel,
+   articles after a blog topic. Each element sets --vt-offset, duration and delay. */
+@keyframes vt-tab-switch-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--vt-offset));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

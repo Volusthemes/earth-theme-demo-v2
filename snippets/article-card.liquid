@@ -1,7 +1,8 @@
 {%- doc -%}
   Renders one blog article as a card: image with its first tag as a badge, date,
-  title, excerpt and a "Read more" link. The featured style puts the date, title
-  and excerpt over the image instead, and the whole card is one link.
+  title, excerpt and a "Read more" link. The overlay style (the featured article,
+  or every card with Card style: Overlay) puts the date, title and excerpt over the
+  image instead; the whole card is one link and the excerpt opens on hover.
 
   The look is shared by every card in the theme: Theme settings > Blog cards
   (image ratio and radius, badge, title size, alignment, date, author, excerpt
@@ -37,13 +38,25 @@
     assign is_featured = true
   endif
 
+  # Overlay: the text sits on the image and the whole card is one link. The featured
+  # article always is; other cards are with Theme settings > Blog cards > Card style.
+  assign is_overlay = is_featured
+  if settings.blog_card_style == 'overlay'
+    assign is_overlay = true
+  endif
+
   assign heading_class = settings.blog_card_heading_size
   assign card_class = 'vt-article-card vt-article-card--' | append: settings.blog_card_text_alignment
   if is_featured
     assign heading_class = 'vt-heading-h2'
-    assign card_class = 'vt-article-card vt-article-card--featured'
-  elsif settings.blog_card_image_ratio == 'adapt'
-    assign card_class = card_class | append: ' vt-article-card--adapt'
+    assign card_class = 'vt-article-card vt-article-card--overlay vt-article-card--featured'
+  else
+    if is_overlay
+      assign card_class = card_class | append: ' vt-article-card--overlay'
+    endif
+    if settings.blog_card_image_ratio == 'adapt'
+      assign card_class = card_class | append: ' vt-article-card--adapt'
+    endif
   endif
 
   # Theme Store: every article shows its excerpt_or_content
@@ -52,7 +65,7 @@
 
 <article class="{{ card_class }}">
   <div class="vt-article-card__media">
-    {%- unless is_featured -%}
+    {%- unless is_overlay -%}
       <a class="vt-article-card__image-link" href="{{ article.url }}" tabindex="-1" aria-hidden="true">
     {%- endunless -%}
     {%- if article.image -%}
@@ -70,7 +83,7 @@
     {%- else -%}
       {{ 'image' | placeholder_svg_tag: 'vt-article-card__image vt-article-card__placeholder' }}
     {%- endif -%}
-    {%- unless is_featured -%}
+    {%- unless is_overlay -%}
       </a>
     {%- endunless -%}
 
@@ -96,12 +109,13 @@
 
     <{{ heading_tag }} class="vt-article-card__title vt-heading {{ heading_class }}">
       {%- comment -%}
-        Hover follows Theme settings > Typography > Link hover effect (.vt-link, .vt-link-label).
+        Hover follows Theme settings > Typography > Link hover effect (.vt-link, .vt-link-label);
+        --wrap keeps the underline under each line of a title that wraps.
         On the featured card this link covers the whole card (::after), so hovering
         anywhere on it plays the effect on the title.
       {%- endcomment -%}
       <a class="vt-article-card__link vt-link" href="{{ article.url }}">
-        <span class="vt-link-label">{{ article.title | escape }}</span>
+        <span class="vt-link-label vt-link-label--wrap">{{ article.title | escape }}</span>
       </a>
     </{{ heading_tag }}>
 
@@ -114,7 +128,7 @@
       </div>
     {%- endif -%}
 
-    {%- if settings.blog_card_show_read_more and is_featured == false -%}
+    {%- if settings.blog_card_show_read_more and is_overlay == false -%}
       <a class="vt-button vt-button--link vt-article-card__more" href="{{ article.url }}">
         <span class="vt-button-label">{{ 'blog.read_more' | t }}</span>
         <span class="vt-visually-hidden">{{ 'blog.read_more_about' | t: title: article.title }}</span>
@@ -226,6 +240,18 @@
     margin: 0;
   }
 
+  /* A long word wraps (with a hyphen where the language allows) instead of
+     running into the next card when the column is narrow */
+  .vt-article-card__title {
+    max-width: 100%;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+
+  .vt-article-card__title .vt-link-label {
+    max-width: 100%;
+  }
+
   .vt-article-card__meta {
     color: var(--vt-section-paragraph-color, var(--vt-color-primary));
   }
@@ -247,8 +273,8 @@
     margin-block-start: 0.75rem;
   }
 
-  /* ---- Featured: text over the image ------------------------------------- */
-  /* Its shape comes from the section (--vt-blog-featured-ratio*) */
+  /* ---- Overlay: text over the image (featured article, Card style: Overlay) - */
+  /* The featured shape comes from the section (--vt-blog-featured-ratio*) */
   .vt-article-card--featured .vt-article-card__media {
     aspect-ratio: var(--vt-blog-featured-ratio-mobile, 4 / 5);
   }
@@ -260,41 +286,54 @@
   }
 
   /* Dark fade under the text, so light text stays readable on any photo */
-  .vt-article-card--featured .vt-article-card__media::after {
+  .vt-article-card--overlay .vt-article-card__media::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to top, rgb(0 0 0 / 0.6) 0%, rgb(0 0 0 / 0.25) 35%, transparent 60%);
+    /* The palette's foreground color, deep at the bottom and gone by the middle */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--vt-foreground-color) 80%, transparent) 0%,
+      color-mix(in srgb, var(--vt-foreground-color) 35%, transparent) 40%,
+      transparent 70%
+    );
     pointer-events: none;
   }
 
-  .vt-article-card--featured .vt-article-card__content {
+  .vt-article-card--overlay .vt-article-card__content {
     position: absolute;
     z-index: 1;
     inset-inline: 0;
     inset-block-end: 0;
-    padding: clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1rem, 2.5vw, 1.75rem);
     color: var(--vt-background-color);
   }
 
-  .vt-article-card--featured .vt-article-card__meta,
-  .vt-article-card--featured .vt-article-card__title {
+  .vt-article-card--featured .vt-article-card__content {
+    padding: clamp(1.25rem, 3vw, 2rem);
+  }
+
+  .vt-article-card--overlay .vt-article-card__meta,
+  .vt-article-card--overlay .vt-article-card__title {
     color: inherit;
   }
 
-  .vt-article-card--featured .vt-article-card__excerpt {
+  .vt-article-card--overlay .vt-article-card__excerpt {
     max-width: 40rem;
+  }
+
+  .vt-article-card--featured .vt-article-card__excerpt {
     -webkit-line-clamp: 2;
   }
 
   /*
-    Desktop with a mouse: the featured excerpt opens on hover, and on keyboard
+    Desktop with a mouse: the overlay excerpt opens on hover, and on keyboard
     focus. Its row grows from 0fr to 1fr, so it opens to its real height and the
     title above moves up evenly. It stays in the page for screen readers and
     search engines. Touch screens and phones always show it.
   */
   @media screen and (min-width: 750px) and (hover: hover) {
-    .vt-article-card--featured .vt-article-card__excerpt-wrap {
+    .vt-article-card--overlay .vt-article-card__excerpt-wrap {
       --vt-reveal-ease: cubic-bezier(0.22, 1, 0.36, 1);
       display: grid;
       grid-template-rows: 0fr;
@@ -303,12 +342,12 @@
       transition: grid-template-rows 0.55s var(--vt-reveal-ease);
     }
 
-    .vt-article-card--featured .vt-article-card__excerpt-inner {
+    .vt-article-card--overlay .vt-article-card__excerpt-inner {
       min-height: 0;
       overflow: hidden;
     }
 
-    .vt-article-card--featured .vt-article-card__excerpt {
+    .vt-article-card--overlay .vt-article-card__excerpt {
       padding-block-start: 0.5rem;
       opacity: 0;
       transform: translateY(0.75rem);
@@ -317,38 +356,70 @@
         transform 0.55s var(--vt-reveal-ease);
     }
 
-    .vt-article-card--featured:is(:hover, :focus-within) .vt-article-card__excerpt-wrap {
+    .vt-article-card--overlay:is(:hover, :focus-within) .vt-article-card__excerpt-wrap {
       grid-template-rows: 1fr;
     }
 
     /* The text fades in once its row has started to open */
-    .vt-article-card--featured:is(:hover, :focus-within) .vt-article-card__excerpt {
+    .vt-article-card--overlay:is(:hover, :focus-within) .vt-article-card__excerpt {
       opacity: 1;
       transform: none;
       transition-delay: 0.08s;
     }
   }
 
-  /* The title link covers the whole featured card */
-  .vt-article-card--featured .vt-article-card__link::after {
+  /*
+    Narrow overlay cards (under 300px wide: two columns on a phone, three on a
+    tablet, four on a small laptop) keep the topic and the title on the image. The
+    date and excerpt stay in the page for screen readers and search engines (same
+    technique as .vt-visually-hidden), but aren't drawn. Measured on the card
+    itself, so it holds for any number of columns and any section.
+  */
+  .vt-article-card--overlay:not(.vt-article-card--featured) {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 300px) {
+    .vt-article-card--overlay :is(.vt-article-card__meta, .vt-article-card__excerpt-wrap) {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    .vt-article-card--overlay .vt-article-card__content {
+      padding: 0.75rem;
+    }
+
+    .vt-article-card--overlay .vt-article-card__title {
+      font-size: clamp(1rem, 8cqi, 1.375rem);
+      line-height: 1.25;
+    }
+  }
+
+  /* The title link covers the whole overlay card */
+  .vt-article-card--overlay .vt-article-card__link::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 1;
   }
 
-  .vt-article-card--featured .vt-article-card__link:focus-visible {
+  .vt-article-card--overlay .vt-article-card__link:focus-visible {
     outline: none;
   }
 
-  .vt-article-card--featured:has(.vt-article-card__link:focus-visible) {
+  .vt-article-card--overlay:has(.vt-article-card__link:focus-visible) {
     outline: 2px solid currentColor;
     outline-offset: 3px;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .vt-article-card--featured .vt-article-card__excerpt-wrap,
-    .vt-article-card--featured .vt-article-card__excerpt {
+    .vt-article-card--overlay .vt-article-card__excerpt-wrap,
+    .vt-article-card--overlay .vt-article-card__excerpt {
       transition: none;
     }
   }

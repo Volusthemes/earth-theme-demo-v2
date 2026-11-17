@@ -1,10 +1,4 @@
 {%- doc -%}
-  Renders accessible pagination: previous/next arrows and page numbers.
-  Pages far from the current page collapse into an ellipsis on mobile.
-
-  Every visual value is a --vt-pagination-* custom property with a
-  color palette fallback, so the snippet works on its own. The
-  `pagination` block sets those properties from merchant settings.
 
   @param {object} paginate - The paginate object
   @param {string} [id] - ID for the nav element (used by the block to scope its styles)
@@ -182,12 +176,9 @@
   </nav>
 {%- endif -%}
 
-{% stylesheet %}
-  /* All values come from --vt-pagination-* (set by the pagination block),
-     falling back to the color palette and sensible defaults. */
+{% stylesheet %}  
   .vt-pagination {
     --vt-pagination-transition: 0.25s ease-out;
-
     display: flex;
     justify-content: var(--vt-pagination-justify, center);
     padding-block: var(--vt-pagination-padding-block-start, 2rem) var(--vt-pagination-padding-block-end, 0);
@@ -219,8 +210,7 @@
   }
 
   .vt-pagination__link {
-    box-sizing: border-box;
-    /* min-width (not width) so 3-digit page numbers still fit */
+    box-sizing: border-box;    
     min-inline-size: max(1.5rem, var(--vt-pagination-size, 2.5rem));
     padding-inline: 0.25em;
     border: var(--vt-pagination-border-width, 0) solid
@@ -240,9 +230,6 @@
     user-select: none;
   }
 
-  /* Hover only on real pointers, so touch devices never keep a "stuck" hover.
-     Defaults: the palette's secondary color behind the foreground color; the
-     block's Hover background / Hover text settings replace them. */
   @media (hover: hover) {
     a.vt-pagination__link:hover {
       background-color: var(--vt-pagination-hover-bg, var(--vt-color-secondary, currentColor));
@@ -267,8 +254,7 @@
     opacity: 0.3;
     cursor: not-allowed;
   }
-
-  /* Previous / Next with text: a plain link next to the round page numbers */
+  
   .vt-pagination--labels .vt-pagination__link--arrow {
     gap: 0.375rem;
     padding-inline: 0.5rem;
@@ -276,8 +262,6 @@
     background-color: transparent;
   }
 
-  /* Hover: the text follows Theme settings > Typography > Link hover effect
-     (.vt-link / .vt-link-label in theme.css), like the other links */
   @media (hover: hover) {
     .vt-pagination--labels a.vt-pagination__link--arrow:hover {
       border-color: transparent;
@@ -285,8 +269,7 @@
       color: inherit;
     }
   }
-
-  /* With text the unavailable arrow is left out instead of shown faded */
+  
   .vt-pagination--labels .vt-pagination__item:has(> .vt-pagination__link--disabled) {
     display: none;
   }
@@ -296,8 +279,7 @@
     inline-size: var(--vt-pagination-icon-size, 0.875rem);
     block-size: var(--vt-pagination-icon-size, 0.875rem);
   }
-
-  /* Previous points left in LTR and right in RTL; next is the opposite */
+  
   .vt-pagination__icon--previous,
   [dir='rtl'] .vt-pagination__icon--next {
     transform: scaleX(-1);
@@ -333,8 +315,7 @@
       display: flex;
     }
   }
-
-  /* Windows high contrast: keep the current page distinguishable */
+  
   @media (forced-colors: active) {
     .vt-pagination__link--current {
       border: 2px solid CanvasText;

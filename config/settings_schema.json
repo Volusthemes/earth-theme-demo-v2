@@ -2425,6 +2425,23 @@
 				"content": "Article cards on the blog page and in other sections that list articles."
 			},
 			{
+				"type": "select",
+				"id": "blog_card_style",
+				"label": "Card style",
+				"options": [
+					{
+						"value": "standard",
+						"label": "Standard"
+					},
+					{
+						"value": "overlay",
+						"label": "Overlay"
+					}
+				],
+				"default": "standard",
+				"info": "Overlay puts the date, title and excerpt on the image. The excerpt opens on hover on desktop and always shows on phones."
+			},
+			{
 				"type": "header",
 				"content": "Image"
 			},
@@ -2572,7 +2589,9 @@
 				"type": "checkbox",
 				"id": "blog_card_show_read_more",
 				"label": "Show \"Read more\" link",
-				"default": true
+				"default": true,
+				"visible_if": "{{ settings.blog_card_style == 'standard' }}",
+				"info": "With Overlay the whole card is the link."
 			}
 		]
 	},
