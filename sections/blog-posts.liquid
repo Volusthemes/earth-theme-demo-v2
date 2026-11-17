@@ -1,0 +1,536 @@
+{% comment %}
+  Blog posts: a header (any blocks, e.g. a heading and a "View all" link) and a row
+  of article cards (snippets/article-card.liquid, styled in Theme settings > Blog cards).
+
+  Articles come from the blog picked in the settings. On an article page with no blog
+  picked, they come from that article's blog, without the article itself, and the ones
+  sharing a topic (tag) with it come first: related posts.
+
+  Columns are Tailwind grid classes per screen size. On phones the row can swipe
+  sideways instead (CSS scroll snap, no script).
+{% endcomment %}
+
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
+
+  assign source = section.settings.blog
+  if source == blank and blog
+    assign source = blog
+  endif
+
+  assign limit = section.settings.posts_count
+  assign current_id = article.id | default: 0
+
+  # Related first: articles sharing a tag with the article being read
+  assign picked_ids = ','
+  assign related_ids = ','
+  assign picked = 0
+  if section.settings.related_first and article and source
+    for post in source.articles
+      if picked >= limit
+        break
+      endif
+      if post.id == current_id
+        continue
+      endif
+      for tag in post.tags
+        if article.tags contains tag
+          assign picked_ids = picked_ids | append: post.id | append: ','
+          assign related_ids = related_ids | append: post.id | append: ','
+          assign picked = picked | plus: 1
+          break
+        endif
+      endfor
+    endfor
+  endif
+
+  # Then the newest others, up to the number to show
+  if source
+    for post in source.articles
+      if picked >= limit
+        break
+      endif
+      assign post_key = ',' | append: post.id | append: ','
+      if post.id == current_id or picked_ids contains post_key
+        continue
+      endif
+      assign picked_ids = picked_ids | append: post.id | append: ','
+      assign picked = picked | plus: 1
+    endfor
+  endif
+
+  assign columns_desktop = section.settings.columns_desktop | plus: 0
+  assign columns_tablet = section.settings.columns_tablet | plus: 0
+  assign grid_class = 'vt-blog-posts__grid grid grid-cols-1'
+  assign grid_class = grid_class | append: ' md:grid-cols-' | append: columns_tablet
+  assign grid_class = grid_class | append: ' lg:grid-cols-' | append: columns_desktop
+  if section.settings.swipe_mobile
+    assign grid_class = grid_class | append: ' vt-blog-posts__grid--swipe'
+  endif
+
+  assign sizes = '(min-width: 990px) calc((min(100vw, 1440px) - 4rem) / ' | append: columns_desktop | append: '), (min-width: 750px) calc((100vw - 3rem) / ' | append: columns_tablet | append: '), 80vw'
+-%}
+
+{%- if picked > 0 or request.design_mode -%}
+  {% render 'section-styles', section: section %}
+
+  <div class="vt-section vt-blog-posts" {{ section.shopify_attributes }}>
+    <div
+      class="{{ inner_classes }}"
+      style="--vt-blog-posts-gap: {% render 'fluid-clamp', min_px: section.settings.grid_gap_mobile, max_px: section.settings.grid_gap_desktop %};"
+    >
+      {%- if section.blocks.size > 0 -%}
+        <div class="vt-blog-posts__header flex flex-wrap items-center justify-between">
+          {% content_for 'blocks' %}
+        </div>
+      {%- endif -%}
+
+      {%- if picked > 0 -%}
+        <ul class="{{ grid_class }}" role="list">
+          {%- comment -%} Related articles first, then the newest others {%- endcomment -%}
+          {%- for pass in (1..2) -%}
+            {%- for post in source.articles -%}
+              {%- liquid
+                assign post_key = ',' | append: post.id | append: ','
+                assign show_post = false
+                if picked_ids contains post_key
+                  if pass == 1 and related_ids contains post_key
+                    assign show_post = true
+                  elsif pass == 2
+                    unless related_ids contains post_key
+                      assign show_post = true
+                    endunless
+                  endif
+                endif
+              -%}
+              {%- if show_post -%}
+                <li class="vt-blog-posts__item">
+                  {%- render 'article-card', article: post, heading_tag: 'h3', sizes: sizes -%}
+                </li>
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endfor -%}
+        </ul>
+      {%- else -%}
+        <p class="vt-blog-posts__empty vt-paragraph-medium">{{ 'blog.posts_empty' | t }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  .vt-blog-posts__header {
+    gap: 1rem 2rem;
+  }
+
+  .vt-blog-posts__grid {
+    gap: calc(var(--vt-blog-posts-gap) * 1.5) var(--vt-blog-posts-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-blog-posts__item {
+    display: flex;
+    min-width: 0;
+  }
+
+  /*
+    Phones: one row that swipes sideways, each card 80% wide so the next one peeks
+    in. Runs to the screen edges, and snaps to the start of a card.
+  */
+  @media screen and (max-width: 749.98px) {
+    .vt-blog-posts__grid--swipe {
+      display: flex;
+      gap: var(--vt-blog-posts-gap);
+      margin-inline: calc(var(--vt-section-padding-inline-start, 1.25rem) * -1) calc(var(--vt-section-padding-inline-end, 1.25rem) * -1);
+      padding-inline: var(--vt-section-padding-inline-start, 1.25rem) var(--vt-section-padding-inline-end, 1.25rem);
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--vt-section-padding-inline-start, 1.25rem);
+      scrollbar-width: none;
+    }
+
+    .vt-blog-posts__grid--swipe::-webkit-scrollbar {
+      display: none;
+    }
+
+    .vt-blog-posts__grid--swipe > .vt-blog-posts__item {
+      flex: 0 0 80%;
+      scroll-snap-align: start;
+    }
+  }
+
+  .vt-blog-posts__empty {
+    margin: 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "tag": "section",
+  "class": "section-blog-posts",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Leave empty on article pages to show more posts from the same blog."
+    },
+    {
+      "type": "range",
+      "id": "posts_count",
+      "label": "Number of posts",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "related_first",
+      "label": "Related posts first",
+      "default": true,
+      "info": "On an article page, posts with the same topic (tag) come first. The article itself is left out."
+    },
+    {
+      "type": "paragraph",
+      "content": "Card image, title, date and \"Read more\": [Theme settings > Blog cards](/editor?context=theme&category=blog%20cards)."
+    },
+    {
+      "type": "header",
+      "content": "Columns"
+    },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "columns_tablet",
+      "label": "Columns (tablet)",
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_mobile",
+      "label": "Swipe on mobile",
+      "default": true,
+      "info": "One row that swipes sideways instead of a list."
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Space between posts (desktop)",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Space between posts (mobile)",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Space under the header (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28,
+      "label": "Space under the header (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog posts",
+      "blocks": [
+        {
+          "type": "heading-group",
+          "settings": {
+            "direction": "horizontal",
+            "alignment": "left",
+            "vertical_alignment": "center",
+            "gap_desktop": 16,
+            "gap_mobile": 12,
+            "width": "fit",
+            "hide_icon_mobile": true
+          },
+          "blocks": [
+            {
+              "type": "icons",
+              "settings": {
+                "icon": "leaf",
+                "icon_size_desktop": 40,
+                "icon_size_mobile": 32,
+                "show_box": false,
+                "color_style": "secondary",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.1,
+                "animation_easing": "ease-out-sine"
+              }
+            },
+            {
+              "type": "heading",
+              "settings": {
+                "heading": "From the blog",
+                "heading_size": "vt-heading-h2",
+                "heading_tag": "h2",
+                "heading_alignment": "text-left",
+                "heading_width": "fit",
+                "animation_type": "slide",
+                "animation_direction": "from-bottom",
+                "animation_duration": 1.2,
+                "animation_delay": 0.2,
+                "animation_easing": "ease-out-sine"
+              }
+            }
+          ]
+        },
+        {
+          "type": "button",
+          "settings": {
+            "button_label": "View all articles",
+            "button_style": "link",
+            "animation_type": "slide",
+            "animation_direction": "from-bottom",
+            "animation_duration": 1.2,
+            "animation_delay": 0.3,
+            "animation_easing": "ease-out-sine"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

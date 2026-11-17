@@ -1,0 +1,126 @@
+{%- doc -%}
+  Share links for a page: Facebook, X and Pinterest. Plain links that open the
+  network's own share page in a new window, so no script is loaded.
+
+  Instagram has no share link for web pages, so it isn't offered.
+
+  @param {string} url - Absolute URL to share
+  @param {string} title - Title of the page (sent to X and Pinterest)
+  @param {object} [image] - Image for Pinterest (an image object)
+  @param {string} [class] - Extra classes for the wrapper, e.g. vt-share--column-desktop
+
+  @example
+  {% render 'share-buttons', url: request.origin | append: article.url, title: article.title, image: article.image %}
+{%- enddoc -%}
+
+{%- liquid
+  assign share_url = url | url_encode
+  assign share_title = title | url_encode
+  assign new_window = 'accessibility.new_window' | t
+-%}
+
+<div class="vt-share {{ class }}">
+  <p class="vt-share__label vt-paragraph-small" id="ShareLabel-{{ section.id }}">{{ 'blog.share' | t }}</p>
+  <ul class="vt-share__list" role="list" aria-labelledby="ShareLabel-{{ section.id }}">
+    <li>
+      <a
+        class="vt-share__link"
+        href="https://www.facebook.com/sharer/sharer.php?u={{ share_url }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="{{ 'blog.share_on' | t: network: 'Facebook' }} {{ new_window }}"
+      >
+        {%- render 'icons', icon: 'facebook' -%}
+      </a>
+    </li>
+    <li>
+      <a
+        class="vt-share__link"
+        href="https://x.com/intent/post?url={{ share_url }}&text={{ share_title }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="{{ 'blog.share_on' | t: network: 'X' }} {{ new_window }}"
+      >
+        {%- render 'icons', icon: 'twitter' -%}
+      </a>
+    </li>
+    <li>
+      <a
+        class="vt-share__link"
+        href="https://pinterest.com/pin/create/button/?url={{ share_url }}{% if image %}&media={{ image | image_url: width: 1200 | prepend: 'https:' | url_encode }}{% endif %}&description={{ share_title }}"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="{{ 'blog.share_on' | t: network: 'Pinterest' }} {{ new_window }}"
+      >
+        {%- render 'icons', icon: 'pinterest' -%}
+      </a>
+    </li>
+  </ul>
+</div>
+
+{% stylesheet %}
+  .vt-share {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .vt-share__label {
+    margin: 0;
+  }
+
+  .vt-share__list {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* 2.25rem tap area around a 1rem icon */
+  .vt-share__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    color: inherit;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+
+  .vt-share__link svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  @media (hover: hover) {
+    .vt-share__link:hover {
+      background-color: color-mix(in srgb, currentColor 10%, transparent);
+    }
+  }
+
+  .vt-share__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  /* Column on desktop (beside an article): label above, icons stacked */
+  @media screen and (min-width: 990px) {
+    .vt-share--column-desktop,
+    .vt-share--column-desktop .vt-share__list {
+      flex-direction: column;
+    }
+
+    .vt-share--column-desktop {
+      gap: 0.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-share__link {
+      transition: none;
+    }
+  }
+{% endstylesheet %}

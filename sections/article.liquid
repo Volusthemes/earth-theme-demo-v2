@@ -6,71 +6,978 @@
   https://shopify.dev/docs/storefronts/themes/architecture/templates/article
 {% endcomment %}
 
-{% if article.image %}
-  {{ article.image | image_url: width: 1000 | image_tag }}
-{% endif %}
+{%- liquid
+  assign inner_classes = 'vt-section__inner'
+  if section.settings.make_section_page_width
+    assign inner_classes = inner_classes | append: ' vt-page-width'
+  endif
 
-<h1>{{ article.title }}</h1>
+  assign show_comments = false
+  if blog.comments_enabled?
+    assign show_comments = true
+  endif
 
-{% assign date = article.published_at | time_tag: format: 'date' %}
-<p>{{ 'blog.article_metadata_html' | t: date: date, author: article.author }}</p>
+  assign body_class = 'vt-article__body'
+  if section.settings.show_share
+    assign body_class = body_class | append: ' vt-article__body--share'
+  endif
+  if section.settings.lead_paragraph
+    assign body_class = body_class | append: ' vt-article__body--lead'
+  endif
 
-{{ article.content }}
+  # The image is usually the largest thing on screen when the page opens
+  assign image_priority = 'auto'
+  if section.index <= 2
+    assign image_priority = 'high'
+  endif
 
-{% if blog.comments_enabled? %}
-  <h2>{{ 'blog.article_comments' | t }}</h2>
+  assign form_id = 'CommentForm-' | append: section.id
+-%}
 
-  <div id="comments">
-    {% paginate article.comments by 10 %}
-      {% for comment in article.comments %}
-        <div>
-          <p>{{ comment.author }}</p>
-          <p>
-            {{- comment.created_at | time_tag: format: 'date' -}}
-          </p>
-          <p>{{ comment.content }}</p>
+{% render 'section-styles', section: section %}
+
+<div class="vt-section vt-article" {{ section.shopify_attributes }}>
+  <div
+    class="{{ inner_classes }}"
+    style="
+      --vt-article-width: {{ section.settings.content_width | divided_by: 16.0 }}rem;
+      --vt-article-image-ratio: {{ section.settings.image_ratio }};
+    "
+  >
+    <article class="vt-article__article">
+      <header class="vt-article__header">
+        {%- if section.settings.show_breadcrumbs -%}
+          {% content_for 'block', type: 'breadcrumbs', id: 'article-breadcrumbs' %}
+        {%- endif -%}
+        <div class="vt-article__heading flex flex-col md:flex-row md:items-end md:justify-between">
+          <h1 class="vt-article__title vt-heading vt-heading-h2">{{ article.title | escape }}</h1>
+
+          {%- if section.settings.show_date or section.settings.show_author -%}
+            <p class="vt-article__meta vt-paragraph-small flex flex-wrap items-center">
+              {%- if section.settings.show_date -%}
+                <span class="vt-article__meta-item flex items-center">
+                  <span class="vt-article__meta-icon" aria-hidden="true">{% render 'icons', icon: 'calendar' %}</span>
+                  {{ article.published_at | time_tag: format: 'date' }}
+                </span>
+              {%- endif -%}
+              {%- if section.settings.show_author and article.author != blank -%}
+                <span class="vt-article__meta-item">{{ 'blog.by_author' | t: author: article.author }}</span>
+              {%- endif -%}
+            </p>
+          {%- endif -%}
         </div>
-      {% endfor %}
+      </header>
 
-      {%- comment -%} The next page of comments opens at the comments (#comments) {%- endcomment -%}
-      {%- assign vt_pagination_label = 'blog.comments_pagination_label' | t -%}
-      {% content_for 'block',
-        type: '_pagination',
-        id: 'vt-pagination',
-        paginate: paginate,
-        aria_label: vt_pagination_label,
-        anchor: 'comments'
-      %}
-    {% endpaginate %}
+      {%- if section.settings.show_image and article.image -%}
+        <div class="vt-article__media">
+          {{
+            article.image
+            | image_url: width: 2400
+            | image_tag:
+              widths: '375, 550, 750, 1000, 1300, 1600, 2000, 2400',
+              sizes: '(min-width: 1440px) 1372px, calc(100vw - 2.5rem)',
+              loading: 'eager',
+              fetchpriority: image_priority,
+              class: 'vt-article__image',
+              alt: article.image.alt
+          }}
+        </div>
+      {%- elsif section.settings.show_image and request.design_mode -%}
+        {%- comment -%}
+          Theme editor only: the article has no image. The store shows nothing here,
+          so the title runs straight into the text.
+        {%- endcomment -%}
+        {%- assign article_admin_url = '/admin/articles/' | append: article.id -%}
+        <div class="vt-article__media vt-article__media--placeholder">
+          {{ 'image' | placeholder_svg_tag: 'vt-article__placeholder' }}
+          <p class="vt-article__placeholder-note vt-paragraph-small">
+            {{ 'blog.image_missing_editor_html' | t: url: article_admin_url }}
+          </p>
+        </div>
+      {%- endif -%}
+
+      <div class="{{ body_class }}">
+        {%- if section.settings.show_share -%}
+          <div class="vt-article__share">
+            {%- assign share_url = request.origin | append: article.url -%}
+            {% render 'share-buttons',
+              url: share_url,
+              title: article.title,
+              image: article.image,
+              class: 'vt-share--column-desktop'
+            %}
+          </div>
+        {%- endif -%}
+
+        <div class="vt-article__content vt-rte">
+          {{ article.content }}
+        </div>
+
+        <footer class="vt-article__footer">
+          {%- if section.settings.show_tags and article.tags.size > 0 or section.settings.show_comment_count and show_comments -%}
+            <div class="vt-article__info flex flex-wrap items-center justify-between">
+              {%- if section.settings.show_tags and article.tags.size > 0 -%}
+                <div class="vt-article__tags flex flex-wrap items-center">
+                  <span class="vt-article__tags-label vt-paragraph-medium">{{ 'blog.tags' | t }}</span>
+                  <ul class="vt-article__tag-list flex flex-wrap" role="list">
+                    {%- for tag in article.tags -%}
+                      <li>
+                        <a class="vt-badge vt-badge--width-fit vt-paragraph-small vt-article__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">
+                          {{- tag | escape -}}
+                        </a>
+                      </li>
+                    {%- endfor -%}
+                  </ul>
+                </div>
+              {%- endif -%}
+
+              {%- if section.settings.show_comment_count and show_comments -%}
+                <a class="vt-article__comment-count vt-paragraph-small flex items-center" href="#Comments-{{ section.id }}">
+                  <span class="vt-article__meta-icon" aria-hidden="true">{% render 'icons', icon: 'comment' %}</span>
+                  {{ 'blog.comments_count' | t: count: article.comments_count }}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if section.settings.show_prev_next and blog.previous_article or section.settings.show_prev_next and blog.next_article -%}
+            <nav class="vt-article__nav" aria-label="{{ 'blog.article_nav_label' | t }}">
+              {%- if blog.previous_article -%}
+                <a class="vt-article__nav-link vt-article__nav-link--previous vt-link" href="{{ blog.previous_article.url }}" rel="prev">
+                  <span class="vt-article__nav-label vt-paragraph-small flex items-center">
+                    <span class="vt-article__nav-icon vt-article__nav-icon--previous" aria-hidden="true">{% render 'icons', icon: 'dropdown' %}</span>
+                    {{ 'blog.previous_post' | t }}
+                  </span>
+                  <span class="vt-article__nav-title vt-heading vt-heading-h6">
+                    <span class="vt-link-label vt-link-label--wrap">{{ blog.previous_article.title | escape }}</span>
+                  </span>
+                </a>
+              {%- endif -%}
+              {%- if blog.next_article -%}
+                <a class="vt-article__nav-link vt-article__nav-link--next vt-link" href="{{ blog.next_article.url }}" rel="next">
+                  <span class="vt-article__nav-label vt-paragraph-small flex items-center">
+                    {{ 'blog.next_post' | t }}
+                    <span class="vt-article__nav-icon vt-article__nav-icon--next" aria-hidden="true">{% render 'icons', icon: 'dropdown' %}</span>
+                  </span>
+                  <span class="vt-article__nav-title vt-heading vt-heading-h6">
+                    <span class="vt-link-label vt-link-label--wrap">{{ blog.next_article.title | escape }}</span>
+                  </span>
+                </a>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        </footer>
+
+        {%- if show_comments -%}
+          <div class="vt-article__comments" id="Comments-{{ section.id }}">
+            {%- if article.comments_count > 0 -%}
+              <h2 class="vt-article__comments-title vt-heading vt-heading-h5">
+                {{ 'blog.article_comments' | t }} ({{ article.comments_count }})
+              </h2>
+              {%- comment -%} The anchor keeps the next page of comments in view {%- endcomment -%}
+              <div id="comments">
+                {%- paginate article.comments by 10 -%}
+                  <ol class="vt-article__comment-list" role="list">
+                    {%- for comment in article.comments -%}
+                      <li class="vt-article__comment">
+                        <p class="vt-article__comment-meta vt-paragraph-small">
+                          <strong>{{ comment.author | escape }}</strong>
+                          · {{ comment.created_at | time_tag: format: 'date' }}
+                        </p>
+                        <div class="vt-rte vt-paragraph-medium">{{ comment.content }}</div>
+                      </li>
+                    {%- endfor -%}
+                  </ol>
+
+                  {%- assign vt_pagination_label = 'blog.comments_pagination_label' | t -%}
+                  {% content_for 'block',
+                    type: '_pagination',
+                    id: 'vt-pagination',
+                    paginate: paginate,
+                    aria_label: vt_pagination_label,
+                    anchor: 'comments'
+                  %}
+                {%- endpaginate -%}
+              </div>
+            {%- endif -%}
+
+            <div class="vt-article__comment-box">
+              {%- form 'new_comment', article, id: form_id, class: 'vt-article__comment-form' -%}
+                <h2 class="vt-article__form-title vt-heading vt-heading-h4">{{ 'blog.comment_form_title' | t }}</h2>
+                {%- if blog.moderated? -%}
+                  <p class="vt-article__form-note vt-paragraph-small">{{ 'blog.comment_moderated' | t }}</p>
+                {%- endif -%}
+
+                {%- if form.posted_successfully? -%}
+                  <p class="vt-article__message vt-article__message--success" role="status" tabindex="-1" autofocus>
+                    {%- if blog.moderated? -%}
+                      {{ 'blog.comment_posted_moderated' | t }}
+                    {%- else -%}
+                      {{ 'blog.comment_posted' | t }}
+                    {%- endif -%}
+                  </p>
+                {%- elsif form.errors -%}
+                  <div class="vt-article__message vt-article__message--error" id="{{ form_id }}-errors" role="alert" tabindex="-1" autofocus>
+                    <p>{{ 'blog.comment_error' | t }}</p>
+                    {{ form.errors | default_errors }}
+                  </div>
+                {%- endif -%}
+
+                <div class="vt-article__fields">
+                  <div class="vt-field vt-field--hidden">
+                    <label class="vt-visually-hidden" for="{{ form_id }}-author">{{ 'blog.comment_form_name' | t }}</label>
+                    <input
+                      class="vt-input"
+                      type="text"
+                      id="{{ form_id }}-author"
+                      name="comment[author]"
+                      value="{{ form.author }}"
+                      autocomplete="name"
+                      placeholder="{{ 'blog.comment_form_name' | t }}"
+                      required
+                      {% if form.errors contains 'author' %}
+                        aria-invalid="true" aria-describedby="{{ form_id }}-errors"
+                      {% endif %}
+                    >
+                  </div>
+                  <div class="vt-field vt-field--hidden">
+                    <label class="vt-visually-hidden" for="{{ form_id }}-email">{{ 'blog.comment_form_email' | t }}</label>
+                    <input
+                      class="vt-input"
+                      type="email"
+                      id="{{ form_id }}-email"
+                      name="comment[email]"
+                      value="{{ form.email }}"
+                      autocomplete="email"
+                      autocapitalize="off"
+                      spellcheck="false"
+                      placeholder="{{ 'blog.comment_form_email' | t }}"
+                      required
+                      {% if form.errors contains 'email' %}
+                        aria-invalid="true" aria-describedby="{{ form_id }}-errors"
+                      {% endif %}
+                    >
+                  </div>
+                  <div class="vt-field vt-field--hidden vt-article__field--full">
+                    <label class="vt-visually-hidden" for="{{ form_id }}-body">{{ 'blog.comment_form_body' | t }}</label>
+                    <textarea
+                      class="vt-input"
+                      id="{{ form_id }}-body"
+                      name="comment[body]"
+                      rows="4"
+                      placeholder="{{ 'blog.comment_form_body' | t }}"
+                      required
+                      {% if form.errors contains 'body' %}
+                        aria-invalid="true" aria-describedby="{{ form_id }}-errors"
+                      {% endif %}
+                    >
+                      {{- form.body -}}
+                    </textarea>
+                  </div>
+                </div>
+
+                <div>
+                  <button type="submit" class="vt-button vt-button--primary{% if settings.buttons_hover_effect == 'standard' %} vt-button--hover-standard{% endif %}">
+                    <span class="vt-button-label">{{ 'blog.comment_form_submit' | t }}</span>
+                  </button>
+                </div>
+
+                {%- if section.settings.comment_note != blank -%}
+                  <div class="vt-article__form-note vt-paragraph-small">{{ section.settings.comment_note }}</div>
+                {%- endif -%}
+              {%- endform -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </article>
   </div>
+</div>
 
-  {% form 'new_comment', article %}
-    <h2>{{ 'blog.comment_form_title' | t }}</h2>
+{% stylesheet %}
+  .vt-article__article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--vt-section-gap, 2.5rem);
+  }
 
-    {{ form.errors | default_errors }}
+  /* ---- Header ------------------------------------------------------------- */
+  .vt-article__header {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
 
-    <div>
-      <label for="author">{{ 'blog.comment_form_name' | t }}</label>
-      <input type="text" name="comment[author]" id="author" value="{{ form.author }}" required>
-    </div>
+  .vt-article__heading {
+    gap: 0.75rem 2rem;
+  }
 
-    <div>
-      <label for="email">{{ 'blog.comment_form_email' | t }}</label>
-      <input type="email" name="comment[email]" id="email" value="{{ form.email }}" required>
-    </div>
+  .vt-article__title {
+    margin: 0;
+  }
 
-    <div>
-      <label for="body">{{ 'blog.comment_form_body' | t }}</label>
-      <textarea name="comment[body]" id="body" required>{{ form.body }}</textarea>
-    </div>
+  .vt-article__meta {
+    flex: none;
+    gap: 0.25rem 0.625rem;
+    margin: 0;
+  }
 
-    <input type="submit" value="{{ 'blog.comment_form_submit' | t }}">
-  {% endform %}
-{% endif %}
+  .vt-article__meta-item {
+    gap: 0.375rem;
+  }
+
+  .vt-article__meta-item + .vt-article__meta-item::before {
+    content: '•';
+    margin-inline-end: 0.625rem;
+  }
+
+  .vt-article__meta-icon {
+    display: inline-flex;
+    flex: none;
+  }
+
+  .vt-article__meta-icon svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /* ---- Image -------------------------------------------------------------- */
+  .vt-article__media {
+    overflow: hidden;
+    aspect-ratio: var(--vt-article-image-ratio, 16 / 9);
+    background-color: color-mix(in srgb, currentColor 6%, transparent);
+  }
+
+  /* Theme editor only: where the image goes when the article has none */
+  .vt-article__media--placeholder {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .vt-article__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    fill: color-mix(in srgb, currentColor 30%, transparent);
+  }
+
+  .vt-article__placeholder-note {
+    position: relative;
+    max-width: 28rem;
+    margin: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--vt-background-color);
+    text-align: center;
+  }
+
+  .vt-article__placeholder-note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .vt-article__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ---- Body: content column, share links beside it on desktop ----------- */
+  .vt-article__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'content'
+      'share'
+      'footer'
+      'comments';
+    row-gap: 2.5rem;
+    width: 100%;
+    max-width: var(--vt-article-width, 50rem);
+    margin-inline: auto;
+  }
+
+  .vt-article__share {
+    grid-area: share;
+  }
+
+  .vt-article__content {
+    grid-area: content;
+  }
+
+  .vt-article__footer {
+    grid-area: footer;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .vt-article__comments {
+    grid-area: comments;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* Desktop: the share links take a narrow column on the left and stay in view
+     beside the text (sticky inside their column, which spans the whole body) */
+  @media screen and (min-width: 990px) {
+    .vt-article__body--share {
+      grid-template-columns: 4rem minmax(0, 1fr) 4rem;
+      grid-template-areas:
+        'share content .'
+        'share footer .'
+        'share comments .';
+      max-width: calc(var(--vt-article-width, 50rem) + 8rem);
+    }
+
+    .vt-article__share {
+      justify-self: start;
+    }
+
+    .vt-article__share > * {
+      position: sticky;
+      top: calc(var(--vt-header-offset, 0px) + 2rem);
+      transition: top 350ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+  }
+
+  /* Larger first paragraph (Content > Larger first paragraph) */
+  .vt-article__body--lead .vt-article__content > p:first-child {
+    color: var(--vt-section-color, var(--vt-foreground-color));
+    font-family: var(--vt-font-family-heading);
+    font-size: var(--vt-font-heading-5-size);
+    font-weight: var(--vt-font-heading-weight);
+    line-height: var(--vt-font-heading-5-line-height);
+  }
+
+  /* ---- Footer: tags, comment count, previous and next ------------------- */
+  .vt-article__info {
+    gap: 1rem;
+    padding-block-end: 1.5rem;
+    border-block-end: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+  }
+
+  .vt-article__tags {
+    gap: 0.75rem;
+  }
+
+  .vt-article__tags-label {
+    color: var(--vt-section-color, var(--vt-foreground-color));
+    font-weight: 600;
+  }
+
+  .vt-article__tag-list {
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-article__tag {
+    --vt-badge-radius: 3.125rem;
+    --vt-badge-border-width: 1px;
+    --vt-badge-border-color: currentColor;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+  }
+
+  @media (hover: hover) {
+    .vt-article__tag:hover {
+      --vt-badge-bg: var(--vt-color-secondary);
+    }
+  }
+
+  .vt-article__comment-count {
+    gap: 0.375rem;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .vt-article__comment-count:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .vt-article__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .vt-article__nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    max-width: 48%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .vt-article__nav-link--next {
+    align-items: flex-end;
+    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  .vt-article__nav-label {
+    gap: 0.375rem;
+  }
+
+  .vt-article__nav-title {
+    margin: 0;
+  }
+
+  .vt-article__nav-icon {
+    display: inline-flex;
+    width: 0.625rem;
+  }
+
+  .vt-article__nav-icon svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .vt-article__nav-icon--previous {
+    rotate: 90deg;
+  }
+
+  .vt-article__nav-icon--next {
+    rotate: -90deg;
+  }
+
+  [dir='rtl'] .vt-article__nav-icon--previous {
+    rotate: -90deg;
+  }
+
+  [dir='rtl'] .vt-article__nav-icon--next {
+    rotate: 90deg;
+  }
+
+  /* Phones: only the labels, the titles are too long for two columns */
+  @media screen and (max-width: 749.98px) {
+    .vt-article__nav-title {
+      display: none;
+    }
+  }
+
+  /* ---- Comments ----------------------------------------------------------- */
+  .vt-article__comments-title {
+    margin: 0;
+  }
+
+  .vt-article__comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .vt-article__comment {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-block-end: 1.5rem;
+    border-block-end: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+  }
+
+  .vt-article__comment-meta {
+    margin: 0;
+  }
+
+  .vt-article__comment-box {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid currentColor;
+  }
+
+  .vt-article__comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .vt-article__form-title,
+  .vt-article__form-note,
+  .vt-article__form-note p {
+    margin: 0;
+  }
+
+  .vt-article__form-title + .vt-article__form-note {
+    margin-block-start: -0.75rem;
+  }
+
+  .vt-article__form-note a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .vt-article__fields {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
+
+  @media screen and (min-width: 750px) {
+    .vt-article__fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .vt-article__field--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .vt-article__message {
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-inline-start: 3px solid currentColor;
+    background-color: color-mix(in srgb, currentColor 6%, transparent);
+  }
+
+  .vt-article__message:focus {
+    outline: none;
+  }
+
+  .vt-article__message--error {
+    border-color: var(--vt-color-red);
+  }
+
+  .vt-article__message p,
+  .vt-article__message ul {
+    margin: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vt-article__share > *,
+    .vt-article__tag {
+      transition: none;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.article",
-  "settings": []
+  "tag": "section",
+  "class": "section-article",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_breadcrumbs",
+      "label": "Show breadcrumbs",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_image",
+      "label": "Show the article's image",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image shape",
+      "options": [
+        {
+          "value": "16/9",
+          "label": "Wide (16:9)"
+        },
+        {
+          "value": "21/9",
+          "label": "Ultra wide (21:9)"
+        },
+        {
+          "value": "3/2",
+          "label": "Landscape (3:2)"
+        },
+        {
+          "value": "4/3",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "16/9",
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Text width",
+      "min": 560,
+      "max": 960,
+      "step": 20,
+      "unit": "px",
+      "default": 800,
+      "info": "A narrower column is easier to read."
+    },
+    {
+      "type": "checkbox",
+      "id": "lead_paragraph",
+      "label": "Larger first paragraph",
+      "default": true,
+      "info": "Shows the article's opening paragraph as an introduction."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share",
+      "label": "Show share links",
+      "default": true,
+      "info": "Facebook, X and Pinterest. Beside the text on desktop, after it on phones."
+    },
+    {
+      "type": "header",
+      "content": "After the article"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_comment_count",
+      "label": "Show number of comments",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_prev_next",
+      "label": "Show previous and next post",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Comments"
+    },
+    {
+      "type": "paragraph",
+      "content": "Comments show when the blog allows them: [Online Store > Blog posts > Manage blogs](/admin/blogs)."
+    },
+    {
+      "type": "richtext",
+      "id": "comment_note",
+      "label": "Note under the comment form",
+      "info": "For example a privacy or spam protection notice. Leave empty to hide."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40,
+      "label": "Space between parts (desktop)",
+      "info": "Between the header, the image and the article."
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 28,
+      "label": "Space between parts (mobile)"
+    },
+    {
+      "type": "header",
+      "content": "Color"
+    },
+    {
+      "type": "select",
+      "id": "color_style",
+      "label": "Color style",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        }
+      ],
+      "default": "default",
+      "info": "Primary is a dark section with light text. Empty colors below follow this style."
+    },
+    {
+      "type": "select",
+      "id": "background_style",
+      "label": "Background",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid"
+        },
+        {
+          "value": "gradient",
+          "label": "Gradient"
+        }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Leave empty to use the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'solid' }}"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background gradient",
+      "info": "Leave empty to use colors from the color palette.",
+      "visible_if": "{{ section.settings.background_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph",
+      "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 40,
+      "label": "Top (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 110,
+      "label": "Bottom (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Left (desktop)"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 34,
+      "label": "Right (desktop)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_mobile_padding",
+      "default": true,
+      "label": "Custom for mobile"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "label": "Top (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 80,
+      "label": "Bottom (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Left (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20,
+      "label": "Right (mobile)",
+      "visible_if": "{{ section.settings.enable_custom_mobile_padding }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "make_section_page_width",
+      "default": true,
+      "label": "Apply max width"
+    }
+  ]
 }
 {% endschema %}

@@ -11,7 +11,8 @@
     recycle, honest-progress, location-map, mail, telephone-call, facebook,
     instagram, twitter, youtube, tiktok, pinterest, linkedin, threads, snapchat,
     arrow-down-right, orders-tracking, message, shipping-delivery,
-    returns-exchange, payment-account, products-care, let-talk, clock.
+    returns-exchange, payment-account, products-care, let-talk, clock,
+    calendar, comment.
 
   Usage:
   {% render 'icons', icon: block.settings.icon %}
@@ -395,4 +396,8 @@
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" aria-hidden="true" focusable="false">
       <path d="M30 16C30 8.26742 23.7326 2 16 2C8.26742 2 2 8.26742 2 16C2 23.7326 8.26742 30 16 30C23.7326 30 30 23.7326 30 16ZM14.4512 9.26465C14.4512 8.71236 14.8989 8.26465 15.4512 8.26465C16.0035 8.26465 16.4512 8.71236 16.4512 9.26465V16.5557L22.0771 19.9131C22.5513 20.1961 22.7067 20.8099 22.4238 21.2842C22.141 21.7583 21.527 21.9134 21.0527 21.6309L14.9385 17.9834C14.6363 17.803 14.4513 17.4769 14.4512 17.125V9.26465ZM32 16C32 24.8372 24.8372 32 16 32C7.16285 32 0 24.8372 0 16C0 7.16285 7.16285 0 16 0C24.8372 0 32 7.16285 32 16Z" fill="currentColor"/>
     </svg>
-{%- endcase -%}
+  {%- when 'calendar' -%}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 17.2 17.67" aria-hidden="true" focusable="false"><rect x=".6" y="2.48" width="16" height="14.59" rx="1.88" ry="1.88" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/><path d="M4.84,.6v3.76M12.36,.6v3.76M.6,7.19H16.6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"/></svg>
+  {%- when 'comment' -%}
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 15 15.88" aria-hidden="true" focusable="false"><path d="M.5,2.69C.5,1.48,1.48,.5,2.69,.5H12.31c1.21,0,2.19,.98,2.19,2.19v7c0,1.21-.98,2.19-2.19,2.19H6.62l-3.94,3.5v-3.5c-1.21,0-2.19-.98-2.19-2.19V2.69Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/><path d="M4,4.44h7m-7,3.06h4.38" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  {%- endcase -%}

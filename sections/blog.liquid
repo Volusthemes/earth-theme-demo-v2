@@ -1,16 +1,6 @@
 {% comment %}
+
   Blog page (templates/blog.json): every article of one blog, newest first.
-
-  - Header: breadcrumbs (static block), the blog's title and an optional intro.
-  - Featured article: the newest article, large, on the first page only and not
-    while a topic is selected. It isn't repeated in the grid. On desktop its
-    excerpt slides in on hover; phones and touch screens always show it.
-  - Topics: links to the blog's tags (/blogs/<blog>/tagged/<tag>). Shopify filters
-    the articles; the current topic is marked with aria-current.
-  - Grid: article cards (snippets/article-card.liquid, styled in Theme settings >
-    Blog cards) in Tailwind grid columns set per screen size, then the shared
-    pagination block, styled like the collection pages.
-
   Theme Store: shows blog.title, and each article's title (full, linked), image
   and excerpt_or_content; the articles are paginated.
 
@@ -42,12 +32,13 @@
   # Without a featured article on topic pages, a topic opens at the topics row
   # (#BlogTopics-…), so the row doesn't jump up when the large article above it
   # goes away. With one, the layout stays the same and the page opens at the top.
+
   assign topic_anchor = ''
   unless section.settings.show_featured and section.settings.featured_on_topics
     assign topic_anchor = '#BlogTopics-' | append: section.id
   endunless
 
-  # Columns: Tailwind grid classes per screen size (assets/tailwind.css)
+  # Columns: Tailwind grid classes per screen size 
   assign columns_desktop = section.settings.columns_desktop | plus: 0
   assign columns_tablet = section.settings.columns_tablet | plus: 0
   assign columns_mobile = section.settings.columns_mobile | plus: 0
