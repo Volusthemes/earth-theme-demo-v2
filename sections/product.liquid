@@ -14,7 +14,11 @@
 <div class="product-info">
   <h1>{{ product.title }}</h1>
   <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
+  {%- comment -%}
+    The description is rich text with its own paragraphs, lists and headings, so it
+    sits in a div (not a p) and takes the shared rich text styles (.vt-rte in theme.css)
+  {%- endcomment -%}
+  <div class="vt-rte">{{ product.description }}</div>
 </div>
 
 <div class="product-form">

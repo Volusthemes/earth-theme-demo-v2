@@ -25,7 +25,8 @@
     {%- endif -%}
 
     {%- if page.content != blank -%}
-      <div class="vt-page-section__content">
+      {%- comment -%} Rich text styles shared with articles and descriptions: .vt-rte in theme.css {%- endcomment -%}
+      <div class="vt-page-section__content vt-rte">
         {{ page.content }}
       </div>
     {%- endif -%}

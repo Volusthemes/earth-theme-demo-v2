@@ -62,6 +62,16 @@
     endfor
   endif
 
+  # Entrance: the cards slide or fade in one after another (snippets/animate.liquid),
+  # off in the first section of a page and in editor preview thumbnails
+  assign anim_class = ''
+  unless section.settings.animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
+    assign anim_class = ' vt-animate vt-animate--' | append: section.settings.animation_type
+    if section.settings.animation_type == 'slide'
+      assign anim_class = anim_class | append: ' vt-animate--dir-from-bottom'
+    endif
+  endunless
+
   assign columns_desktop = section.settings.columns_desktop | plus: 0
   assign columns_tablet = section.settings.columns_tablet | plus: 0
   assign grid_class = 'vt-blog-posts__grid grid grid-cols-1'
@@ -89,6 +99,7 @@
       {%- endif -%}
 
       {%- if picked > 0 -%}
+        {%- assign shown = 0 -%}
         <ul class="{{ grid_class }}" role="list">
           {%- comment -%} Related articles first, then the newest others {%- endcomment -%}
           {%- for pass in (1..2) -%}
@@ -107,9 +118,11 @@
                 endif
               -%}
               {%- if show_post -%}
-                <li class="vt-blog-posts__item">
+                {%- assign card_delay = shown | times: 0.1 | at_most: 0.5 -%}
+                <li class="vt-blog-posts__item{{ anim_class }}" style="--vt-delay: {{ card_delay }}s;">
                   {%- render 'article-card', article: post, heading_tag: 'h3', sizes: sizes -%}
                 </li>
+                {%- assign shown = shown | plus: 1 -%}
               {%- endif -%}
             {%- endfor -%}
           {%- endfor -%}
@@ -280,6 +293,27 @@
       "step": 2,
       "unit": "px",
       "default": 16
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Post entrance",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide",
+          "label": "Slide up"
+        }
+      ],
+      "default": "slide",
+      "info": "The posts appear one after another as they're scrolled to. Uses Theme settings > Animations."
     },
     {
       "type": "header",
@@ -529,7 +563,10 @@
             "animation_easing": "ease-out-sine"
           }
         }
-      ]
+      ],
+      "settings": {
+        "animation_type": "slide"
+      }
     }
   ]
 }

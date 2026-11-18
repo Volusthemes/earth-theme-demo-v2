@@ -36,6 +36,18 @@
   
   assign form_id = 'CommentForm-' | append: section.id
 
+  # Entrance: the title, date, the parts after the article and the comments slide or
+  # fade in (snippets/animate.liquid). Not the image (it's the page's largest element,
+  # which would be painted late) and not the text (a long article is mostly off screen,
+  # so it would never count as shown). Off in the first section of a page.
+  assign anim_class = ''
+  unless section.settings.animation_type == 'none' or request.visual_preview_mode or section.index == 1 and section.location == 'template'
+    assign anim_class = ' vt-animate vt-animate--' | append: section.settings.animation_type
+    if section.settings.animation_type == 'slide'
+      assign anim_class = anim_class | append: ' vt-animate--dir-from-bottom'
+    endif
+  endunless
+
   # Each part decided on its own: Liquid reads and/or right to left with no
   # precedence, so they aren't combined in one condition
   assign show_tag_list = false
@@ -70,10 +82,10 @@
           {% content_for 'block', type: 'breadcrumbs', id: 'article-breadcrumbs' %}
         {%- endif -%}
         <div class="vt-article__heading flex flex-col">
-          <h1 class="vt-article__title vt-heading vt-heading-h2">{{ article.title | escape }}</h1>
+          <h1 class="vt-article__title vt-heading vt-heading-h2{{ anim_class }}" style="--vt-delay: 0.2s;">{{ article.title | escape }}</h1>
 
           {%- if section.settings.show_date or section.settings.show_author -%}
-            <p class="vt-article__meta vt-paragraph-small flex flex-wrap items-center">
+            <p class="vt-article__meta vt-paragraph-small flex flex-wrap items-center{{ anim_class }}" style="--vt-delay: 0.3s;">
               {%- if section.settings.show_date -%}
                 <span class="vt-article__meta-item flex items-center">
                   <span class="vt-article__meta-icon" aria-hidden="true">{% render 'icons', icon: 'calendar' %}</span>
@@ -138,7 +150,7 @@
 
         <footer class="vt-article__footer">
           {%- if show_tag_list or show_count -%}
-            <div class="vt-article__info flex flex-wrap items-center justify-between">
+            <div class="vt-article__info flex flex-wrap items-center justify-between{{ anim_class }}">
               {%- if show_tag_list -%}
                 <div class="vt-article__tags flex flex-wrap items-center">
                   <span class="vt-article__tags-label vt-paragraph-medium">{{ 'blog.tags' | t }}</span>
@@ -164,7 +176,7 @@
           {%- endif -%}
 
           {%- if show_nav -%}
-            <nav class="vt-article__nav" aria-label="{{ 'blog.article_nav_label' | t }}">
+            <nav class="vt-article__nav{{ anim_class }}" style="--vt-delay: 0.15s;" aria-label="{{ 'blog.article_nav_label' | t }}">
               {%- if blog.previous_article -%}
                 <a class="vt-article__nav-link vt-article__nav-link--previous vt-link" href="{{ blog.previous_article.url }}" rel="prev">
                   <span class="vt-article__nav-label vt-paragraph-small flex items-center">
@@ -194,11 +206,11 @@
         {%- if show_comments -%}
           <div class="vt-article__comments" id="Comments-{{ section.id }}">
             {%- if article.comments_count > 0 -%}
-              <h2 class="vt-article__comments-title vt-heading vt-heading-h5">
+              <h2 class="vt-article__comments-title vt-heading vt-heading-h5{{ anim_class }}">
                 {{ 'blog.article_comments' | t }} ({{ article.comments_count }})
               </h2>
               {%- comment -%} The anchor keeps the next page of comments in view {%- endcomment -%}
-              <div id="comments">
+              <div id="comments" class="{{ anim_class }}" style="--vt-delay: 0.1s;">
                 {%- paginate article.comments by 10 -%}
                   <ol class="vt-article__comment-list" role="list">
                     {%- for comment in article.comments -%}
@@ -224,7 +236,7 @@
               </div>
             {%- endif -%}
 
-            <div class="vt-article__comment-box">
+            <div class="vt-article__comment-box{{ anim_class }}">
               {%- form 'new_comment', article, id: form_id, class: 'vt-article__comment-form' -%}
                 <h2 class="vt-article__form-title vt-heading vt-heading-h4">{{ 'blog.comment_form_title' | t }}</h2>
                 {%- if blog.moderated? -%}
@@ -518,13 +530,27 @@
     --vt-badge-border-width: 1px;
     --vt-badge-border-color: currentColor;
     text-decoration: none;
-    transition: background-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease;
   }
 
+  /* Hover and keyboard focus: the palette's foreground behind the background color */
   @media (hover: hover) {
     .vt-article__tag:hover {
-      --vt-badge-bg: var(--vt-color-secondary);
+      --vt-badge-bg: var(--vt-foreground-color);
+      --vt-badge-color: var(--vt-background-color);
+      --vt-badge-border-color: var(--vt-foreground-color);
     }
+  }
+
+  .vt-article__tag:focus-visible {
+    --vt-badge-bg: var(--vt-foreground-color);
+    --vt-badge-color: var(--vt-background-color);
+    --vt-badge-border-color: var(--vt-foreground-color);
+    outline: 2px solid var(--vt-foreground-color);
+    outline-offset: 2px;
   }
 
   .vt-article__comment-count {
@@ -855,6 +881,31 @@
       "id": "comment_note",
       "label": "Note under the comment form",
       "info": "For example a privacy or spam protection notice. Leave empty to hide."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_type",
+      "label": "Entrance",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide",
+          "label": "Slide up"
+        }
+      ],
+      "default": "slide",
+      "info": "The title, date, tags, previous and next post and the comments appear as they're scrolled to. The image and the article text show right away. Uses Theme settings > Animations."
     },
     {
       "type": "header",
