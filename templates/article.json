@@ -12,7 +12,6 @@
         "main": {
             "type": "article",
             "settings": {
-                "color_style": "default",
                 "background_style": "solid",
                 "background_color": "{{ settings.color_palette.background }}",
                 "heading_color": "{{ settings.color_palette.foreground }}",
@@ -34,6 +33,11 @@
                 "show_comment_count": true,
                 "show_prev_next": true,
                 "comment_note": "<p>This site is protected by hCaptcha and the hCaptcha <a href=\"https://www.hcaptcha.com/privacy\" title=\"hCaptcha Privacy Policy\">Privacy Policy</a> and <a href=\"https://www.hcaptcha.com/terms\" title=\"hCaptcha Terms of Service\">Terms of Service</a> apply.</p>",
+                "comment_box_border_width": 1,
+                "comment_box_padding_block_desktop": 32,
+                "comment_box_padding_inline_desktop": 32,
+                "comment_box_padding_block_mobile": 20,
+                "comment_box_padding_inline_mobile": 20,
                 "gap": 40,
                 "gap_mobile": 28,
                 "padding_top_desktop": 40,
@@ -42,7 +46,8 @@
                 "padding_bottom_mobile": 0,
                 "show_excerpt_intro": true,
                 "image_width": "column",
-                "animation_type": "slide"
+                "animation_type": "slide",
+                "share_style": "sticky"
             },
             "blocks": {
                 "article-breadcrumbs": {
@@ -116,7 +121,6 @@
         "related_posts_section": {
             "type": "blog-posts",
             "settings": {
-                "color_style": "default",
                 "background_style": "solid",
                 "background_color": "{{ settings.color_palette.background }}",
                 "heading_color": "{{ settings.color_palette.foreground }}",
@@ -131,11 +135,11 @@
                 "related_first": true,
                 "columns_desktop": "3",
                 "columns_tablet": "2",
-                "swipe_mobile": true,
+                "swipe_on": "mobile_tablet",
                 "grid_gap_desktop": 28,
                 "grid_gap_mobile": 16,
-                "gap": 40,
-                "gap_mobile": 28,
+                "gap": 64,
+                "gap_mobile": 40,
                 "padding_top_desktop": 110,
                 "padding_bottom_desktop": 110,
                 "padding_top_mobile": 80,

@@ -1403,9 +1403,10 @@ body {
    Tracks come from snippets/grid-tracks.liquid; gaps come from Tailwind gap
    classes. Breakpoints mirror Tailwind's md: (768px) and lg: (1024px), so any
    two layouts with the same widths and gaps line up. */
+   
 .vt-grid-tracks {
   display: grid;
-  grid-template-columns: var(--vt-grid-mobile, 1fr);
+  grid-template-columns: var(--vt-grid-mobile, 1fr);  
 }
 
 /* Long words or wide media must not stretch a column past its share */
@@ -1770,6 +1771,9 @@ textarea.vt-input {
   margin-block-start: 0;
 }
 
+/* Two steps down from the theme's heading sizes, so every heading in the text stays
+   smaller than the page title (Heading 2): h1 Heading 3, h2 Heading 4, h3 Heading 5,
+   h4 to h6 Heading 6. Use h2 or h3 for section headings in an article. */
 .vt-rte h1 {
   font-size: var(--vt-font-heading-3-size);
   line-height: var(--vt-font-heading-3-line-height);
@@ -1780,20 +1784,16 @@ textarea.vt-input {
   line-height: var(--vt-font-heading-4-line-height);
 }
 
-/* h3 and h4 share a size: article editors often use h4 for section headings */
-.vt-rte :is(h3, h4) {
+.vt-rte h3 {
   font-size: var(--vt-font-heading-5-size);
   line-height: var(--vt-font-heading-5-line-height);
 }
 
-.vt-rte :is(h5, h6) {
+.vt-rte :is(h4, h5, h6) {
   font-size: var(--vt-font-heading-6-size, var(--vt-font-large-size));
   line-height: var(--vt-font-heading-6-line-height, 1.3);
 }
 
-/* Lists keep their markers: Tailwind's base reset (tailwind.css) removes them from
-   every ul and ol, and text written in the editor needs them back. This rule isn't
-   in a layer, so it wins over that reset. */
 .vt-rte :is(ul, ol) {
   padding-inline-start: 1.5em;
 }

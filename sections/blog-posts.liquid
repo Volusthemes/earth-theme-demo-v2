@@ -6,8 +6,8 @@
   picked, they come from that article's blog, without the article itself, and the ones
   sharing a topic (tag) with it come first: related posts.
 
-  Columns are Tailwind grid classes per screen size. On phones the row can swipe
-  sideways instead (CSS scroll snap, no script).
+  Columns are Tailwind grid classes per screen size. On phones, or on phones and
+  tablets, the row can swipe sideways instead (CSS scroll snap, no script).
 {% endcomment %}
 
 {%- liquid
@@ -77,9 +77,12 @@
   assign grid_class = 'vt-blog-posts__grid grid grid-cols-1'
   assign grid_class = grid_class | append: ' md:grid-cols-' | append: columns_tablet
   assign grid_class = grid_class | append: ' lg:grid-cols-' | append: columns_desktop
-  if section.settings.swipe_mobile
-    assign grid_class = grid_class | append: ' vt-blog-posts__grid--swipe'
-  endif
+  case section.settings.swipe_on
+    when 'mobile'
+      assign grid_class = grid_class | append: ' vt-blog-posts__grid--swipe vt-blog-posts__grid--swipe-mobile-only'
+    when 'mobile_tablet'
+      assign grid_class = grid_class | append: ' vt-blog-posts__grid--swipe'
+  endcase
 
   assign sizes = '(min-width: 990px) calc((min(100vw, 1440px) - 4rem) / ' | append: columns_desktop | append: '), (min-width: 750px) calc((100vw - 3rem) / ' | append: columns_tablet | append: '), 80vw'
 -%}
@@ -90,7 +93,7 @@
   <div class="vt-section vt-blog-posts" {{ section.shopify_attributes }}>
     <div
       class="{{ inner_classes }}"
-      style="--vt-blog-posts-gap: {% render 'fluid-clamp', min_px: section.settings.grid_gap_mobile, max_px: section.settings.grid_gap_desktop %};"
+      style="--vt-blog-posts-gap: {% render 'fluid-clamp', min_px: section.settings.grid_gap_mobile, max_px: section.settings.grid_gap_desktop %}; --vt-blog-posts-columns-tablet: {{ columns_tablet }};"
     >
       {%- if section.blocks.size > 0 -%}
         <div class="vt-blog-posts__header flex flex-wrap items-center justify-between">
@@ -152,10 +155,11 @@
   }
 
   /*
-    Phones: one row that swipes sideways, each card 80% wide so the next one peeks
-    in. Runs to the screen edges, and snaps to the start of a card.
+    Swipe: one row that scrolls sideways, runs to the screen edges and snaps to the
+    start of a card. The next card peeks in so it's clear there's more.
+    Tablets show "Columns (tablet)" cards plus a peek; phones show one card at 80%.
   */
-  @media screen and (max-width: 749.98px) {
+  @media screen and (max-width: 989.98px) {
     .vt-blog-posts__grid--swipe {
       display: flex;
       gap: var(--vt-blog-posts-gap);
@@ -173,8 +177,26 @@
     }
 
     .vt-blog-posts__grid--swipe > .vt-blog-posts__item {
-      flex: 0 0 80%;
+      flex: 0 0 calc((100% - var(--vt-blog-posts-gap) * (var(--vt-blog-posts-columns-tablet, 2) - 1)) / (var(--vt-blog-posts-columns-tablet, 2) + 0.3));
       scroll-snap-align: start;
+    }
+  }
+
+  @media screen and (max-width: 749.98px) {
+    .vt-blog-posts__grid--swipe > .vt-blog-posts__item {
+      flex-basis: 80%;
+    }
+  }
+
+  /* "Mobile" only: tablets keep the grid */
+  @media screen and (min-width: 750px) {
+    .vt-blog-posts__grid--swipe-mobile-only {
+      display: grid;
+      gap: calc(var(--vt-blog-posts-gap) * 1.5) var(--vt-blog-posts-gap);
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow-x: visible;
+      scroll-snap-type: none;
     }
   }
 
@@ -268,11 +290,25 @@
       "default": "2"
     },
     {
-      "type": "checkbox",
-      "id": "swipe_mobile",
-      "label": "Swipe on mobile",
-      "default": true,
-      "info": "One row that swipes sideways instead of a list."
+      "type": "select",
+      "id": "swipe_on",
+      "label": "Swipe",
+      "options": [
+        {
+          "value": "off",
+          "label": "Off"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile"
+        },
+        {
+          "value": "mobile_tablet",
+          "label": "Mobile and tablet"
+        }
+      ],
+      "default": "mobile_tablet",
+      "info": "One row that swipes sideways instead of a grid."
     },
     {
       "type": "range",
@@ -342,23 +378,6 @@
     {
       "type": "header",
       "content": "Color"
-    },
-    {
-      "type": "select",
-      "id": "color_style",
-      "label": "Color style",
-      "options": [
-        {
-          "value": "default",
-          "label": "Default"
-        },
-        {
-          "value": "primary",
-          "label": "Primary"
-        }
-      ],
-      "default": "default",
-      "info": "Primary is a dark section with light text. Empty colors below follow this style."
     },
     {
       "type": "select",

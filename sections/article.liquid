@@ -18,8 +18,12 @@
   endif
 
   assign body_class = 'vt-article__body'
-  if section.settings.show_share
+  # Share links: Normal is a row after the text (on every screen); Sticky is a column
+  # beside the text on desktop that stays in view while reading
+  assign share_class = ''
+  if section.settings.show_share and section.settings.share_style == 'sticky'
     assign body_class = body_class | append: ' vt-article__body--share'
+    assign share_class = 'vt-share--column-desktop'
   endif
   # Introduction: the article's excerpt, set larger above the text. Styling inside
   # the content itself is left to the article editor
@@ -27,7 +31,7 @@
   if section.settings.show_excerpt_intro and article.excerpt != blank
     assign lead_text = article.excerpt | strip_html | strip
   endif
-
+  
   # The image is usually the largest thing on screen when the page opens
   assign image_priority = 'auto'
   if section.index <= 2
@@ -136,7 +140,7 @@
               url: share_url,
               title: article.title,
               image: article.image,
-              class: 'vt-share--column-desktop'
+              class: share_class
             %}
           </div>
         {%- endif -%}
@@ -215,11 +219,11 @@
                   <ol class="vt-article__comment-list" role="list">
                     {%- for comment in article.comments -%}
                       <li class="vt-article__comment">
-                        <p class="vt-article__comment-meta vt-paragraph-small">
-                          <strong>{{ comment.author | escape }}</strong>
-                          · {{ comment.created_at | time_tag: format: 'date' }}
+                        <div class="vt-article__comment-body vt-rte vt-paragraph-medium">{{ comment.content }}</div>
+                        <p class="vt-article__comment-meta vt-paragraph-small flex flex-wrap items-center">
+                          <span class="vt-article__comment-meta-item">{{ comment.author | escape }}</span>
+                          <span class="vt-article__comment-meta-item">{{ comment.created_at | time_tag: format: 'date' }}</span>
                         </p>
-                        <div class="vt-rte vt-paragraph-medium">{{ comment.content }}</div>
                       </li>
                     {%- endfor -%}
                   </ol>
@@ -236,7 +240,17 @@
               </div>
             {%- endif -%}
 
-            <div class="vt-article__comment-box{{ anim_class }}">
+            {%- liquid
+              # Border color: empty (or fully transparent in the editor) follows the text color
+              assign box_border_color = section.settings.comment_box_border_color | append: '' | strip
+              if box_border_color == '' or section.settings.comment_box_border_color.alpha == 0
+                assign box_border_color = 'currentColor'
+              endif
+            -%}
+            <div
+              class="vt-article__comment-box{{ anim_class }}"
+              style="--vt-comment-box-border-width: {{ section.settings.comment_box_border_width }}px; --vt-comment-box-border-color: {{ box_border_color }}; --vt-comment-box-padding-block: {% render 'fluid-clamp', min_px: section.settings.comment_box_padding_block_mobile, max_px: section.settings.comment_box_padding_block_desktop %}; --vt-comment-box-padding-inline: {% render 'fluid-clamp', min_px: section.settings.comment_box_padding_inline_mobile, max_px: section.settings.comment_box_padding_inline_desktop %};"
+            >
               {%- form 'new_comment', article, id: form_id, class: 'vt-article__comment-form' -%}
                 <h2 class="vt-article__form-title vt-heading vt-heading-h4">{{ 'blog.comment_form_title' | t }}</h2>
                 {%- if blog.moderated? -%}
@@ -441,7 +455,7 @@
       'share'
       'footer'
       'comments';
-    row-gap: 2.5rem;
+    row-gap: 4rem;
     width: 100%;
     max-width: var(--vt-article-width, 50rem);
     margin-inline: auto;
@@ -481,11 +495,11 @@
       max-width: calc(var(--vt-article-width, 50rem) + 8rem);
     }
 
-    .vt-article__share {
+    .vt-article__body--share .vt-article__share {
       justify-self: start;
     }
 
-    .vt-article__share > * {
+    .vt-article__body--share .vt-article__share > * {
       position: sticky;
       top: calc(var(--vt-header-offset, 0px) + 2rem);
       transition: top 350ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -647,27 +661,45 @@
   .vt-article__comment-list {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1.25rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  /* Each comment in a softly tinted panel (the same 6% tint as the image placeholder),
+     text first, then the name and date in a quieter line */
   .vt-article__comment {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    padding-block-end: 1.5rem;
-    border-block-end: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+    gap: 0.75rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    background-color: color-mix(in srgb, currentColor 6%, transparent);
+  }
+
+  .vt-article__comment-body > :first-child {
+    margin-block-start: 0;
+  }
+
+  .vt-article__comment-body > :last-child {
+    margin-block-end: 0;
   }
 
   .vt-article__comment-meta {
+    gap: 0.25rem 0.625rem;
     margin: 0;
+    color: color-mix(in srgb, currentColor 60%, transparent);
   }
 
+  .vt-article__comment-meta-item + .vt-article__comment-meta-item::before {
+    content: '•';
+    margin-inline-end: 0.625rem;
+  }
+
+  /* Border and padding come from the section settings (Comment form) */
   .vt-article__comment-box {
-    padding: clamp(1.25rem, 3vw, 2rem);
-    border: 1px solid currentColor;
+    padding: var(--vt-comment-box-padding-block, 2rem) var(--vt-comment-box-padding-inline, 2rem);
+    border: var(--vt-comment-box-border-width, 1px) solid var(--vt-comment-box-border-color, currentColor);
   }
 
   .vt-article__comment-form {
@@ -844,7 +876,25 @@
       "id": "show_share",
       "label": "Show share links",
       "default": true,
-      "info": "Facebook, X and Pinterest. Beside the text on desktop, after it on phones."
+      "info": "Facebook, X and Pinterest."
+    },
+    {
+      "type": "select",
+      "id": "share_style",
+      "label": "Share style",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "sticky",
+          "label": "Sticky"
+        }
+      ],
+      "default": "normal",
+      "info": "Normal: a row after the text, above the tags. Sticky: a column beside the text on desktop that stays in view while reading. Phones always show the row.",
+      "visible_if": "{{ section.settings.show_share }}"
     },
     {
       "type": "header",
@@ -884,6 +934,67 @@
     },
     {
       "type": "header",
+      "content": "Comment form"
+    },
+    {
+      "type": "range",
+      "id": "comment_box_border_width",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1,
+      "info": "Set to 0 to hide the border."
+    },
+    {
+      "type": "color",
+      "id": "comment_box_border_color",
+      "label": "Border color",
+      "info": "Leave empty to use the text color."
+    },
+    {
+      "type": "range",
+      "id": "comment_box_padding_block_desktop",
+      "label": "Top and bottom padding (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "comment_box_padding_inline_desktop",
+      "label": "Left and right padding (desktop)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "comment_box_padding_block_mobile",
+      "label": "Top and bottom padding (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "comment_box_padding_inline_mobile",
+      "label": "Left and right padding (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
       "content": "Animation"
     },
     {
@@ -919,7 +1030,7 @@
       "step": 2,
       "unit": "px",
       "default": 40,
-      "label": "Space between parts (desktop)",
+      "label": "Gap parts (desktop)",
       "info": "Between the header, the image and the article."
     },
     {
@@ -930,28 +1041,11 @@
       "step": 2,
       "unit": "px",
       "default": 28,
-      "label": "Space between parts (mobile)"
+      "label": "Gap parts (mobile)"
     },
     {
       "type": "header",
       "content": "Color"
-    },
-    {
-      "type": "select",
-      "id": "color_style",
-      "label": "Color style",
-      "options": [
-        {
-          "value": "default",
-          "label": "Default"
-        },
-        {
-          "value": "primary",
-          "label": "Primary"
-        }
-      ],
-      "default": "default",
-      "info": "Primary is a dark section with light text. Empty colors below follow this style."
     },
     {
       "type": "select",

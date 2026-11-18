@@ -140,7 +140,6 @@
                 "padding_left_mobile": 20,
                 "padding_right_mobile": 20,
                 "make_section_page_width": true,
-                "color_style": "default",
                 "background_color": "{{ settings.color_palette.background }}",
                 "heading_color": "{{ settings.color_palette.foreground }}",
                 "paragraph_color": "{{ settings.color_palette.primary }}"
@@ -580,7 +579,6 @@
                 "padding_left_mobile": 20,
                 "padding_right_mobile": 20,
                 "make_section_page_width": true,
-                "color_style": "default",
                 "background_color": "{{ settings.color_palette.background }}",
                 "heading_color": "{{ settings.color_palette.foreground }}",
                 "paragraph_color": "{{ settings.color_palette.primary }}"

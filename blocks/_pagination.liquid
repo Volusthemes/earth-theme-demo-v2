@@ -82,11 +82,6 @@
     endfor
   -%}
 
-  {%- comment -%}
-    Sizes and spacing are written once as mobile -> desktop fluid values,
-    so no breakpoint media queries are needed. Colors are always output: the
-    picked color or the palette default (vt_color_css above).
-  {%- endcomment -%}
   {%- style -%}
     #{{ vt_id }} {
       --vt-pagination-justify: {{ vt_s.alignment }};

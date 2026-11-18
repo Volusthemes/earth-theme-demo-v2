@@ -16,16 +16,12 @@
 {% enddoc %}
 
 {%- liquid
-  # Empty colors follow the color palette and the section's color style
+  # Empty colors follow the color palette
   assign badge_color = block.settings.text_color | default: 'currentColor'
   # Not currentColor: on the active badge that would be its own (light) text color
   assign active_bg = block.settings.active_background | default: 'var(--vt-section-color, var(--vt-foreground-color))'
   # Like the badge "Dark" style: section text color behind accent text
-  assign active_text_default = 'var(--vt-color-accent)'
-  if section.settings.color_style == 'primary'
-    assign active_text_default = 'var(--vt-color-primary)'
-  endif
-  assign active_color = block.settings.active_text_color | default: active_text_default
+  assign active_color = block.settings.active_text_color | default: 'var(--vt-color-accent)'
 
   assign badge_classes = 'vt-badge vt-timeline-badges__link vt-badge--width-fit ' | append: block.settings.badge_size
   if block.settings.show_border

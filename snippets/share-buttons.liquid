@@ -87,7 +87,9 @@
     height: 2.25rem;
     color: inherit;
     border-radius: 50%;
-    transition: background-color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .vt-share__link svg {
@@ -95,14 +97,19 @@
     height: 1rem;
   }
 
+  /* Hover swaps the colors, like the article tags and the boxed social icons:
+     foreground fill, icon in the background color */
   @media (hover: hover) {
     .vt-share__link:hover {
-      background-color: color-mix(in srgb, currentColor 10%, transparent);
+      color: var(--vt-background-color);
+      background-color: var(--vt-foreground-color);
     }
   }
 
   .vt-share__link:focus-visible {
-    outline: 2px solid currentColor;
+    color: var(--vt-background-color);
+    background-color: var(--vt-foreground-color);
+    outline: 2px solid var(--vt-foreground-color);
     outline-offset: 2px;
   }
 
