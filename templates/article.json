@@ -28,8 +28,7 @@
                 "show_author": true,
                 "show_image": true,
                 "image_ratio": "16/9",
-                "content_width": 800,
-                "lead_paragraph": true,
+                "content_width": 780,
                 "show_share": true,
                 "show_tags": true,
                 "show_comment_count": true,
@@ -40,7 +39,9 @@
                 "padding_top_desktop": 40,
                 "padding_bottom_desktop": 80,
                 "padding_top_mobile": 20,
-                "padding_bottom_mobile": 56
+                "padding_bottom_mobile": 56,
+                "show_excerpt_intro": true,
+                "image_width": "column"
             },
             "blocks": {
                 "article-breadcrumbs": {

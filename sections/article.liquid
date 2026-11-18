@@ -21,17 +21,37 @@
   if section.settings.show_share
     assign body_class = body_class | append: ' vt-article__body--share'
   endif
-  if section.settings.lead_paragraph
-    assign body_class = body_class | append: ' vt-article__body--lead'
+  # Introduction: the article's excerpt, set larger above the text. Styling inside
+  # the content itself is left to the article editor
+  assign lead_text = ''
+  if section.settings.show_excerpt_intro and article.excerpt != blank
+    assign lead_text = article.excerpt | strip_html | strip
   endif
 
   # The image is usually the largest thing on screen when the page opens
   assign image_priority = 'auto'
   if section.index <= 2
     assign image_priority = 'high'
-  endif
-
+  endif  
+  
   assign form_id = 'CommentForm-' | append: section.id
+
+  # Each part decided on its own: Liquid reads and/or right to left with no
+  # precedence, so they aren't combined in one condition
+  assign show_tag_list = false
+  if section.settings.show_tags and article.tags.size > 0
+    assign show_tag_list = true
+  endif
+  assign show_count = false
+  if section.settings.show_comment_count and show_comments
+    assign show_count = true
+  endif
+  assign show_nav = false
+  if section.settings.show_prev_next
+    if blog.previous_article or blog.next_article
+      assign show_nav = true
+    endif
+  endif
 -%}
 
 {% render 'section-styles', section: section %}
@@ -49,7 +69,7 @@
         {%- if section.settings.show_breadcrumbs -%}
           {% content_for 'block', type: 'breadcrumbs', id: 'article-breadcrumbs' %}
         {%- endif -%}
-        <div class="vt-article__heading flex flex-col md:flex-row md:items-end md:justify-between">
+        <div class="vt-article__heading flex flex-col">
           <h1 class="vt-article__title vt-heading vt-heading-h2">{{ article.title | escape }}</h1>
 
           {%- if section.settings.show_date or section.settings.show_author -%}
@@ -69,7 +89,7 @@
       </header>
 
       {%- if section.settings.show_image and article.image -%}
-        <div class="vt-article__media">
+        <div class="vt-article__media vt-article__media--{{ section.settings.image_width }}">
           {{
             article.image
             | image_url: width: 2400
@@ -88,7 +108,7 @@
           so the title runs straight into the text.
         {%- endcomment -%}
         {%- assign article_admin_url = '/admin/articles/' | append: article.id -%}
-        <div class="vt-article__media vt-article__media--placeholder">
+        <div class="vt-article__media vt-article__media--{{ section.settings.image_width }} vt-article__media--placeholder">
           {{ 'image' | placeholder_svg_tag: 'vt-article__placeholder' }}
           <p class="vt-article__placeholder-note vt-paragraph-small">
             {{ 'blog.image_missing_editor_html' | t: url: article_admin_url }}
@@ -110,19 +130,22 @@
         {%- endif -%}
 
         <div class="vt-article__content vt-rte">
+          {%- if lead_text != blank -%}
+            <p class="vt-article__lead">{{ lead_text | escape }}</p>
+          {%- endif -%}
           {{ article.content }}
         </div>
 
         <footer class="vt-article__footer">
-          {%- if section.settings.show_tags and article.tags.size > 0 or section.settings.show_comment_count and show_comments -%}
+          {%- if show_tag_list or show_count -%}
             <div class="vt-article__info flex flex-wrap items-center justify-between">
-              {%- if section.settings.show_tags and article.tags.size > 0 -%}
+              {%- if show_tag_list -%}
                 <div class="vt-article__tags flex flex-wrap items-center">
                   <span class="vt-article__tags-label vt-paragraph-medium">{{ 'blog.tags' | t }}</span>
                   <ul class="vt-article__tag-list flex flex-wrap" role="list">
                     {%- for tag in article.tags -%}
                       <li>
-                        <a class="vt-badge vt-badge--width-fit vt-paragraph-small vt-article__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">
+                        <a class="vt-badge vt-badge--width-fit vt-paragraph-extra-small vt-article__tag" href="{{ blog.url }}/tagged/{{ tag | handle }}">
                           {{- tag | escape -}}
                         </a>
                       </li>
@@ -131,7 +154,7 @@
                 </div>
               {%- endif -%}
 
-              {%- if section.settings.show_comment_count and show_comments -%}
+              {%- if show_count -%}
                 <a class="vt-article__comment-count vt-paragraph-small flex items-center" href="#Comments-{{ section.id }}">
                   <span class="vt-article__meta-icon" aria-hidden="true">{% render 'icons', icon: 'comment' %}</span>
                   {{ 'blog.comments_count' | t: count: article.comments_count }}
@@ -140,7 +163,7 @@
             </div>
           {%- endif -%}
 
-          {%- if section.settings.show_prev_next and blog.previous_article or section.settings.show_prev_next and blog.next_article -%}
+          {%- if show_nav -%}
             <nav class="vt-article__nav" aria-label="{{ 'blog.article_nav_label' | t }}">
               {%- if blog.previous_article -%}
                 <a class="vt-article__nav-link vt-article__nav-link--previous vt-link" href="{{ blog.previous_article.url }}" rel="prev">
@@ -302,14 +325,18 @@
   }
 
   /* ---- Header ------------------------------------------------------------- */
+  /* The header lines up with the text column below it */
   .vt-article__header {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    width: 100%;
+    max-width: var(--vt-article-width, 50rem);
+    margin-inline: auto;
   }
 
   .vt-article__heading {
-    gap: 0.75rem 2rem;
+    gap: 1rem;
   }
 
   .vt-article__title {
@@ -342,7 +369,9 @@
   }
 
   /* ---- Image -------------------------------------------------------------- */
+  /* Image width: Wide fills the page width; Text column lines up with the text */
   .vt-article__media {
+    width: 100%;
     overflow: hidden;
     aspect-ratio: var(--vt-article-image-ratio, 16 / 9);
     background-color: color-mix(in srgb, currentColor 6%, transparent);
@@ -377,6 +406,11 @@
     color: inherit;
     text-decoration: underline;
     text-underline-offset: 0.2em;
+  }
+
+  .vt-article__media--column {
+    max-width: var(--vt-article-width, 50rem);
+    margin-inline: auto;
   }
 
   .vt-article__image {
@@ -446,8 +480,9 @@
     }
   }
 
-  /* Larger first paragraph (Content > Larger first paragraph) */
-  .vt-article__body--lead .vt-article__content > p:first-child {
+  /* Introduction (Content > Show excerpt as introduction): the excerpt above the
+     text, in the heading font at Heading 5 size */
+  .vt-article__lead {
     color: var(--vt-section-color, var(--vt-foreground-color));
     font-family: var(--vt-font-family-heading);
     font-size: var(--vt-font-heading-5-size);
@@ -568,6 +603,19 @@
   /* ---- Comments ----------------------------------------------------------- */
   .vt-article__comments-title {
     margin: 0;
+  }
+
+  /* "3 comments" and the comment pages (#comments) land here, clear of the sticky header */
+  .vt-article__comments,
+  .vt-article__comments #comments {
+    scroll-margin-block-start: calc(var(--vt-header-height, 0px) + 1.5rem);
+  }
+
+  /* The page glides down to the comments instead of jumping (article pages only) */
+  @media (prefers-reduced-motion: no-preference) {
+    html:has(.vt-article__comment-count) {
+      scroll-behavior: smooth;
+    }
   }
 
   .vt-article__comment-list {
@@ -702,6 +750,24 @@
     },
     {
       "type": "select",
+      "id": "image_width",
+      "label": "Image width",
+      "options": [
+        {
+          "value": "wide",
+          "label": "Wide"
+        },
+        {
+          "value": "column",
+          "label": "Text column"
+        }
+      ],
+      "default": "column",
+      "info": "Wide fills the page width. Text column lines up with the text and the title.",
+      "visible_if": "{{ section.settings.show_image }}"
+    },
+    {
+      "type": "select",
       "id": "image_ratio",
       "label": "Image shape",
       "options": [
@@ -737,15 +803,15 @@
       "max": 960,
       "step": 20,
       "unit": "px",
-      "default": 800,
+      "default": 780,
       "info": "A narrower column is easier to read."
     },
     {
       "type": "checkbox",
-      "id": "lead_paragraph",
-      "label": "Larger first paragraph",
+      "id": "show_excerpt_intro",
+      "label": "Show excerpt as introduction",
       "default": true,
-      "info": "Shows the article's opening paragraph as an introduction."
+      "info": "The article's Excerpt, shown larger above the text. Write it as a short summary, not a copy of the first paragraph."
     },
     {
       "type": "checkbox",
