@@ -12,6 +12,21 @@
     assign inner_classes = inner_classes | append: ' vt-page-width'
   endif
 
+  # Header alignment: Tailwind utilities (assets/tailwind.css), like the blog header.
+  # The breadcrumbs, title and meta line move together; justify-* lines up the
+  # meta items when they wrap.
+  case section.settings.header_alignment
+    when 'center'
+      assign header_align_class = 'items-center text-center'
+      assign header_justify_class = 'justify-center'
+    when 'right'
+      assign header_align_class = 'items-end text-right'
+      assign header_justify_class = 'justify-end'
+    else
+      assign header_align_class = 'items-start text-left'
+      assign header_justify_class = 'justify-start'
+  endcase
+
   assign show_comments = false
   if blog.comments_enabled?
     assign show_comments = true
@@ -78,18 +93,20 @@
     style="
       --vt-article-width: {{ section.settings.content_width | divided_by: 16.0 }}rem;
       --vt-article-image-ratio: {{ section.settings.image_ratio }};
+      --vt-article-image-radius: {{ section.settings.image_radius }}px;
+      --vt-article-comment-radius: {{ section.settings.comment_radius }}px;
     "
   >
     <article class="vt-article__article">
-      <header class="vt-article__header">
+      <header class="vt-article__header {{ header_align_class }}">
         {%- if section.settings.show_breadcrumbs -%}
           {% content_for 'block', type: 'breadcrumbs', id: 'article-breadcrumbs' %}
         {%- endif -%}
-        <div class="vt-article__heading flex flex-col">
+        <div class="vt-article__heading flex flex-col {{ header_align_class }}">
           <h1 class="vt-article__title vt-heading vt-heading-h2{{ anim_class }}" style="--vt-delay: 0.2s;">{{ article.title | escape }}</h1>
 
           {%- if section.settings.show_date or section.settings.show_author -%}
-            <p class="vt-article__meta vt-paragraph-small flex flex-wrap items-center{{ anim_class }}" style="--vt-delay: 0.3s;">
+            <p class="vt-article__meta vt-paragraph-small flex flex-wrap items-center {{ header_justify_class }}{{ anim_class }}" style="--vt-delay: 0.3s;">
               {%- if section.settings.show_date -%}
                 <span class="vt-article__meta-item flex items-center">
                   <span class="vt-article__meta-icon" aria-hidden="true">{% render 'icons', icon: 'calendar' %}</span>
@@ -246,6 +263,7 @@
               if box_border_color == '' or section.settings.comment_box_border_color.alpha == 0
                 assign box_border_color = 'currentColor'
               endif
+              assign box_border_color = 'color-mix(in srgb, ' | append: box_border_color | append: ' ' | append: section.settings.comment_box_border_opacity | append: '%, transparent)'
             -%}
             <div
               class="vt-article__comment-box{{ anim_class }}"
@@ -344,10 +362,11 @@
 </div>
 
 {% stylesheet %}
+  /* Between the header, the image and the article: 40px on phones up to 64px from 990px */
   .vt-article__article {
     display: flex;
     flex-direction: column;
-    gap: var(--vt-section-gap, 2.5rem);
+    gap: clamp(2.5rem, 1.5854rem + 3.9024vw, 4rem);
   }
 
   /* ---- Header ------------------------------------------------------------- */
@@ -355,7 +374,7 @@
   .vt-article__header {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: clamp(1rem, 0.6951rem + 1.3008vw, 1.5rem);
     width: 100%;
     max-width: var(--vt-article-width, 50rem);
     margin-inline: auto;
@@ -400,6 +419,7 @@
     width: 100%;
     overflow: hidden;
     aspect-ratio: var(--vt-article-image-ratio, 16 / 9);
+    border-radius: var(--vt-article-image-radius, 0);
     background-color: color-mix(in srgb, currentColor 6%, transparent);
   }
 
@@ -455,7 +475,8 @@
       'share'
       'footer'
       'comments';
-    row-gap: 4rem;
+    /* 40px on phones up to 64px from 990px */
+    row-gap: clamp(2.5rem, 1.5854rem + 3.9024vw, 4rem);
     width: 100%;
     max-width: var(--vt-article-width, 50rem);
     margin-inline: auto;
@@ -463,6 +484,12 @@
 
   .vt-article__share {
     grid-area: share;
+  }
+
+  /* Images in the article text get the same corners as the featured image
+     (the store's text editor has no corner setting of its own) */
+  .vt-article__content :is(img, video, iframe) {
+    border-radius: var(--vt-article-image-radius, 0);
   }
 
   .vt-article__content {
@@ -473,14 +500,14 @@
     grid-area: footer;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: clamp(1.5rem, 1.1951rem + 1.3008vw, 2rem);
   }
 
   .vt-article__comments {
     grid-area: comments;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: clamp(1.5rem, 1.1951rem + 1.3008vw, 2rem);
   }
 
   /* Desktop: the share links take a narrow column on the left and stay in view
@@ -519,7 +546,7 @@
   /* ---- Footer: tags, comment count, previous and next ------------------- */
   .vt-article__info {
     gap: 1rem;
-    padding-block-end: 1.5rem;
+    padding-block-end: clamp(1rem, 0.6951rem + 1.3008vw, 1.5rem);
     border-block-end: 1px solid color-mix(in srgb, currentColor 20%, transparent);
   }
 
@@ -674,6 +701,7 @@
     flex-direction: column;
     gap: 0.75rem;
     padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: var(--vt-article-comment-radius, 0);
     background-color: color-mix(in srgb, currentColor 6%, transparent);
   }
 
@@ -700,6 +728,7 @@
   .vt-article__comment-box {
     padding: var(--vt-comment-box-padding-block, 2rem) var(--vt-comment-box-padding-inline, 2rem);
     border: var(--vt-comment-box-border-width, 1px) solid var(--vt-comment-box-border-color, currentColor);
+    border-radius: var(--vt-article-comment-radius, 0);
   }
 
   .vt-article__comment-form {
@@ -777,7 +806,7 @@
     {
       "type": "header",
       "content": "Header"
-    },
+    },    
     {
       "type": "checkbox",
       "id": "show_breadcrumbs",
@@ -795,6 +824,26 @@
       "id": "show_author",
       "label": "Show author",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"      
     },
     {
       "type": "header",
@@ -850,6 +899,17 @@
       "visible_if": "{{ section.settings.show_image }}"
     },
     {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0,
+      "info": "For the featured image and the images in the article text."
+    },
+    {
       "type": "header",
       "content": "Content"
     },
@@ -868,8 +928,7 @@
       "type": "checkbox",
       "id": "show_excerpt_intro",
       "label": "Show excerpt as introduction",
-      "default": true,
-      "info": "The article's Excerpt, shown larger above the text. Write it as a short summary, not a copy of the first paragraph."
+      "default": false      
     },
     {
       "type": "checkbox",
@@ -892,8 +951,7 @@
           "label": "Sticky"
         }
       ],
-      "default": "normal",
-      "info": "Normal: a row after the text, above the tags. Sticky: a column beside the text on desktop that stays in view while reading. Phones always show the row.",
+      "default": "normal",      
       "visible_if": "{{ section.settings.show_share }}"
     },
     {
@@ -929,8 +987,7 @@
     {
       "type": "richtext",
       "id": "comment_note",
-      "label": "Note under the comment form",
-      "info": "For example a privacy or spam protection notice. Leave empty to hide."
+      "label": "Note under the comment form"      
     },
     {
       "type": "header",
@@ -952,6 +1009,16 @@
       "id": "comment_box_border_color",
       "label": "Border color",
       "info": "Leave empty to use the text color."
+    },
+    {
+      "type": "range",
+      "id": "comment_box_border_opacity",
+      "label": "Border opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
     },
     {
       "type": "range",
@@ -994,6 +1061,16 @@
       "default": 20
     },
     {
+      "type": "range",
+      "id": "comment_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0      
+    },
+    {
       "type": "header",
       "content": "Animation"
     },
@@ -1015,33 +1092,7 @@
           "label": "Slide up"
         }
       ],
-      "default": "slide",
-      "info": "The title, date, tags, previous and next post and the comments appear as they're scrolled to. The image and the article text show right away. Uses Theme settings > Animations."
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "range",
-      "id": "gap",
-      "min": 0,
-      "max": 100,
-      "step": 2,
-      "unit": "px",
-      "default": 40,
-      "label": "Gap parts (desktop)",
-      "info": "Between the header, the image and the article."
-    },
-    {
-      "type": "range",
-      "id": "gap_mobile",
-      "min": 0,
-      "max": 100,
-      "step": 2,
-      "unit": "px",
-      "default": 28,
-      "label": "Gap parts (mobile)"
+      "default": "slide"      
     },
     {
       "type": "header",
