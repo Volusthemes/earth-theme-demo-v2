@@ -3019,7 +3019,7 @@
               "name": "Featured card",
               "settings": {
                 "color_style": "accent",
-                "position": "top",
+                "position": "between",
                 "alignment": "left",
                 "enable_decorative_icon": true,
                 "decorative_icon": "leaf",
@@ -3051,92 +3051,7 @@
               "blocks": [
                 {
                   "type": "stack",
-                  "name": "Label",
-                  "settings": {
-                    "layout_direction_desktop": "vt-stack--horizontal",
-                    "layout_direction_tablet": "vt-stack--horizontal",
-                    "layout_direction_mobile": "vt-stack--horizontal",
-                    "alignment": "flex-start",
-                    "position": "center",
-                    "position_type": "default",
-                    "wrap_content": "nowrap",
-                    "width": "fill",
-                    "height": "fit",
-                    "gap_desktop": 8,
-                    "gap_mobile": 8,
-                    "enable_padding": false
-                  },
-                  "blocks": [
-                    {
-                      "type": "icons",
-                      "settings": {
-                        "icon": "sparkle",
-                        "icon_size_desktop": 16,
-                        "icon_size_mobile": 14,
-                        "show_box": false,
-                        "animation_type": "none"
-                      }
-                    },
-                    {
-                      "type": "sub-heading",
-                      "settings": {
-                        "sub_heading": "Add a short label",
-                        "subheading_tag": "p",
-                        "subheading_alignment": "text-left",
-                        "animation_type": "none"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "heading-group",
-                  "name": "Heading",
-                  "settings": {
-                    "direction": "horizontal",
-                    "alignment": "left",
-                    "vertical_alignment": "center",
-                    "gap_desktop": 12,
-                    "gap_mobile": 10,
-                    "width": "fill",
-                    "hide_icon_mobile": false
-                  },
-                  "blocks": [
-                    {
-                      "type": "icons",
-                      "settings": {
-                        "icon": "eco",
-                        "icon_size_desktop": 24,
-                        "icon_size_mobile": 22,
-                        "show_box": false,
-                        "animation_type": "none"
-                      }
-                    },
-                    {
-                      "type": "heading",
-                      "settings": {
-                        "heading": "Add a card heading",
-                        "heading_size": "vt-heading-h4",
-                        "heading_tag": "h3",
-                        "heading_alignment": "text-inherit",
-                        "heading_width": "fill",
-                        "animation_type": "none"
-                      }
-                    }
-                  ]
-                },
-                {
-                  "type": "paragraph",
-                  "settings": {
-                    "text": "<p>Share a short summary of what this card is about.</p>",
-                    "paragraph_size": "vt-paragraph-medium",
-                    "paragraph_alignment": "text-inherit",
-                    "paragraph_width": "fit",
-                    "animation_type": "none"
-                  }
-                },
-                {
-                  "type": "stack",
-                  "name": "Details",
+                  "name": "Content",
                   "settings": {
                     "layout_direction_desktop": "vt-stack--vertical",
                     "layout_direction_tablet": "vt-stack--vertical",
@@ -3147,113 +3062,218 @@
                     "wrap_content": "nowrap",
                     "width": "fill",
                     "height": "fit",
-                    "gap_desktop": 0,
-                    "gap_mobile": 0,
+                    "gap_desktop": 24,
+                    "gap_mobile": 20,
                     "enable_padding": false
                   },
                   "blocks": [
                     {
-                      "type": "card",
-                      "name": "Details",
+                      "type": "stack",
+                      "name": "Label",
                       "settings": {
-                        "background_color": "#0000000D",
-                        "position": "top",
-                        "alignment": "left",
-                        "enable_decorative_icon": false,
-                        "padding_vertical": 16,
-                        "padding_horizontal": 16,
-                        "enable_padding_mobile": true,
-                        "padding_vertical_mobile": 16,
-                        "padding_horizontal_mobile": 16,
+                        "layout_direction_desktop": "vt-stack--horizontal",
+                        "layout_direction_tablet": "vt-stack--horizontal",
+                        "layout_direction_mobile": "vt-stack--horizontal",
+                        "alignment": "flex-start",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
                         "width": "fill",
                         "height": "fit",
-                        "gap": 4,
-                        "enable_gap_mobile": true,
-                        "gap_mobile": 12,
-                        "border": "solid",
-                        "border_width": 1,
-                        "border_opacity": 100,
-                        "border_radius": 0,
-                        "animation_type": "none"
+                        "gap_desktop": 8,
+                        "gap_mobile": 8,
+                        "enable_padding": false
                       },
                       "blocks": [
                         {
-                          "type": "stack",
-                          "name": "First row",
+                          "type": "icons",
                           "settings": {
-                            "layout_direction_desktop": "vt-stack--horizontal",
-                            "layout_direction_tablet": "vt-stack--horizontal",
-                            "layout_direction_mobile": "vt-stack--vertical",
-                            "alignment": "space-between",
-                            "position": "flex-start",
-                            "position_type": "default",
-                            "wrap_content": "nowrap",
-                            "width": "fill",
-                            "height": "fit",
-                            "gap_desktop": 16,
-                            "gap_mobile": 4,
-                            "enable_padding": false
-                          },
-                          "blocks": [
-                            {
-                              "type": "paragraph",
-                              "settings": {
-                                "text": "<p>Add a label:</p>",
-                                "paragraph_size": "vt-paragraph-small",
-                                "paragraph_alignment": "text-left",
-                                "paragraph_width": "fit",
-                                "animation_type": "none"
-                              }
-                            },
-                            {
-                              "type": "paragraph",
-                              "settings": {
-                                "text": "<p>Add a detail</p>",
-                                "paragraph_size": "vt-paragraph-small",
-                                "paragraph_alignment": "text-left",
-                                "paragraph_width": "fit",
-                                "animation_type": "none"
-                              }
-                            }
-                          ]
+                            "icon": "sparkle",
+                            "icon_size_desktop": 16,
+                            "icon_size_mobile": 14,
+                            "show_box": false,
+                            "animation_type": "none"
+                          }
                         },
                         {
-                          "type": "stack",
-                          "name": "Second row",
+                          "type": "sub-heading",
                           "settings": {
-                            "layout_direction_desktop": "vt-stack--horizontal",
-                            "layout_direction_tablet": "vt-stack--horizontal",
-                            "layout_direction_mobile": "vt-stack--vertical",
-                            "alignment": "space-between",
-                            "position": "flex-start",
-                            "position_type": "default",
-                            "wrap_content": "nowrap",
+                            "sub_heading": "Add a short label",
+                            "subheading_tag": "p",
+                            "subheading_alignment": "text-left",
+                            "animation_type": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "heading-group",
+                      "name": "Heading",
+                      "settings": {
+                        "direction": "horizontal",
+                        "alignment": "left",
+                        "vertical_alignment": "center",
+                        "gap_desktop": 12,
+                        "gap_mobile": 10,
+                        "width": "fill",
+                        "hide_icon_mobile": false
+                      },
+                      "blocks": [
+                        {
+                          "type": "icons",
+                          "settings": {
+                            "icon": "eco",
+                            "icon_size_desktop": 24,
+                            "icon_size_mobile": 22,
+                            "show_box": false,
+                            "animation_type": "none"
+                          }
+                        },
+                        {
+                          "type": "heading",
+                          "settings": {
+                            "heading": "Add a card heading",
+                            "heading_size": "vt-heading-h4",
+                            "heading_tag": "h3",
+                            "heading_alignment": "text-inherit",
+                            "heading_width": "fill",
+                            "animation_type": "none"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "paragraph",
+                      "settings": {
+                        "text": "<p>Share a short summary of what this card is about.</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-inherit",
+                        "paragraph_width": "fit",
+                        "animation_type": "none"
+                      }
+                    },
+                    {
+                      "type": "stack",
+                      "name": "Details",
+                      "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "height": "fit",
+                        "gap_desktop": 0,
+                        "gap_mobile": 0,
+                        "enable_padding": false
+                      },
+                      "blocks": [
+                        {
+                          "type": "card",
+                          "name": "Details",
+                          "settings": {
+                            "background_color": "#0000000D",
+                            "position": "top",
+                            "alignment": "left",
+                            "enable_decorative_icon": false,
+                            "padding_vertical": 16,
+                            "padding_horizontal": 16,
+                            "enable_padding_mobile": true,
+                            "padding_vertical_mobile": 16,
+                            "padding_horizontal_mobile": 16,
                             "width": "fill",
                             "height": "fit",
-                            "gap_desktop": 16,
-                            "gap_mobile": 4,
-                            "enable_padding": false
+                            "gap": 4,
+                            "enable_gap_mobile": true,
+                            "gap_mobile": 12,
+                            "border": "solid",
+                            "border_width": 1,
+                            "border_opacity": 100,
+                            "border_radius": 0,
+                            "animation_type": "none"
                           },
                           "blocks": [
                             {
-                              "type": "paragraph",
+                              "type": "stack",
+                              "name": "First row",
                               "settings": {
-                                "text": "<p>Add another label:</p>",
-                                "paragraph_size": "vt-paragraph-small",
-                                "paragraph_alignment": "text-left",
-                                "paragraph_width": "fit",
-                                "animation_type": "none"
-                              }
+                                "layout_direction_desktop": "vt-stack--horizontal",
+                                "layout_direction_tablet": "vt-stack--horizontal",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "space-between",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 16,
+                                "gap_mobile": 4,
+                                "enable_padding": false
+                              },
+                              "blocks": [
+                                {
+                                  "type": "paragraph",
+                                  "settings": {
+                                    "text": "<p>Add a label:</p>",
+                                    "paragraph_size": "vt-paragraph-small",
+                                    "paragraph_alignment": "text-left",
+                                    "paragraph_width": "fit",
+                                    "animation_type": "none"
+                                  }
+                                },
+                                {
+                                  "type": "paragraph",
+                                  "settings": {
+                                    "text": "<p>Add a detail</p>",
+                                    "paragraph_size": "vt-paragraph-small",
+                                    "paragraph_alignment": "text-left",
+                                    "paragraph_width": "fit",
+                                    "animation_type": "none"
+                                  }
+                                }
+                              ]
                             },
                             {
-                              "type": "paragraph",
+                              "type": "stack",
+                              "name": "Second row",
                               "settings": {
-                                "text": "<p>Add a detail</p>",
-                                "paragraph_size": "vt-paragraph-small",
-                                "paragraph_alignment": "text-left",
-                                "paragraph_width": "fit",
-                                "animation_type": "none"
-                              }
+                                "layout_direction_desktop": "vt-stack--horizontal",
+                                "layout_direction_tablet": "vt-stack--horizontal",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "space-between",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 16,
+                                "gap_mobile": 4,
+                                "enable_padding": false
+                              },
+                              "blocks": [
+                                {
+                                  "type": "paragraph",
+                                  "settings": {
+                                    "text": "<p>Add another label:</p>",
+                                    "paragraph_size": "vt-paragraph-small",
+                                    "paragraph_alignment": "text-left",
+                                    "paragraph_width": "fit",
+                                    "animation_type": "none"
+                                  }
+                                },
+                                {
+                                  "type": "paragraph",
+                                  "settings": {
+                                    "text": "<p>Add a detail</p>",
+                                    "paragraph_size": "vt-paragraph-small",
+                                    "paragraph_alignment": "text-left",
+                                    "paragraph_width": "fit",
+                                    "animation_type": "none"
+                                  }
+                                }
+                              ]
                             }
                           ]
                         }

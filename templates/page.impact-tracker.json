@@ -1497,7 +1497,7 @@
                             "name": "Latest update",
                             "settings": {
                                 "color_style": "accent",
-                                "position": "top",
+                                "position": "between",
                                 "alignment": "left",
                                 "enable_decorative_icon": true,
                                 "decorative_icon": "leaf",
@@ -1528,102 +1528,9 @@
                                 "animation_blur_intensity": 5
                             },
                             "blocks": {
-                                "numbers_label": {
+                                "numbers_content": {
                                     "type": "stack",
-                                    "name": "Label",
-                                    "settings": {
-                                        "layout_direction_desktop": "vt-stack--horizontal",
-                                        "layout_direction_tablet": "vt-stack--horizontal",
-                                        "layout_direction_mobile": "vt-stack--horizontal",
-                                        "alignment": "flex-start",
-                                        "position": "center",
-                                        "position_type": "default",
-                                        "wrap_content": "nowrap",
-                                        "width": "fill",
-                                        "height": "fit",
-                                        "gap_desktop": 8,
-                                        "gap_mobile": 8,
-                                        "enable_padding": false
-                                    },
-                                    "blocks": {
-                                        "numbers_label_icon": {
-                                            "type": "icons",
-                                            "settings": {
-                                                "icon": "sparkle",
-                                                "icon_size_desktop": 16,
-                                                "icon_size_mobile": 14,
-                                                "show_box": false,
-                                                "animation_type": "none"
-                                            }
-                                        },
-                                        "numbers_label_text": {
-                                            "type": "sub-heading",
-                                            "settings": {
-                                                "sub_heading": "Latest impact update",
-                                                "subheading_tag": "p",
-                                                "subheading_alignment": "text-left",
-                                                "animation_type": "none"
-                                            }
-                                        }
-                                    },
-                                    "block_order": [
-                                        "numbers_label_icon",
-                                        "numbers_label_text"
-                                    ]
-                                },
-                                "numbers_title": {
-                                    "type": "heading-group",
-                                    "name": "Heading",
-                                    "settings": {
-                                        "direction": "horizontal",
-                                        "alignment": "left",
-                                        "vertical_alignment": "center",
-                                        "gap_desktop": 12,
-                                        "gap_mobile": 10,
-                                        "width": "fill",
-                                        "hide_icon_mobile": false
-                                    },
-                                    "blocks": {
-                                        "numbers_title_icon": {
-                                            "type": "icons",
-                                            "settings": {
-                                                "icon": "eco",
-                                                "icon_size_desktop": 24,
-                                                "icon_size_mobile": 22,
-                                                "show_box": false,
-                                                "animation_type": "none"
-                                            }
-                                        },
-                                        "numbers_title_heading": {
-                                            "type": "heading",
-                                            "settings": {
-                                                "heading": "Q4 / Annual Review 2026",
-                                                "heading_size": "vt-heading-h4",
-                                                "heading_tag": "h3",
-                                                "heading_alignment": "text-inherit",
-                                                "heading_width": "fill",
-                                                "animation_type": "none"
-                                            }
-                                        }
-                                    },
-                                    "block_order": [
-                                        "numbers_title_icon",
-                                        "numbers_title_heading"
-                                    ]
-                                },
-                                "numbers_text": {
-                                    "type": "paragraph",
-                                    "settings": {
-                                        "text": "<p>A comprehensive summary of our fiscal disbursements, verified partner planting receipts, garment sorting audit weights, and planned ecological milestones for the upcoming year.</p>",
-                                        "paragraph_size": "vt-paragraph-medium",
-                                        "paragraph_alignment": "text-inherit",
-                                        "paragraph_width": "fit",
-                                        "animation_type": "none"
-                                    }
-                                },
-                                "numbers_details": {
-                                    "type": "stack",
-                                    "name": "Details",
+                                    "name": "Content",
                                     "settings": {
                                         "layout_direction_desktop": "vt-stack--vertical",
                                         "layout_direction_tablet": "vt-stack--vertical",
@@ -1634,136 +1541,255 @@
                                         "wrap_content": "nowrap",
                                         "width": "fill",
                                         "height": "fit",
-                                        "gap_desktop": 0,
-                                        "gap_mobile": 0,
+                                        "gap_desktop": 24,
+                                        "gap_mobile": 20,
                                         "enable_padding": false
                                     },
                                     "blocks": {
-                                        "numbers_details_box": {
-                                            "type": "card",
-                                            "name": "Details",
+                                        "numbers_label": {
+                                            "type": "stack",
+                                            "name": "Label",
                                             "settings": {
-                                                "background_color": "#0032250D",
-                                                "heading_color": "{{ settings.color_palette.foreground }}",
-                                                "text_color": "{{ settings.color_palette.foreground }}",
-                                                "position": "top",
-                                                "alignment": "left",
-                                                "enable_decorative_icon": false,
-                                                "padding_vertical": 16,
-                                                "padding_horizontal": 16,
-                                                "enable_padding_mobile": true,
-                                                "padding_vertical_mobile": 16,
-                                                "padding_horizontal_mobile": 16,
+                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                "layout_direction_mobile": "vt-stack--horizontal",
+                                                "alignment": "flex-start",
+                                                "position": "center",
+                                                "position_type": "default",
+                                                "wrap_content": "nowrap",
                                                 "width": "fill",
                                                 "height": "fit",
-                                                "gap": 4,
-                                                "enable_gap_mobile": true,
-                                                "gap_mobile": 12,
-                                                "border": "solid",
-                                                "border_color": "{{ settings.color_palette.foreground }}",
-                                                "border_width": 1,
-                                                "border_opacity": 100,
-                                                "border_radius": 0,
-                                                "animation_type": "none"
+                                                "gap_desktop": 8,
+                                                "gap_mobile": 8,
+                                                "enable_padding": false
                                             },
                                             "blocks": {
-                                                "numbers_period": {
-                                                    "type": "stack",
-                                                    "name": "Reporting period",
+                                                "numbers_label_icon": {
+                                                    "type": "icons",
                                                     "settings": {
-                                                        "layout_direction_desktop": "vt-stack--horizontal",
-                                                        "layout_direction_tablet": "vt-stack--horizontal",
-                                                        "layout_direction_mobile": "vt-stack--vertical",
-                                                        "alignment": "space-between",
-                                                        "position": "flex-start",
-                                                        "position_type": "default",
-                                                        "wrap_content": "nowrap",
-                                                        "width": "fill",
-                                                        "height": "fit",
-                                                        "gap_desktop": 16,
-                                                        "gap_mobile": 4,
-                                                        "enable_padding": false
-                                                    },
-                                                    "blocks": {
-                                                        "numbers_period_label": {
-                                                            "type": "paragraph",
-                                                            "settings": {
-                                                                "text": "<p>Reporting period:</p>",
-                                                                "paragraph_size": "vt-paragraph-small",
-                                                                "paragraph_alignment": "text-left",
-                                                                "paragraph_width": "fit",
-                                                                "animation_type": "none"
-                                                            }
-                                                        },
-                                                        "numbers_period_value": {
-                                                            "type": "paragraph",
-                                                            "settings": {
-                                                                "text": "<p>Jan 1, 2026 – Dec 31, 2026</p>",
-                                                                "paragraph_size": "vt-paragraph-small",
-                                                                "paragraph_alignment": "text-left",
-                                                                "paragraph_width": "fit",
-                                                                "animation_type": "none"
-                                                            }
-                                                        }
-                                                    },
-                                                    "block_order": [
-                                                        "numbers_period_label",
-                                                        "numbers_period_value"
-                                                    ]
+                                                        "icon": "sparkle",
+                                                        "icon_size_desktop": 16,
+                                                        "icon_size_mobile": 14,
+                                                        "show_box": false,
+                                                        "animation_type": "none"
+                                                    }
                                                 },
-                                                "numbers_updated": {
-                                                    "type": "stack",
-                                                    "name": "Last updated",
+                                                "numbers_label_text": {
+                                                    "type": "sub-heading",
                                                     "settings": {
-                                                        "layout_direction_desktop": "vt-stack--horizontal",
-                                                        "layout_direction_tablet": "vt-stack--horizontal",
-                                                        "layout_direction_mobile": "vt-stack--vertical",
-                                                        "alignment": "space-between",
-                                                        "position": "flex-start",
-                                                        "position_type": "default",
-                                                        "wrap_content": "nowrap",
+                                                        "sub_heading": "Latest impact update",
+                                                        "subheading_tag": "p",
+                                                        "subheading_alignment": "text-left",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "numbers_label_icon",
+                                                "numbers_label_text"
+                                            ]
+                                        },
+                                        "numbers_title": {
+                                            "type": "heading-group",
+                                            "name": "Heading",
+                                            "settings": {
+                                                "direction": "horizontal",
+                                                "alignment": "left",
+                                                "vertical_alignment": "center",
+                                                "gap_desktop": 12,
+                                                "gap_mobile": 10,
+                                                "width": "fill",
+                                                "hide_icon_mobile": false
+                                            },
+                                            "blocks": {
+                                                "numbers_title_icon": {
+                                                    "type": "icons",
+                                                    "settings": {
+                                                        "icon": "eco",
+                                                        "icon_size_desktop": 24,
+                                                        "icon_size_mobile": 22,
+                                                        "show_box": false,
+                                                        "animation_type": "none"
+                                                    }
+                                                },
+                                                "numbers_title_heading": {
+                                                    "type": "heading",
+                                                    "settings": {
+                                                        "heading": "Q4 / Annual Review 2026",
+                                                        "heading_size": "vt-heading-h4",
+                                                        "heading_tag": "h3",
+                                                        "heading_alignment": "text-inherit",
+                                                        "heading_width": "fill",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "numbers_title_icon",
+                                                "numbers_title_heading"
+                                            ]
+                                        },
+                                        "numbers_text": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>A comprehensive summary of our fiscal disbursements, verified partner planting receipts, garment sorting audit weights, and planned ecological milestones for the upcoming year.</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-inherit",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "numbers_details": {
+                                            "type": "stack",
+                                            "name": "Details",
+                                            "settings": {
+                                                "layout_direction_desktop": "vt-stack--vertical",
+                                                "layout_direction_tablet": "vt-stack--vertical",
+                                                "layout_direction_mobile": "vt-stack--vertical",
+                                                "alignment": "flex-start",
+                                                "position": "flex-start",
+                                                "position_type": "default",
+                                                "wrap_content": "nowrap",
+                                                "width": "fill",
+                                                "height": "fit",
+                                                "gap_desktop": 0,
+                                                "gap_mobile": 0,
+                                                "enable_padding": false
+                                            },
+                                            "blocks": {
+                                                "numbers_details_box": {
+                                                    "type": "card",
+                                                    "name": "Details",
+                                                    "settings": {
+                                                        "background_color": "#0032250D",
+                                                        "heading_color": "{{ settings.color_palette.foreground }}",
+                                                        "text_color": "{{ settings.color_palette.foreground }}",
+                                                        "position": "top",
+                                                        "alignment": "left",
+                                                        "enable_decorative_icon": false,
+                                                        "padding_vertical": 16,
+                                                        "padding_horizontal": 16,
+                                                        "enable_padding_mobile": true,
+                                                        "padding_vertical_mobile": 16,
+                                                        "padding_horizontal_mobile": 16,
                                                         "width": "fill",
                                                         "height": "fit",
-                                                        "gap_desktop": 16,
-                                                        "gap_mobile": 4,
-                                                        "enable_padding": false
+                                                        "gap": 4,
+                                                        "enable_gap_mobile": true,
+                                                        "gap_mobile": 12,
+                                                        "border": "solid",
+                                                        "border_color": "{{ settings.color_palette.foreground }}",
+                                                        "border_width": 1,
+                                                        "border_opacity": 100,
+                                                        "border_radius": 0,
+                                                        "animation_type": "none"
                                                     },
                                                     "blocks": {
-                                                        "numbers_updated_label": {
-                                                            "type": "paragraph",
+                                                        "numbers_period": {
+                                                            "type": "stack",
+                                                            "name": "Reporting period",
                                                             "settings": {
-                                                                "text": "<p>Last updated:</p>",
-                                                                "paragraph_size": "vt-paragraph-small",
-                                                                "paragraph_alignment": "text-left",
-                                                                "paragraph_width": "fit",
-                                                                "animation_type": "none"
-                                                            }
+                                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                                "layout_direction_mobile": "vt-stack--vertical",
+                                                                "alignment": "space-between",
+                                                                "position": "flex-start",
+                                                                "position_type": "default",
+                                                                "wrap_content": "nowrap",
+                                                                "width": "fill",
+                                                                "height": "fit",
+                                                                "gap_desktop": 16,
+                                                                "gap_mobile": 4,
+                                                                "enable_padding": false
+                                                            },
+                                                            "blocks": {
+                                                                "numbers_period_label": {
+                                                                    "type": "paragraph",
+                                                                    "settings": {
+                                                                        "text": "<p>Reporting period:</p>",
+                                                                        "paragraph_size": "vt-paragraph-small",
+                                                                        "paragraph_alignment": "text-left",
+                                                                        "paragraph_width": "fit",
+                                                                        "animation_type": "none"
+                                                                    }
+                                                                },
+                                                                "numbers_period_value": {
+                                                                    "type": "paragraph",
+                                                                    "settings": {
+                                                                        "text": "<p>Jan 1, 2026 – Dec 31, 2026</p>",
+                                                                        "paragraph_size": "vt-paragraph-small",
+                                                                        "paragraph_alignment": "text-left",
+                                                                        "paragraph_width": "fit",
+                                                                        "animation_type": "none"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "block_order": [
+                                                                "numbers_period_label",
+                                                                "numbers_period_value"
+                                                            ]
                                                         },
-                                                        "numbers_updated_value": {
-                                                            "type": "paragraph",
+                                                        "numbers_updated": {
+                                                            "type": "stack",
+                                                            "name": "Last updated",
                                                             "settings": {
-                                                                "text": "<p>Jan 15, 2027</p>",
-                                                                "paragraph_size": "vt-paragraph-small",
-                                                                "paragraph_alignment": "text-left",
-                                                                "paragraph_width": "fit",
-                                                                "animation_type": "none"
-                                                            }
+                                                                "layout_direction_desktop": "vt-stack--horizontal",
+                                                                "layout_direction_tablet": "vt-stack--horizontal",
+                                                                "layout_direction_mobile": "vt-stack--vertical",
+                                                                "alignment": "space-between",
+                                                                "position": "flex-start",
+                                                                "position_type": "default",
+                                                                "wrap_content": "nowrap",
+                                                                "width": "fill",
+                                                                "height": "fit",
+                                                                "gap_desktop": 16,
+                                                                "gap_mobile": 4,
+                                                                "enable_padding": false
+                                                            },
+                                                            "blocks": {
+                                                                "numbers_updated_label": {
+                                                                    "type": "paragraph",
+                                                                    "settings": {
+                                                                        "text": "<p>Last updated:</p>",
+                                                                        "paragraph_size": "vt-paragraph-small",
+                                                                        "paragraph_alignment": "text-left",
+                                                                        "paragraph_width": "fit",
+                                                                        "animation_type": "none"
+                                                                    }
+                                                                },
+                                                                "numbers_updated_value": {
+                                                                    "type": "paragraph",
+                                                                    "settings": {
+                                                                        "text": "<p>Jan 15, 2027</p>",
+                                                                        "paragraph_size": "vt-paragraph-small",
+                                                                        "paragraph_alignment": "text-left",
+                                                                        "paragraph_width": "fit",
+                                                                        "animation_type": "none"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "block_order": [
+                                                                "numbers_updated_label",
+                                                                "numbers_updated_value"
+                                                            ]
                                                         }
                                                     },
                                                     "block_order": [
-                                                        "numbers_updated_label",
-                                                        "numbers_updated_value"
+                                                        "numbers_period",
+                                                        "numbers_updated"
                                                     ]
                                                 }
                                             },
                                             "block_order": [
-                                                "numbers_period",
-                                                "numbers_updated"
+                                                "numbers_details_box"
                                             ]
                                         }
                                     },
                                     "block_order": [
-                                        "numbers_details_box"
+                                        "numbers_label",
+                                        "numbers_title",
+                                        "numbers_text",
+                                        "numbers_details"
                                     ]
                                 },
                                 "numbers_button": {
@@ -1778,10 +1804,7 @@
                                 }
                             },
                             "block_order": [
-                                "numbers_label",
-                                "numbers_title",
-                                "numbers_text",
-                                "numbers_details",
+                                "numbers_content",
                                 "numbers_button"
                             ]
                         },
