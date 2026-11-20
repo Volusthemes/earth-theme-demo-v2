@@ -1742,106 +1742,111 @@ textarea.vt-input {
 
 /* ==========================================================================
    Rich text (.vt-rte): article content, and any rich text from the admin
-   (page content, product and collection descriptions), styled the same way.
-   Headings step down one size: the page title is the only h1-sized text.
+   (page content, product and collection descriptions, store policies), styled the
+   same way. Headings step down one size: the page title is the only h1-sized text.
+
+   Store policies (/policies/...) are rendered by Shopify, so they can't take the
+   .vt-rte class: every rule also targets their .rte wrapper, and the extra <div>
+   Shopify puts around the policy text. Wrapped in :where(), those selectors add
+   no specificity, so .vt-rte rules keep the same weight as before.
    ========================================================================== */
-.vt-rte {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) {
   font-size: var(--vt-font-body-size);
   line-height: var(--vt-font-body-line-height);
   letter-spacing: var(--vt-font-body-letter-spacing);
   overflow-wrap: break-word;
 }
 
-.vt-rte > * {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) > * {
   margin-block: 0 1em;
 }
 
-.vt-rte > :last-child {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) > :last-child {
   margin-block-end: 0;
 }
 
-.vt-rte :is(h1, h2, h3, h4, h5, h6) {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(h1, h2, h3, h4, h5, h6) {
   margin-block: 1.75em 0.6em;
   color: var(--vt-section-color, var(--vt-foreground-color));
   font-family: var(--vt-font-family-heading);
   font-weight: var(--vt-font-heading-weight);
 }
 
-.vt-rte > :is(h1, h2, h3, h4, h5, h6):first-child {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) > :is(h1, h2, h3, h4, h5, h6):first-child {
   margin-block-start: 0;
 }
 
 /* Two steps down from the theme's heading sizes, so every heading in the text stays
    smaller than the page title (Heading 2): h1 Heading 3, h2 Heading 4, h3 Heading 5,
    h4 to h6 Heading 6. Use h2 or h3 for section headings in an article. */
-.vt-rte h1 {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) h1 {
   font-size: var(--vt-font-heading-3-size);
   line-height: var(--vt-font-heading-3-line-height);
 }
 
-.vt-rte h2 {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) h2 {
   font-size: var(--vt-font-heading-4-size);
   line-height: var(--vt-font-heading-4-line-height);
 }
 
-.vt-rte h3 {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) h3 {
   font-size: var(--vt-font-heading-5-size);
   line-height: var(--vt-font-heading-5-line-height);
 }
 
-.vt-rte :is(h4, h5, h6) {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(h4, h5, h6) {
   font-size: var(--vt-font-heading-6-size, var(--vt-font-large-size));
   line-height: var(--vt-font-heading-6-line-height, 1.3);
 }
 
-.vt-rte :is(ul, ol) {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(ul, ol) {
   padding-inline-start: 1.5em;
 }
 
-.vt-rte ul {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) ul {
   list-style: disc;
 }
 
-.vt-rte ol {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) ol {
   list-style: decimal;
 }
 
-.vt-rte :is(ul, ol) ul {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(ul, ol) ul {
   list-style: circle;
 }
 
-.vt-rte :is(ul, ol) :is(ul, ol) ul {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(ul, ol) :is(ul, ol) ul {
   list-style: square;
 }
 
-.vt-rte :is(ul, ol) ol {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(ul, ol) ol {
   list-style: lower-alpha;
 }
 
-.vt-rte :is(ul, ol) :is(ul, ol) {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(ul, ol) :is(ul, ol) {
   margin-block: 0.35em 0;
 }
 
-.vt-rte li::marker {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) li::marker {
   color: var(--vt-section-color, var(--vt-foreground-color));
 }
 
-.vt-rte li + li {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) li + li {
   margin-block-start: 0.35em;
 }
 
-.vt-rte a {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) a {
   color: inherit;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.2em;
 }
 
-.vt-rte a:hover {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) a:hover {
   text-decoration-thickness: 2px;
 }
 
-.vt-rte img {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) img {
   display: block;
   max-width: 100%;
   height: auto;
@@ -1849,12 +1854,12 @@ textarea.vt-input {
 
 /* Space around media placed straight in the text. Media inside the merchant's own
    layout (a grid of images, for example) keeps that layout's spacing */
-.vt-rte > :is(img, figure, iframe, video),
-.vt-rte > p > img:only-child {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) > :is(img, figure, iframe, video),
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) > p > img:only-child {
   margin-block: 2em;
 }
 
-.vt-rte blockquote {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) blockquote {
   margin-inline: 0;
   padding-inline-start: 1.25em;
   border-inline-start: 2px solid color-mix(in srgb, currentColor 35%, transparent);
@@ -1862,27 +1867,68 @@ textarea.vt-input {
   line-height: var(--vt-font-large-line-height);
 }
 
-.vt-rte blockquote p {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) blockquote p {
   margin: 0;
 }
 
-.vt-rte blockquote + p {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) blockquote + p {
   font-size: 0.875em;
 }
 
-.vt-rte table {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.vt-rte :is(th, td) {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) :is(th, td) {
   padding: 0.6em 0.75em;
   border: 1px solid color-mix(in srgb, currentColor 20%, transparent);
   text-align: start;
 }
 
-.vt-rte hr {
+:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) hr {
   margin-block: 2em;
   border: 0;
   border-block-start: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+}
+
+/* ==========================================================================
+   Store policies (/policies/privacy-policy, terms-of-service, shipping-policy,
+   refund-policy, contact-information...). Shopify renders every policy with the
+   same markup and no theme template, so these rules style all of them at once;
+   the text inside takes the rich text styles above. The merchant edits the
+   content in Settings > Policies; type, colors and page padding come from the
+   theme settings.
+
+   Shopify's own policy stylesheet (65ch wide, centered title) loads after this
+   file, so these rules are scoped to the .template-policy body to outweigh it.
+   ========================================================================== */
+.template-policy .shopify-policy__container {
+  /* Width of the text column: about 75 characters, easy to read */
+  --vt-policy-width: 720px;
+
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--vt-policy-width) + var(--vt-page-padding) * 2);
+  margin-inline: auto;
+  /* 60px at 375px wide up to 100px at 1180px; 80px up to 110px below */
+  padding-block: clamp(60px, 41.37px + 4.969vw, 100px) clamp(80px, 66.02px + 3.727vw, 110px);
+  padding-inline: var(--vt-page-padding);
+}
+
+.template-policy .shopify-policy__title {
+  /* 24px at 375px wide up to 48px at 1180px */
+  margin-block-end: clamp(24px, 12.82px + 2.981vw, 48px);
+  text-align: start;
+}
+
+.template-policy .shopify-policy__title h1 {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+@media screen and (min-width: 750px) {
+  .template-policy .shopify-policy__title {
+    text-align: center;
+  }
 }

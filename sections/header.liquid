@@ -4,13 +4,42 @@
   child blocks, which merchants can reorder or move between columns.  
 {% endcomment %}
 
+{%- liquid
+  # Bottom border: one checkbox per kind of page. Store policies and other pages
+  # Shopify renders itself have no template, so the header decides for them.
+  case request.page_type
+    when 'index'
+      assign show_border = section.settings.border_home
+    when 'product'
+      assign show_border = section.settings.border_product
+    when 'collection'
+      assign show_border = section.settings.border_collection
+    when 'blog'
+      assign show_border = section.settings.border_blog
+    when 'article'
+      assign show_border = section.settings.border_article
+    when 'page'
+      if template.suffix == 'contact'
+        assign show_border = section.settings.border_contact
+      else
+        assign show_border = section.settings.border_page
+      endif
+    when 'policy'
+      assign show_border = section.settings.border_policy
+    else
+      assign show_border = section.settings.border_other
+  endcase
+-%}
+
 <vt-header
   class="vt-header"
   data-sticky="{{ section.settings.sticky_header }}"
+  {% if show_border %}data-border{% endif %}
   style="
     --vt-header-background: {{ section.settings.background_color | default: 'var(--vt-background-color)' }};
     --vt-header-text: {{ section.settings.text_color | default: 'var(--vt-color-primary)' }};
     --vt-header-logo-text: {{ section.settings.text_color | default: 'var(--vt-foreground-color)' }};
+    --vt-header-border: {{ section.settings.border_color | default: 'currentColor' }};
     --vt-header-padding-block: {% render 'fluid-clamp', min_px: section.settings.padding_block_mobile, max_px: section.settings.padding_block_desktop %};
     --vt-header-padding-inline: {% render 'fluid-clamp', min_px: section.settings.padding_inline_mobile, max_px: section.settings.padding_inline_desktop %};
   "
@@ -83,6 +112,76 @@
       "id": "text_color",
       "label": "Text and icons",
       "info": "Leave empty to use the color palette."
+    },
+    {
+      "type": "header",
+      "content": "Bottom border",
+      "info": "A line under the header, shown on the kinds of page checked below."
+    },
+    {
+      "type": "checkbox",
+      "id": "border_home",
+      "label": "Home page",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "border_product",
+      "label": "Product pages",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "border_collection",
+      "label": "Collection pages",
+      "info": "Includes the all products page.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_blog",
+      "label": "Blog pages",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_article",
+      "label": "Blog posts",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_contact",
+      "label": "Contact page",
+      "info": "Pages using the contact template.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_page",
+      "label": "Other pages",
+      "info": "Pages using any other template, such as About or FAQ.",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "border_policy",
+      "label": "Policy pages",
+      "info": "Privacy policy, terms of service, shipping policy and the other policies from Settings > Policies.",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "border_other",
+      "label": "Everything else",
+      "info": "Search, cart, collections list, 404 and customer account pages.",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "info": "Leave empty to use the header text color."
     },
     {
       "type": "header",

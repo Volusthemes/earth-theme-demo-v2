@@ -62,53 +62,9 @@
                     }
                 }
             }
-        },
-        "divider_section": {
-            "type": "custom-section",
-            "name": "Divider",
-            "blocks": {
-                "divider_block": {
-                    "type": "divider",
-                    "settings": {
-                        "variant": "horizontal",
-                        "style": "solid",
-                        "thickness": 1,
-                        "color_source": "inherit",
-                        "margin_top_desktop": 0,
-                        "margin_bottom_desktop": 0,
-                        "margin_top_mobile": 0,
-                        "margin_bottom_mobile": 0,
-                        "animation_type": "reveal",
-                        "animation_direction": "from-left",
-                        "animation_duration": 1.2,
-                        "animation_delay": 0.2,
-                        "animation_easing": "ease-out-sine",
-                        "animation_blur_intensity": 5
-                    }
-                }
-            },
-            "block_order": [
-                "divider_block"
-            ],
-            "settings": {
-                "gap": 0,
-                "gap_mobile": 0,
-                "background_style": "solid",
-                "padding_top_desktop": 0,
-                "padding_bottom_desktop": 0,
-                "padding_left_desktop": 0,
-                "padding_right_desktop": 0,
-                "enable_custom_mobile_padding": true,
-                "padding_top_mobile": 0,
-                "padding_bottom_mobile": 0,
-                "padding_left_mobile": 0,
-                "padding_right_mobile": 0,
-                "make_section_page_width": false
-            }
         }
     },
     "order": [
-        "divider_section",
         "main"
     ]
 }
