@@ -26,9 +26,14 @@
 }
 
 /* Bottom border chosen per kind of page in the header settings. It replaces the
-   faint line of the stuck header, so the line looks the same while scrolling */
+   faint line of the stuck header; once the header sticks while scrolling, the
+   line fades to 15% so it sits quietly over the page */
 .vt-header[data-border] {
   box-shadow: 0 1px 0 var(--vt-header-border);
+}
+
+.vt-header[data-border][data-stuck] {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--vt-header-border) 15%, transparent);
 }
 
 .vt-header__inner {

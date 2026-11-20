@@ -771,7 +771,8 @@
             "policies": {
               "type": "menu",
               "settings": {
-                "source": "policies",
+                "source": "menu",
+                "menu": "footer-legal",
                 "show_heading": false,
                 "layout": "horizontal",
                 "separator": "dot",
