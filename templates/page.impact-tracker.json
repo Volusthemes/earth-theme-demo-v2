@@ -1989,6 +1989,50 @@
                 "numbers_header",
                 "numbers_columns"
             ]
+        },
+        "statement_section": {
+            "type": "rich-text",
+            "name": "Statement",
+            "settings": {
+                "desktop_content_alignment": "justify-center",
+                "mobile_content_alignment": "justify-center",
+                "gap": 36,
+                "gap_mobile": 32,
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.primary }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true
+            },
+            "blocks": {
+                "statement_text": {
+                    "type": "scroll-reveal-text",
+                    "settings": {
+                        "heading": "Caring for yourself shouldn’t mean leaving more plastic bottles behind. We choose a different way — solid shampoo, soap, and lotion bars that pack light without compromising your self-care ritual. From everyday routines to days by the sea, every small choice can be the start of something bigger. Care for yourself. Be gentle on the ocean.",
+                        "heading_alignment": "text-inherit",
+                        "heading_size": "vt-heading-h3",
+                        "heading_tag": "p",
+                        "uppercase": false,
+                        "start_opacity": 30,
+                        "heading_width": "fill",
+                        "enable_max_width": true,
+                        "heading_max_width": 960,
+                        "animation_type": "none"
+                    }
+                }
+            },
+            "block_order": [
+                "statement_text"
+            ]
         }
     },
     "order": [
@@ -1996,6 +2040,7 @@
         "image_with_text_overlay_section",
         "how_it_helps_section",
         "campaign_diary_section",
-        "closer_look_section"
+        "closer_look_section",
+        "statement_section"
     ]
 }

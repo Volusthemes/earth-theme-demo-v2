@@ -266,6 +266,9 @@
     },
     {
       "type": "stack"
+    },
+    {
+      "type": "scroll-reveal-text"
     }
   ],
   "presets": [
@@ -338,6 +341,43 @@
             "animation_delay": 0.4,
             "animation_easing": "ease-out-sine",
             "animation_blur_intensity": 5
+          }
+        }
+      ]
+    },
+    {
+      "name": "Text reveal",
+      "settings": {
+        "desktop_content_alignment": "justify-center",
+        "mobile_content_alignment": "justify-center",
+        "gap": 36,
+        "gap_mobile": 32,
+        "background_style": "solid",
+        "padding_top_desktop": 110,
+        "padding_bottom_desktop": 110,
+        "padding_left_desktop": 34,
+        "padding_right_desktop": 34,
+        "enable_custom_mobile_padding": true,
+        "padding_top_mobile": 80,
+        "padding_bottom_mobile": 80,
+        "padding_left_mobile": 20,
+        "padding_right_mobile": 20,
+        "make_section_page_width": true
+      },
+      "blocks": [
+        {
+          "type": "scroll-reveal-text",
+          "settings": {
+            "heading": "Share a statement about what your brand stands for. It lights up word by word as customers scroll, so keep it to two or three sentences.",
+            "heading_alignment": "text-inherit",
+            "heading_size": "vt-heading-h3",
+            "heading_tag": "p",
+            "uppercase": false,
+            "start_opacity": 30,
+            "heading_width": "fill",
+            "enable_max_width": true,
+            "heading_max_width": 960,
+            "animation_type": "none"
           }
         }
       ]
