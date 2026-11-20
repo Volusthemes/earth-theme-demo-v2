@@ -1,0 +1,1978 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+    "sections": {
+        "main": {
+            "type": "page",
+            "disabled": true,
+            "settings": {
+                "show_title": true
+            }
+        },
+        "image_with_text_overlay_section": {
+            "type": "image-with-text-overlay",
+            "settings": {
+                "image_radius": 0,
+                "section_height": "scale",
+                "image_ratio_desktop": "wide",
+                "image_ratio_mobile": "classic_portrait",
+                "overlay_color": "{{ settings.color_palette.foreground }}",
+                "overlay_opacity": 20,
+                "content_position": "center",
+                "pin_last_block": true,
+                "desktop_content_alignment": "justify-center",
+                "mobile_content_alignment": "justify-center",
+                "gap": 80,
+                "gap_mobile": 60,
+                "heading_color": "{{ settings.color_palette.background }}",
+                "paragraph_color": "{{ settings.color_palette.background }}",
+                "padding_top_desktop": 60,
+                "padding_bottom_desktop": 40,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 40,
+                "padding_bottom_mobile": 20,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": false
+            },
+            "blocks": {
+                "impact_content": {
+                    "type": "stack",
+                    "name": "Content",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "center",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "height": "fit",
+                        "gap_desktop": 64,
+                        "gap_mobile": 40,
+                        "enable_padding": false
+                    },
+                    "blocks": {
+                        "impact_intro": {
+                            "type": "stack",
+                            "name": "Header",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "impact_eyebrow": {
+                                    "type": "stack",
+                                    "name": "Eyebrow",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fit",
+                                        "height": "fit",
+                                        "gap_desktop": 8,
+                                        "gap_mobile": 8,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "impact_eyebrow_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "sparkle",
+                                                "icon_color": "{{ settings.color_palette.accent }}",
+                                                "icon_size_desktop": 16,
+                                                "icon_size_mobile": 16,
+                                                "show_box": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.1,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "impact_eyebrow_text": {
+                                            "type": "sub-heading",
+                                            "settings": {
+                                                "sub_heading": "Our progress",
+                                                "subheading_tag": "p",
+                                                "subheading_alignment": "text-center",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.1,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "impact_eyebrow_icon",
+                                        "impact_eyebrow_text"
+                                    ]
+                                },
+                                "impact_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Our Collective Impact",
+                                        "heading_size": "vt-heading-h1",
+                                        "heading_tag": "h1",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "enable_max_width": true,
+                                        "heading_max_width": 560,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "impact_eyebrow",
+                                "impact_heading"
+                            ]
+                        },
+                        "impact_stats": {
+                            "type": "column-layout",
+                            "name": "Stats",
+                            "settings": {
+                                "desktop_column_count": 3,
+                                "tablet_column_count": 3,
+                                "mobile_column_count": 1,
+                                "desktop_column_1_width": "lg:w-1/3|33.3333",
+                                "desktop_column_2_width": "lg:w-1/3|33.3333",
+                                "desktop_column_3_width": "lg:w-1/3|33.3333",
+                                "tablet_column_1_width": "md:w-1/3|33.3333",
+                                "tablet_column_2_width": "md:w-1/3|33.3333",
+                                "tablet_column_3_width": "md:w-1/3|33.3333",
+                                "mobile_column_1_width": "w-full|100",
+                                "swipe_columns_mobile": true,
+                                "autoplay": "5",
+                                "swipe_bleed": false,
+                                "desktop_gap_x": "lg:gap-x-8",
+                                "desktop_gap_y": "lg:gap-y-8",
+                                "tablet_gap_x": "md:gap-x-6",
+                                "tablet_gap_y": "md:gap-y-6",
+                                "mobile_gap_x": "gap-x-4",
+                                "mobile_gap_y": "gap-y-4",
+                                "vertical_alignment": "flex-start",
+                                "alignment": "center"
+                            },
+                            "blocks": {
+                                "water_stat": {
+                                    "type": "stack",
+                                    "name": "Water saved",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 16,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "water_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "drop",
+                                                "icon_size_desktop": 40,
+                                                "icon_size_mobile": 36,
+                                                "show_box": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.3,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "water_number": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "2,500,000",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "p",
+                                                "heading_alignment": "text-center",
+                                                "heading_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.4,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "water_label": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Liters Water Saved</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-center",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.5,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "water_icon",
+                                        "water_number",
+                                        "water_label"
+                                    ]
+                                },
+                                "co2_stat": {
+                                    "type": "stack",
+                                    "name": "CO₂ saved",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 16,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "co2_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "zero-emissions",
+                                                "icon_size_desktop": 40,
+                                                "icon_size_mobile": 36,
+                                                "show_box": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.4,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "co2_number": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "15,400",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "p",
+                                                "heading_alignment": "text-center",
+                                                "heading_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.5,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "co2_label": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>CO₂ Saved</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-center",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.6000000000000001,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "co2_icon",
+                                        "co2_number",
+                                        "co2_label"
+                                    ]
+                                },
+                                "trees_stat": {
+                                    "type": "stack",
+                                    "name": "Trees planted",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "center",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 16,
+                                        "gap_mobile": 12,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "trees_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "tree",
+                                                "icon_size_desktop": 40,
+                                                "icon_size_mobile": 36,
+                                                "show_box": false,
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.5,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "trees_number": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "5,000",
+                                                "heading_size": "vt-heading-h2",
+                                                "heading_tag": "p",
+                                                "heading_alignment": "text-center",
+                                                "heading_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.6,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        },
+                                        "trees_label": {
+                                            "type": "paragraph",
+                                            "settings": {
+                                                "text": "<p>Trees Planted</p>",
+                                                "paragraph_size": "vt-paragraph-medium",
+                                                "paragraph_alignment": "text-center",
+                                                "paragraph_width": "fit",
+                                                "animation_type": "slide",
+                                                "animation_direction": "from-bottom",
+                                                "animation_duration": 1,
+                                                "animation_delay": 0.7,
+                                                "animation_easing": "ease-out-sine"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "trees_icon",
+                                        "trees_number",
+                                        "trees_label"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "water_stat",
+                                "co2_stat",
+                                "trees_stat"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "impact_intro",
+                        "impact_stats"
+                    ]
+                },
+                "impact_updated": {
+                    "type": "paragraph",
+                    "settings": {
+                        "text": "<p>Last updated: June 5, 2026  •  Updated quarterly</p>",
+                        "paragraph_size": "vt-paragraph-extra-small",
+                        "paragraph_alignment": "text-center",
+                        "paragraph_width": "fit",
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1,
+                        "animation_delay": 0.6,
+                        "animation_easing": "ease-out-sine"
+                    }
+                }
+            },
+            "block_order": [
+                "impact_content",
+                "impact_updated"
+            ]
+        },
+        "how_it_helps_section": {
+            "type": "multicolumn",
+            "name": "How your purchase helps",
+            "settings": {
+                "gap": 64,
+                "gap_mobile": 40,
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true
+            },
+            "blocks": {
+                "helps_intro": {
+                    "type": "stack",
+                    "name": "Header",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "center",
+                        "position": "center",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "height": "fit",
+                        "gap_desktop": 16,
+                        "gap_mobile": 12,
+                        "enable_padding": false
+                    },
+                    "blocks": {
+                        "helps_eyebrow": {
+                            "type": "stack",
+                            "name": "Eyebrow",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--horizontal",
+                                "layout_direction_tablet": "vt-stack--horizontal",
+                                "layout_direction_mobile": "vt-stack--horizontal",
+                                "alignment": "center",
+                                "position": "center",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fit",
+                                "height": "fit",
+                                "gap_desktop": 8,
+                                "gap_mobile": 8,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "helps_eyebrow_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "sparkle",
+                                        "icon_color": "{{ settings.color_palette.accent }}",
+                                        "icon_size_desktop": 16,
+                                        "icon_size_mobile": 16,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "helps_eyebrow_text": {
+                                    "type": "sub-heading",
+                                    "settings": {
+                                        "sub_heading": "Your part in the story",
+                                        "subheading_tag": "p",
+                                        "subheading_alignment": "text-center",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "helps_eyebrow_icon",
+                                "helps_eyebrow_text"
+                            ]
+                        },
+                        "helps_title": {
+                            "type": "heading-group",
+                            "name": "Heading",
+                            "settings": {
+                                "direction": "horizontal",
+                                "alignment": "center",
+                                "vertical_alignment": "center",
+                                "gap_desktop": 32,
+                                "gap_mobile": 12,
+                                "width": "fit",
+                                "max_width": 1000,
+                                "hide_icon_mobile": true
+                            },
+                            "blocks": {
+                                "helps_leaf_left": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
+                                        "icon_size_desktop": 40,
+                                        "icon_size_mobile": 24,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "helps_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "How Your Purchase Helps",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-center",
+                                        "heading_width": "fit",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                },
+                                "helps_leaf_right": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
+                                        "icon_size_desktop": 40,
+                                        "icon_size_mobile": 24,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "helps_leaf_left",
+                                "helps_heading",
+                                "helps_leaf_right"
+                            ]
+                        },
+                        "helps_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Your support makes these initiatives possible, connecting every purchase to verified conservation efforts.</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-center",
+                                "paragraph_width": "fit",
+                                "enable_max_width": true,
+                                "paragraph_max_width": 880,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "helps_eyebrow",
+                        "helps_title",
+                        "helps_text"
+                    ]
+                },
+                "helps_steps": {
+                    "type": "column-layout",
+                    "name": "Steps",
+                    "settings": {
+                        "desktop_column_count": 3,
+                        "tablet_column_count": 3,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-1/3|33.3333",
+                        "desktop_column_2_width": "lg:w-1/3|33.3333",
+                        "desktop_column_3_width": "lg:w-1/3|33.3333",
+                        "tablet_column_1_width": "md:w-1/2|50",
+                        "tablet_column_2_width": "md:w-1/2|50",
+                        "tablet_column_3_width": "md:w-1/2|50",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": true,
+                        "autoplay": "5",
+                        "swipe_bleed": false,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-4",
+                        "vertical_alignment": "stretch",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "helps_step_1": {
+                            "type": "card",
+                            "name": "Step 1",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "middle",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 40,
+                                "padding_horizontal": 32,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 32,
+                                "padding_horizontal_mobile": 24,
+                                "width": "fill",
+                                "height": "square",
+                                "gap": 16,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 12,
+                                "border": "solid",
+                                "border_color": "{{ settings.color_palette.foreground }}",
+                                "border_width": 1,
+                                "border_opacity": 100,
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine"
+                            },
+                            "blocks": {
+                                "helps_step_1_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "01",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_1_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "You Shop",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_1_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Choose everyday pieces crafted from natural textiles and responsibly sourced from ethical mills.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "helps_step_1_number",
+                                "helps_step_1_title",
+                                "helps_step_1_text"
+                            ]
+                        },
+                        "helps_step_2": {
+                            "type": "card",
+                            "name": "Step 2",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "middle",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 40,
+                                "padding_horizontal": 32,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 32,
+                                "padding_horizontal_mobile": 24,
+                                "width": "fill",
+                                "height": "square",
+                                "gap": 16,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 12,
+                                "border": "solid",
+                                "border_color": "{{ settings.color_palette.foreground }}",
+                                "border_width": 1,
+                                "border_opacity": 100,
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.4,
+                                "animation_easing": "ease-out-sine"
+                            },
+                            "blocks": {
+                                "helps_step_2_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "02",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_2_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "We Give Back",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_2_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>We donate 1% of eligible revenue from every order to verified reforestation and community-led initiatives.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "helps_step_2_number",
+                                "helps_step_2_title",
+                                "helps_step_2_text"
+                            ]
+                        },
+                        "helps_step_3": {
+                            "type": "card",
+                            "name": "Step 3",
+                            "settings": {
+                                "color_style": "transparent",
+                                "position": "middle",
+                                "alignment": "center",
+                                "enable_decorative_icon": false,
+                                "padding_vertical": 40,
+                                "padding_horizontal": 32,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 32,
+                                "padding_horizontal_mobile": 24,
+                                "width": "fill",
+                                "height": "square",
+                                "gap": 16,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 12,
+                                "border": "solid",
+                                "border_color": "{{ settings.color_palette.foreground }}",
+                                "border_width": 1,
+                                "border_opacity": 100,
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.5,
+                                "animation_easing": "ease-out-sine"
+                            },
+                            "blocks": {
+                                "helps_step_3_number": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "03",
+                                        "heading_size": "vt-heading-h5",
+                                        "heading_tag": "p",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_3_title": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "We Share Progress",
+                                        "heading_size": "vt-heading-h3",
+                                        "heading_tag": "h3",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "helps_step_3_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>Discover our campaigns, environmental audits, and verified progress in quarterly reports.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "helps_step_3_number",
+                                "helps_step_3_title",
+                                "helps_step_3_text"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "helps_step_1",
+                        "helps_step_2",
+                        "helps_step_3"
+                    ]
+                },
+                "helps_note": {
+                    "type": "paragraph",
+                    "name": "Closing note",
+                    "settings": {
+                        "text": "<p>“You’re part of this story. Thank you for supporting the work behind these updates.”</p>",
+                        "paragraph_size": "vt-paragraph-medium",
+                        "paragraph_alignment": "text-center",
+                        "paragraph_width": "fit",
+                        "enable_max_width": true,
+                        "paragraph_max_width": 680,
+                        "animation_type": "slide",
+                        "animation_direction": "from-bottom",
+                        "animation_duration": 1.2,
+                        "animation_delay": 0.6,
+                        "animation_easing": "ease-out-sine"
+                    }
+                }
+            },
+            "block_order": [
+                "helps_intro",
+                "helps_steps",
+                "helps_note"
+            ]
+        },
+        "campaign_diary_section": {
+            "type": "timeline",
+            "name": "Campaign diary",
+            "blocks": {
+                "timeline-intro": {
+                    "type": "stack",
+                    "static": true,
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 16,
+                        "gap_mobile": 12
+                    },
+                    "blocks": {
+                        "timeline-intro_heading_group": {
+                            "type": "heading-group",
+                            "name": "Heading",
+                            "settings": {
+                                "direction": "vertical",
+                                "alignment": "inherit",
+                                "vertical_alignment": "top",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "width": "fill",
+                                "hide_icon_mobile": true
+                            },
+                            "blocks": {
+                                "timeline-intro_icons_1": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_size_desktop": 40,
+                                        "icon_size_mobile": 32,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    },
+                                    "blocks": {}
+                                },
+                                "timeline-intro_heading_2": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Our Campaign Diary &amp; Impact Milestones",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fill",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    },
+                                    "blocks": {}
+                                }
+                            },
+                            "block_order": [
+                                "timeline-intro_icons_1",
+                                "timeline-intro_heading_2"
+                            ]
+                        },
+                        "timeline-intro_paragraph_3": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Explore the projects behind our progress through dated contributions, field reports, and real ecological action.</p>",
+                                "paragraph_size": "vt-paragraph-large",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.4,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5,
+                                "enable_max_width": true,
+                                "paragraph_max_width": 460
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "timeline-intro_heading_group",
+                        "timeline-intro_paragraph_3"
+                    ]
+                },
+                "timeline-badges": {
+                    "type": "_timeline-badges",
+                    "static": true,
+                    "settings": {
+                        "radius": "3.125rem",
+                        "show_border": true,
+                        "badge_size": "vt-paragraph-small",
+                        "gap": 8
+                    },
+                    "blocks": {}
+                },
+                "timeline-closing": {
+                    "type": "stack",
+                    "static": true,
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "width_custom": 100,
+                        "height": "fit",
+                        "min_height": 400,
+                        "enable_padding": false,
+                        "gap_desktop": 24,
+                        "gap_mobile": 20
+                    },
+                    "blocks": {
+                        "timeline-closing_paragraph_1": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Learn how we source our materials, work with partners and measure our progress.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        },
+                        "timeline-closing_button_2": {
+                            "type": "button",
+                            "settings": {
+                                "button_label": "Transparency",
+                                "button_link": "",
+                                "open_in_new_tab": false,
+                                "button_style": "primary",
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {}
+                        }
+                    },
+                    "block_order": [
+                        "timeline-closing_paragraph_1",
+                        "timeline-closing_button_2"
+                    ]
+                },
+                "campaign_1": {
+                    "type": "_timeline-item",
+                    "settings": {
+                        "label": "Forest restoration"
+                    },
+                    "blocks": {
+                        "campaign_1_media": {
+                            "type": "image-card",
+                            "name": "Image",
+                            "settings": {
+                                "aspect_ratio": "landscape",
+                                "enable_aspect_ratio_mobile": false,
+                                "overlay_style": "solid",
+                                "overlay_opacity": 20,
+                                "position": "top",
+                                "alignment": "left",
+                                "padding_vertical": 20,
+                                "padding_horizontal": 20,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 12,
+                                "padding_horizontal_mobile": 12,
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 8,
+                                "border_radius": 0,
+                                "animation_type": "none"
+                            },
+                            "blocks": {
+                                "campaign_1_badge": {
+                                    "type": "badge",
+                                    "settings": {
+                                        "text": "12,400 trees funded",
+                                        "color_style": "light",
+                                        "badge_size": "vt-paragraph-small",
+                                        "radius": "3.125rem",
+                                        "show_border": false,
+                                        "width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "campaign_1_badge"
+                            ]
+                        },
+                        "campaign_1_date": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "December, 2025",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_1_heading": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Growing Native Forests",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_1_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>We donated $38,000 to support native oak and rowan planting across degraded Scottish Highland slopes, restoring habitats and improving water retention.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_1_button": {
+                            "type": "button",
+                            "settings": {
+                                "button_label": "Read campaign",
+                                "button_link": "",
+                                "open_in_new_tab": false,
+                                "button_style": "link",
+                                "animation_type": "none"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "campaign_1_media",
+                        "campaign_1_date",
+                        "campaign_1_heading",
+                        "campaign_1_text",
+                        "campaign_1_button"
+                    ]
+                },
+                "campaign_2": {
+                    "type": "_timeline-item",
+                    "settings": {
+                        "label": "Take Back, Make New"
+                    },
+                    "blocks": {
+                        "campaign_2_media": {
+                            "type": "image-card",
+                            "name": "Image",
+                            "settings": {
+                                "aspect_ratio": "landscape",
+                                "enable_aspect_ratio_mobile": false,
+                                "overlay_style": "solid",
+                                "overlay_opacity": 20,
+                                "position": "top",
+                                "alignment": "left",
+                                "padding_vertical": 20,
+                                "padding_horizontal": 20,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 12,
+                                "padding_horizontal_mobile": 12,
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 8,
+                                "border_radius": 0,
+                                "animation_type": "none"
+                            },
+                            "blocks": {
+                                "campaign_2_badge": {
+                                    "type": "badge",
+                                    "settings": {
+                                        "text": "500 garments returned",
+                                        "color_style": "light",
+                                        "badge_size": "vt-paragraph-small",
+                                        "radius": "3.125rem",
+                                        "show_border": false,
+                                        "width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "campaign_2_badge"
+                            ]
+                        },
+                        "campaign_2_date": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "June, 2026",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_2_heading": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Take Back, Make New",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_2_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Customers returned 500 pre-loved garments for sorting, and responsible recycling.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_2_button": {
+                            "type": "button",
+                            "settings": {
+                                "button_label": "Read campaign",
+                                "button_link": "",
+                                "open_in_new_tab": false,
+                                "button_style": "link",
+                                "animation_type": "none"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "campaign_2_media",
+                        "campaign_2_date",
+                        "campaign_2_heading",
+                        "campaign_2_text",
+                        "campaign_2_button"
+                    ]
+                },
+                "campaign_3": {
+                    "type": "_timeline-item",
+                    "settings": {
+                        "label": "Second Life for Clothing"
+                    },
+                    "blocks": {
+                        "campaign_3_media": {
+                            "type": "image-card",
+                            "name": "Image",
+                            "settings": {
+                                "aspect_ratio": "landscape",
+                                "enable_aspect_ratio_mobile": false,
+                                "overlay_style": "solid",
+                                "overlay_opacity": 20,
+                                "position": "top",
+                                "alignment": "left",
+                                "padding_vertical": 20,
+                                "padding_horizontal": 20,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 12,
+                                "padding_horizontal_mobile": 12,
+                                "gap": 8,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 8,
+                                "border_radius": 0,
+                                "animation_type": "none"
+                            },
+                            "blocks": {
+                                "campaign_3_badge": {
+                                    "type": "badge",
+                                    "settings": {
+                                        "text": "1,200 garments rehomed",
+                                        "color_style": "light",
+                                        "badge_size": "vt-paragraph-small",
+                                        "radius": "3.125rem",
+                                        "show_border": false,
+                                        "width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "campaign_3_badge"
+                            ]
+                        },
+                        "campaign_3_date": {
+                            "type": "sub-heading",
+                            "settings": {
+                                "sub_heading": "December, 2026",
+                                "subheading_tag": "p",
+                                "subheading_alignment": "text-left",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_3_heading": {
+                            "type": "heading",
+                            "settings": {
+                                "heading": "Second Life for Clothing",
+                                "heading_size": "vt-heading-h4",
+                                "heading_tag": "h3",
+                                "heading_alignment": "text-inherit",
+                                "heading_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_3_text": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Pre-loved garments are given a new life through reuse, resale, and responsible redistribution.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fill",
+                                "animation_type": "none"
+                            }
+                        },
+                        "campaign_3_button": {
+                            "type": "button",
+                            "settings": {
+                                "button_label": "View program",
+                                "button_link": "",
+                                "open_in_new_tab": false,
+                                "button_style": "link",
+                                "animation_type": "none"
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "campaign_3_media",
+                        "campaign_3_date",
+                        "campaign_3_heading",
+                        "campaign_3_text",
+                        "campaign_3_button"
+                    ]
+                }
+            },
+            "block_order": [
+                "campaign_1",
+                "campaign_2",
+                "campaign_3"
+            ],
+            "settings": {
+                "content_width": 50,
+                "column_gap": 100,
+                "sticky_content": true,
+                "sticky_offset": 40,
+                "gap": 32,
+                "gap_mobile": 40,
+                "card_animation": "slide",
+                "card_radius": 0,
+                "card_padding": 32,
+                "card_padding_mobile": 20,
+                "card_gap": 18,
+                "card_gap_mobile": 14,
+                "card_spacing": 32,
+                "card_spacing_mobile": 20,
+                "background_style": "gradient",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true,
+                "background_gradient": "radial-gradient(40% 25% at 45% 0%, rgba(234, 224, 96, 0.45) 0%, rgba(234, 224, 96, 0) 100%), radial-gradient(45% 35% at 30% 50%, rgba(113, 204, 59, 0.3) 0%, rgba(113, 204, 59, 0) 100%), radial-gradient(35% 20% at 15% 95%, rgba(234, 224, 96, 0.4) 0%, rgba(234, 224, 96, 0) 100%), #EDF5C2"
+            }
+        },
+        "closer_look_section": {
+            "type": "custom-section",
+            "name": "A closer look",
+            "settings": {
+                "gap": 56,
+                "gap_mobile": 40,
+                "background_style": "solid",
+                "background_color": "{{ settings.color_palette.background }}",
+                "heading_color": "{{ settings.color_palette.foreground }}",
+                "paragraph_color": "{{ settings.color_palette.primary }}",
+                "padding_top_desktop": 110,
+                "padding_bottom_desktop": 110,
+                "padding_left_desktop": 34,
+                "padding_right_desktop": 34,
+                "enable_custom_mobile_padding": true,
+                "padding_top_mobile": 80,
+                "padding_bottom_mobile": 80,
+                "padding_left_mobile": 20,
+                "padding_right_mobile": 20,
+                "make_section_page_width": true
+            },
+            "blocks": {
+                "numbers_header": {
+                    "type": "stack",
+                    "name": "Header",
+                    "settings": {
+                        "layout_direction_desktop": "vt-stack--vertical",
+                        "layout_direction_tablet": "vt-stack--vertical",
+                        "layout_direction_mobile": "vt-stack--vertical",
+                        "alignment": "flex-start",
+                        "position": "flex-start",
+                        "position_type": "default",
+                        "wrap_content": "nowrap",
+                        "width": "fill",
+                        "height": "fit",
+                        "gap_desktop": 16,
+                        "gap_mobile": 12,
+                        "enable_padding": false
+                    },
+                    "blocks": {
+                        "numbers_heading_group": {
+                            "type": "heading-group",
+                            "name": "Heading",
+                            "settings": {
+                                "direction": "vertical",
+                                "alignment": "inherit",
+                                "vertical_alignment": "top",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "width": "fill",
+                                "hide_icon_mobile": true
+                            },
+                            "blocks": {
+                                "numbers_heading_icon": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_color": "{{ settings.color_palette.secondary }}",
+                                        "icon_size_desktop": 40,
+                                        "icon_size_mobile": 32,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.1,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    }
+                                },
+                                "numbers_heading": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "A closer look at the numbers",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fill",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "numbers_heading_icon",
+                                "numbers_heading"
+                            ]
+                        },
+                        "numbers_intro": {
+                            "type": "paragraph",
+                            "settings": {
+                                "text": "<p>Explore our reporting periods, sources, and records. We share real progress, not marketing claims.</p>",
+                                "paragraph_size": "vt-paragraph-medium",
+                                "paragraph_alignment": "text-inherit",
+                                "paragraph_width": "fit",
+                                "enable_max_width": true,
+                                "paragraph_max_width": 460,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.3,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            }
+                        }
+                    },
+                    "block_order": [
+                        "numbers_heading_group",
+                        "numbers_intro"
+                    ]
+                },
+                "numbers_columns": {
+                    "type": "column-layout",
+                    "name": "Columns",
+                    "settings": {
+                        "desktop_column_count": 2,
+                        "tablet_column_count": 1,
+                        "mobile_column_count": 1,
+                        "desktop_column_1_width": "lg:w-1/2|50",
+                        "desktop_column_2_width": "lg:w-1/2|50",
+                        "tablet_column_1_width": "md:w-full|100",
+                        "mobile_column_1_width": "w-full|100",
+                        "swipe_columns_mobile": false,
+                        "desktop_gap_x": "lg:gap-x-8",
+                        "desktop_gap_y": "lg:gap-y-8",
+                        "tablet_gap_x": "md:gap-x-6",
+                        "tablet_gap_y": "md:gap-y-6",
+                        "mobile_gap_x": "gap-x-4",
+                        "mobile_gap_y": "gap-y-5",
+                        "padding_block": 0,
+                        "padding_inline": 0,
+                        "mobile_padding_block": 0,
+                        "mobile_padding_inline": 0,
+                        "vertical_alignment": "flex-start",
+                        "alignment": "stretch"
+                    },
+                    "blocks": {
+                        "numbers_card": {
+                            "type": "card",
+                            "name": "Latest update",
+                            "settings": {
+                                "color_style": "accent",
+                                "position": "top",
+                                "alignment": "left",
+                                "enable_decorative_icon": true,
+                                "decorative_icon": "leaf",
+                                "decorative_icon_color": "{{ settings.color_palette.background }}",
+                                "decorative_icon_size_desktop": 100,
+                                "decorative_icon_size_mobile": 100,
+                                "decorative_icon_opacity": 100,
+                                "decorative_icon_blend_mode": "multiply",
+                                "decorative_icon_position": "right",
+                                "decorative_icon_alignment": "bottom",
+                                "padding_vertical": 40,
+                                "padding_horizontal": 40,
+                                "enable_padding_mobile": true,
+                                "padding_vertical_mobile": 28,
+                                "padding_horizontal_mobile": 20,
+                                "width": "fill",
+                                "height": "fill",
+                                "gap": 24,
+                                "enable_gap_mobile": true,
+                                "gap_mobile": 20,
+                                "border": "none",
+                                "border_radius": 0,
+                                "animation_type": "slide",
+                                "animation_direction": "from-bottom",
+                                "animation_duration": 1.2,
+                                "animation_delay": 0.2,
+                                "animation_easing": "ease-out-sine",
+                                "animation_blur_intensity": 5
+                            },
+                            "blocks": {
+                                "numbers_label": {
+                                    "type": "stack",
+                                    "name": "Label",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                        "layout_direction_mobile": "vt-stack--horizontal",
+                                        "alignment": "flex-start",
+                                        "position": "center",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 8,
+                                        "gap_mobile": 8,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "numbers_label_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "sparkle",
+                                                "icon_size_desktop": 16,
+                                                "icon_size_mobile": 14,
+                                                "show_box": false,
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "numbers_label_text": {
+                                            "type": "sub-heading",
+                                            "settings": {
+                                                "sub_heading": "Latest impact update",
+                                                "subheading_tag": "p",
+                                                "subheading_alignment": "text-left",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "numbers_label_icon",
+                                        "numbers_label_text"
+                                    ]
+                                },
+                                "numbers_title": {
+                                    "type": "heading-group",
+                                    "name": "Heading",
+                                    "settings": {
+                                        "direction": "horizontal",
+                                        "alignment": "left",
+                                        "vertical_alignment": "center",
+                                        "gap_desktop": 12,
+                                        "gap_mobile": 10,
+                                        "width": "fill",
+                                        "hide_icon_mobile": false
+                                    },
+                                    "blocks": {
+                                        "numbers_title_icon": {
+                                            "type": "icons",
+                                            "settings": {
+                                                "icon": "eco",
+                                                "icon_size_desktop": 24,
+                                                "icon_size_mobile": 22,
+                                                "show_box": false,
+                                                "animation_type": "none"
+                                            }
+                                        },
+                                        "numbers_title_heading": {
+                                            "type": "heading",
+                                            "settings": {
+                                                "heading": "Q4 / Annual Review 2026",
+                                                "heading_size": "vt-heading-h4",
+                                                "heading_tag": "h3",
+                                                "heading_alignment": "text-inherit",
+                                                "heading_width": "fill",
+                                                "animation_type": "none"
+                                            }
+                                        }
+                                    },
+                                    "block_order": [
+                                        "numbers_title_icon",
+                                        "numbers_title_heading"
+                                    ]
+                                },
+                                "numbers_text": {
+                                    "type": "paragraph",
+                                    "settings": {
+                                        "text": "<p>A comprehensive summary of our fiscal disbursements, verified partner planting receipts, garment sorting audit weights, and planned ecological milestones for the upcoming year.</p>",
+                                        "paragraph_size": "vt-paragraph-medium",
+                                        "paragraph_alignment": "text-inherit",
+                                        "paragraph_width": "fit",
+                                        "animation_type": "none"
+                                    }
+                                },
+                                "numbers_details": {
+                                    "type": "stack",
+                                    "name": "Details",
+                                    "settings": {
+                                        "layout_direction_desktop": "vt-stack--vertical",
+                                        "layout_direction_tablet": "vt-stack--vertical",
+                                        "layout_direction_mobile": "vt-stack--vertical",
+                                        "alignment": "flex-start",
+                                        "position": "flex-start",
+                                        "position_type": "default",
+                                        "wrap_content": "nowrap",
+                                        "width": "fill",
+                                        "height": "fit",
+                                        "gap_desktop": 0,
+                                        "gap_mobile": 0,
+                                        "enable_padding": false
+                                    },
+                                    "blocks": {
+                                        "numbers_details_box": {
+                                            "type": "card",
+                                            "name": "Details",
+                                            "settings": {
+                                                "background_color": "#0032250D",
+                                                "heading_color": "{{ settings.color_palette.foreground }}",
+                                                "text_color": "{{ settings.color_palette.foreground }}",
+                                                "position": "top",
+                                                "alignment": "left",
+                                                "enable_decorative_icon": false,
+                                                "padding_vertical": 16,
+                                                "padding_horizontal": 16,
+                                                "enable_padding_mobile": true,
+                                                "padding_vertical_mobile": 16,
+                                                "padding_horizontal_mobile": 16,
+                                                "width": "fill",
+                                                "height": "fit",
+                                                "gap": 4,
+                                                "enable_gap_mobile": true,
+                                                "gap_mobile": 12,
+                                                "border": "solid",
+                                                "border_color": "{{ settings.color_palette.foreground }}",
+                                                "border_width": 1,
+                                                "border_opacity": 100,
+                                                "border_radius": 0,
+                                                "animation_type": "none"
+                                            },
+                                            "blocks": {
+                                                "numbers_period": {
+                                                    "type": "stack",
+                                                    "name": "Reporting period",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--vertical",
+                                                        "alignment": "space-between",
+                                                        "position": "flex-start",
+                                                        "position_type": "default",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "gap_desktop": 16,
+                                                        "gap_mobile": 4,
+                                                        "enable_padding": false
+                                                    },
+                                                    "blocks": {
+                                                        "numbers_period_label": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Reporting period:</p>",
+                                                                "paragraph_size": "vt-paragraph-small",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "numbers_period_value": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Jan 1, 2026 – Dec 31, 2026</p>",
+                                                                "paragraph_size": "vt-paragraph-small",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "numbers_period_label",
+                                                        "numbers_period_value"
+                                                    ]
+                                                },
+                                                "numbers_updated": {
+                                                    "type": "stack",
+                                                    "name": "Last updated",
+                                                    "settings": {
+                                                        "layout_direction_desktop": "vt-stack--horizontal",
+                                                        "layout_direction_tablet": "vt-stack--horizontal",
+                                                        "layout_direction_mobile": "vt-stack--vertical",
+                                                        "alignment": "space-between",
+                                                        "position": "flex-start",
+                                                        "position_type": "default",
+                                                        "wrap_content": "nowrap",
+                                                        "width": "fill",
+                                                        "height": "fit",
+                                                        "gap_desktop": 16,
+                                                        "gap_mobile": 4,
+                                                        "enable_padding": false
+                                                    },
+                                                    "blocks": {
+                                                        "numbers_updated_label": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Last updated:</p>",
+                                                                "paragraph_size": "vt-paragraph-small",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        },
+                                                        "numbers_updated_value": {
+                                                            "type": "paragraph",
+                                                            "settings": {
+                                                                "text": "<p>Jan 15, 2027</p>",
+                                                                "paragraph_size": "vt-paragraph-small",
+                                                                "paragraph_alignment": "text-left",
+                                                                "paragraph_width": "fit",
+                                                                "animation_type": "none"
+                                                            }
+                                                        }
+                                                    },
+                                                    "block_order": [
+                                                        "numbers_updated_label",
+                                                        "numbers_updated_value"
+                                                    ]
+                                                }
+                                            },
+                                            "block_order": [
+                                                "numbers_period",
+                                                "numbers_updated"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "numbers_details_box"
+                                    ]
+                                },
+                                "numbers_button": {
+                                    "type": "button",
+                                    "settings": {
+                                        "button_label": "View impact summary",
+                                        "button_link": "",
+                                        "open_in_new_tab": false,
+                                        "button_style": "link",
+                                        "animation_type": "none"
+                                    }
+                                }
+                            },
+                            "block_order": [
+                                "numbers_label",
+                                "numbers_title",
+                                "numbers_text",
+                                "numbers_details",
+                                "numbers_button"
+                            ]
+                        },
+                        "numbers_questions_stack": {
+                            "type": "stack",
+                            "name": "Questions",
+                            "settings": {
+                                "layout_direction_desktop": "vt-stack--vertical",
+                                "layout_direction_tablet": "vt-stack--vertical",
+                                "layout_direction_mobile": "vt-stack--vertical",
+                                "alignment": "flex-start",
+                                "position": "flex-start",
+                                "position_type": "default",
+                                "wrap_content": "nowrap",
+                                "width": "fill",
+                                "height": "fit",
+                                "gap_desktop": 0,
+                                "gap_mobile": 0,
+                                "enable_padding": false
+                            },
+                            "blocks": {
+                                "numbers_questions": {
+                                    "type": "accordion",
+                                    "name": "Accordion",
+                                    "settings": {
+                                        "open_one_at_a_time": true,
+                                        "keep_first_open": true,
+                                        "expand_effect": "slide_fade",
+                                        "indicator": "arrow",
+                                        "indicator_position": "right",
+                                        "indicator_size_desktop": 20,
+                                        "indicator_size_mobile": 20,
+                                        "alignment": "text-left",
+                                        "gap": 28,
+                                        "padding_x_desktop": 20,
+                                        "padding_x_mobile": 20,
+                                        "padding_y_desktop": 20,
+                                        "padding_y_mobile": 20,
+                                        "content_gap_desktop": 20,
+                                        "content_gap_mobile": 20,
+                                        "border_style": "all",
+                                        "header_divider": true,
+                                        "border_thickness": 1,
+                                        "border_opacity": 100,
+                                        "border_color": "{{ settings.color_palette.foreground }}",
+                                        "border_radius": 0,
+                                        "hover_highlight": "none",
+                                        "open_highlight": "none",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    },
+                                    "blocks": {
+                                        "faq_updated": {
+                                            "type": "_accordion-item",
+                                            "settings": {
+                                                "heading": "How often is this page updated?",
+                                                "description": "",
+                                                "description_visibility": "off",
+                                                "show_icon": false,
+                                                "heading_size": "vt-heading-h5",
+                                                "heading_tag": "h3"
+                                            },
+                                            "blocks": {
+                                                "faq_updated_answer": {
+                                                    "type": "paragraph",
+                                                    "settings": {
+                                                        "text": "<p>We update this page quarterly. Each update includes the latest available contribution records, verified disbursement accounts, and ground-level partner progress reports.</p>",
+                                                        "paragraph_size": "vt-paragraph-medium",
+                                                        "paragraph_alignment": "text-inherit",
+                                                        "paragraph_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "faq_updated_answer"
+                                            ]
+                                        },
+                                        "faq_sources": {
+                                            "type": "_accordion-item",
+                                            "settings": {
+                                                "heading": "Where do the numbers come from?",
+                                                "description": "",
+                                                "description_visibility": "off",
+                                                "show_icon": false,
+                                                "heading_size": "vt-heading-h5",
+                                                "heading_tag": "h3"
+                                            },
+                                            "blocks": {
+                                                "faq_sources_answer": {
+                                                    "type": "paragraph",
+                                                    "settings": {
+                                                        "text": "<p>Our figures come directly from partner receipts, donation records, and on-site audit reports. Tree counts are confirmed by our planting partners, while garment data is based on weights recorded at our sorting facility.</p>",
+                                                        "paragraph_size": "vt-paragraph-medium",
+                                                        "paragraph_alignment": "text-inherit",
+                                                        "paragraph_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "faq_sources_answer"
+                                            ]
+                                        },
+                                        "faq_final": {
+                                            "type": "_accordion-item",
+                                            "settings": {
+                                                "heading": "Are all results final?",
+                                                "description": "",
+                                                "description_visibility": "off",
+                                                "show_icon": false,
+                                                "heading_size": "vt-heading-h5",
+                                                "heading_tag": "h3"
+                                            },
+                                            "blocks": {
+                                                "faq_final_answer": {
+                                                    "type": "paragraph",
+                                                    "settings": {
+                                                        "text": "<p>Not always. Some figures, such as tree survival rates and recycling outcomes, are confirmed months after the activity takes place. Estimated results are clearly marked and updated once verified data is available.</p>",
+                                                        "paragraph_size": "vt-paragraph-medium",
+                                                        "paragraph_alignment": "text-inherit",
+                                                        "paragraph_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "faq_final_answer"
+                                            ]
+                                        },
+                                        "faq_garments": {
+                                            "type": "_accordion-item",
+                                            "settings": {
+                                                "heading": "How are take-back garments routed?",
+                                                "description": "",
+                                                "description_visibility": "off",
+                                                "show_icon": false,
+                                                "heading_size": "vt-heading-h5",
+                                                "heading_tag": "h3"
+                                            },
+                                            "blocks": {
+                                                "faq_garments_answer": {
+                                                    "type": "paragraph",
+                                                    "settings": {
+                                                        "text": "<p>Every returned garment is sorted by hand. Pieces in good condition are cleaned and resold, worn items are repaired or donated to local partners, and anything beyond use is sent to certified textile recyclers.</p>",
+                                                        "paragraph_size": "vt-paragraph-medium",
+                                                        "paragraph_alignment": "text-inherit",
+                                                        "paragraph_width": "fit",
+                                                        "animation_type": "none"
+                                                    }
+                                                }
+                                            },
+                                            "block_order": [
+                                                "faq_garments_answer"
+                                            ]
+                                        }
+                                    },
+                                    "block_order": [
+                                        "faq_updated",
+                                        "faq_sources",
+                                        "faq_final",
+                                        "faq_garments"
+                                    ]
+                                }
+                            },
+                            "block_order": [
+                                "numbers_questions"
+                            ]
+                        }
+                    },
+                    "block_order": [
+                        "numbers_card",
+                        "numbers_questions_stack"
+                    ]
+                }
+            },
+            "block_order": [
+                "numbers_header",
+                "numbers_columns"
+            ]
+        }
+    },
+    "order": [
+        "main",
+        "image_with_text_overlay_section",
+        "how_it_helps_section",
+        "campaign_diary_section",
+        "closer_look_section"
+    ]
+}

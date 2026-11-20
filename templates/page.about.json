@@ -3287,43 +3287,61 @@
                         "gap_mobile": 12
                     },
                     "blocks": {
-                        "timeline-intro_icons_1": {
-                            "type": "icons",
+                        "timeline-intro_heading_group": {
+                            "type": "heading-group",
+                            "name": "Heading",
                             "settings": {
-                                "icon": "leaf",
-                                "icon_size_desktop": 40,
-                                "icon_size_mobile": 32,
-                                "show_box": false,
-                                "animation_type": "slide",
-                                "animation_direction": "from-bottom",
-                                "animation_duration": 1.2,
-                                "animation_delay": 0.2,
-                                "animation_easing": "ease-out-sine",
-                                "animation_blur_intensity": 5
+                                "direction": "vertical",
+                                "alignment": "inherit",
+                                "vertical_alignment": "top",
+                                "gap_desktop": 16,
+                                "gap_mobile": 12,
+                                "width": "fill",
+                                "hide_icon_mobile": true
                             },
-                            "blocks": {}
-                        },
-                        "timeline-intro_heading_2": {
-                            "type": "heading",
-                            "settings": {
-                                "heading": "Our Sustainability Journey: from a small organic farm to global impact",
-                                "heading_size": "vt-heading-h2",
-                                "heading_tag": "h2",
-                                "heading_alignment": "text-inherit",
-                                "heading_width": "fill",
-                                "animation_type": "slide",
-                                "animation_direction": "from-bottom",
-                                "animation_duration": 1.2,
-                                "animation_delay": 0.3,
-                                "animation_easing": "ease-out-sine",
-                                "animation_blur_intensity": 5
+                            "blocks": {
+                                "timeline-intro_icons_1": {
+                                    "type": "icons",
+                                    "settings": {
+                                        "icon": "leaf",
+                                        "icon_size_desktop": 40,
+                                        "icon_size_mobile": 32,
+                                        "show_box": false,
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.2,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    },
+                                    "blocks": {}
+                                },
+                                "timeline-intro_heading_2": {
+                                    "type": "heading",
+                                    "settings": {
+                                        "heading": "Our Sustainability Journey: from a small organic farm to global impact",
+                                        "heading_size": "vt-heading-h2",
+                                        "heading_tag": "h2",
+                                        "heading_alignment": "text-inherit",
+                                        "heading_width": "fill",
+                                        "animation_type": "slide",
+                                        "animation_direction": "from-bottom",
+                                        "animation_duration": 1.2,
+                                        "animation_delay": 0.3,
+                                        "animation_easing": "ease-out-sine",
+                                        "animation_blur_intensity": 5
+                                    },
+                                    "blocks": {}
+                                }
                             },
-                            "blocks": {}
+                            "block_order": [
+                                "timeline-intro_icons_1",
+                                "timeline-intro_heading_2"
+                            ]
                         }
                     },
                     "block_order": [
-                        "timeline-intro_icons_1",
-                        "timeline-intro_heading_2"
+                        "timeline-intro_heading_group"
                     ]
                 },
                 "timeline-badges": {
@@ -3689,8 +3707,8 @@
                 "card_radius": 0,
                 "card_padding": 32,
                 "card_padding_mobile": 20,
-                "card_gap": 12,
-                "card_gap_mobile": 10,
+                "card_gap": 18,
+                "card_gap_mobile": 14,
                 "card_spacing": 32,
                 "card_spacing_mobile": 20,
                 "background_style": "gradient",

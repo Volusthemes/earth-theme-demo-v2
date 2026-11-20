@@ -21,8 +21,6 @@ if (!customElements.get('vt-faq-menu')) {
     // [{ topic, link, item }] in page order
     #entries = [];
     #active = null;
-    // Link under the mouse: the highlight moves to it and back to #active on leave
-    #hovered = null;
     #frame = 0;
     #inView = false;
     // While a link scrolls the page, the topics passed on the way don't take over
@@ -39,8 +37,6 @@ if (!customElements.get('vt-faq-menu')) {
       this.scope = this.closest('.shopify-section') || document.body;
 
       this.addEventListener('click', this.#onClick, { signal });
-      this.addEventListener('pointerover', this.#onPointerOver, { signal });
-      this.addEventListener('pointerout', this.#onPointerOut, { signal });
       window.addEventListener('scroll', this.#requestUpdate, { signal, passive: true });
       window.addEventListener('resize', this.#requestUpdate, { signal, passive: true });
 
@@ -74,7 +70,6 @@ if (!customElements.get('vt-faq-menu')) {
       clearTimeout(this.#jumpTimer);
       this.#entries = [];
       this.#active = null;
-      this.#hovered = null;
     }
 
     #build() {
@@ -84,7 +79,6 @@ if (!customElements.get('vt-faq-menu')) {
 
       const activeTopic = this.#active?.topic;
       this.#active = null;
-      this.#hovered = null;
       this.#entries = [];
 
       this.scope.querySelectorAll('[data-faq-topic]').forEach((topic) => {
@@ -143,31 +137,8 @@ if (!customElements.get('vt-faq-menu')) {
       this.#placeIndicator();
     }
 
-    // Mouse only: on touch screens a tap is a click, and the page moves to the topic
-    #onPointerOver = (event) => {
-      if (event.pointerType !== 'mouse') return;
-      const link = event.target.closest('[data-faq-menu-link]');
-      const entry = link && this.#entries.find((candidate) => candidate.link === link);
-      if (!entry || entry === this.#hovered) return;
-      this.#setHovered(entry);
-    };
-
-    #onPointerOut = (event) => {
-      if (!this.#hovered || event.pointerType !== 'mouse') return;
-      // Still on a link: pointerover of that link takes over
-      if (event.relatedTarget?.closest?.('[data-faq-menu-link]') && this.contains(event.relatedTarget)) return;
-      this.#setHovered(null);
-    };
-
-    #setHovered(entry) {
-      this.#hovered?.link.removeAttribute('data-hover');
-      entry?.link.setAttribute('data-hover', '');
-      this.#hovered = entry;
-      this.#placeIndicator();
-    }
-
     #placeIndicator() {
-      const item = (this.#hovered ?? this.#active)?.item;
+      const item = this.#active?.item;
       if (!item?.isConnected) return;
 
       this.style.setProperty('--vt-faq-indicator-y', `${item.offsetTop}px`);

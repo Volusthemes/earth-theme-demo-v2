@@ -136,18 +136,17 @@
     outline-offset: -2px;
   }
 
-  /* Active, and the link under the mouse: the highlight slides to it (data-hover,
-     set by the script), so it looks the same as the active link */
-  .vt-faq-menu__link[aria-current='true'],
-  .vt-faq-menu__link[data-hover] {
+  /* Active: the topic being read. The highlight (indicator) sits behind it */
+  .vt-faq-menu__link[aria-current='true'] {
     color: var(--vt-faq-menu-active-color);
     font-weight: 600;
   }
 
-  /* Meanwhile the active link, now without the highlight, looks like the others */
-  .vt-faq-menu__list:has([data-hover]) .vt-faq-menu__link[aria-current='true']:not([data-hover]) {
-    color: inherit;
-    font-weight: inherit;
+  /* Hover: a light tint of the active color, so it never looks like the topic being read */
+  @media (hover: hover) {
+    .vt-faq-menu__link:not([aria-current='true']):hover {
+      background-color: color-mix(in srgb, var(--vt-faq-menu-active-bg) 15%, transparent);
+    }
   }
 
   .vt-faq-menu__icon {

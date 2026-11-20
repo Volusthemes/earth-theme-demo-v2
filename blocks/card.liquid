@@ -323,6 +323,12 @@
     min-height: var(--vt-min-height, auto);
   }
 
+  /* As tall as it is wide; longer content still makes it taller */
+  .vt-card--height-square {
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
   /* Custom height on mobile */
   @media screen and (max-width: 749px) {
     .vt-card--height-custom {
@@ -775,6 +781,10 @@
           "label": "Fill"
         },
         {
+          "value": "square",
+          "label": "Square"
+        },
+        {
           "value": "custom",
           "label": "Custom"
         }
@@ -1062,7 +1072,7 @@
     {
       "type": "button"
     }
-  ],
+  ],  
   "presets": [
     {
       "name": "Card",

@@ -113,7 +113,7 @@
     padding-block: var(--vt-padding-block, 0px);
     padding-inline: var(--vt-padding-inline, 0px);
     box-sizing: border-box;
-    --vt-gap: var(--vt-gap-mobile, 0px);
+    --vt-columns-gap: var(--vt-gap-mobile, 0px);
   }
 
   /* Columns: shared .vt-grid-tracks (assets/theme.css) */
@@ -143,7 +143,7 @@
   /* Tablet breakpoint mirrors Tailwind's md: (>= 768px). */
   @media (min-width: 768px) {
     .vt-column-layout {
-      --vt-gap: var(--vt-gap-tablet, 0px);
+      --vt-columns-gap: var(--vt-gap-tablet, 0px);
     }
 
     .vt-column-layout__list > * {
@@ -177,7 +177,7 @@
 
     .vt-column-layout[data-swipe='true'] .vt-column-layout__list > * {
       flex: 0 0 auto;
-      width: calc((100% + var(--vt-gap)) * var(--vt-slide-share) / 100 - var(--vt-gap));
+      width: calc((100% + var(--vt-columns-gap)) * var(--vt-slide-share) / 100 - var(--vt-columns-gap));
     }
 
     /* Swiper applies the gap itself (spaceBetween), so drop the CSS gap. */

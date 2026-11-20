@@ -521,8 +521,8 @@
         "card_radius": 0,
         "card_padding": 32,
         "card_padding_mobile": 20,
-        "card_gap": 12,
-        "card_gap_mobile": 10,
+        "card_gap": 18,
+        "card_gap_mobile": 14,
         "card_spacing": 32,
         "card_spacing_mobile": 20,
         "background_style": "solid",
@@ -558,41 +558,58 @@
           },
           "blocks": [
             {
-              "type": "icons",
+              "type": "heading-group",
+              "name": "Heading",
               "settings": {
-                "icon": "leaf",
-                "icon_size_desktop": 40,
-                "icon_size_mobile": 32,
-                "show_box": false,
-                "animation_type": "slide",
-                "animation_direction": "from-bottom",
-                "animation_duration": 1.2,
-                "animation_delay": 0.2,
-                "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 5
-              }
-            },
-            {
-              "type": "heading",
-              "settings": {
-                "heading": "Tell your story",
-                "heading_size": "vt-heading-h2",
-                "heading_tag": "h2",
-                "heading_alignment": "text-inherit",
-                "heading_width": "fill",
-                "animation_type": "slide",
-                "animation_direction": "from-bottom",
-                "animation_duration": 1.2,
-                "animation_delay": 0.3,
-                "animation_easing": "ease-out-sine",
-                "animation_blur_intensity": 5
-              }
+                "direction": "vertical",
+                "alignment": "inherit",
+                "vertical_alignment": "top",
+                "gap_desktop": 16,
+                "gap_mobile": 12,
+                "width": "fill",
+                "hide_icon_mobile": true
+              },
+              "blocks": [
+                {
+                  "type": "icons",
+                  "settings": {
+                    "icon": "leaf",
+                    "icon_size_desktop": 40,
+                    "icon_size_mobile": 32,
+                    "show_box": false,
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.2,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                },
+                {
+                  "type": "heading",
+                  "settings": {
+                    "heading": "Tell your story",
+                    "heading_size": "vt-heading-h2",
+                    "heading_tag": "h2",
+                    "heading_alignment": "text-inherit",
+                    "heading_width": "fill",
+                    "animation_type": "slide",
+                    "animation_direction": "from-bottom",
+                    "animation_duration": 1.2,
+                    "animation_delay": 0.3,
+                    "animation_easing": "ease-out-sine",
+                    "animation_blur_intensity": 5
+                  }
+                }
+              ]
             },
             {
               "type": "paragraph",
               "settings": {
                 "text": "<p>Walk customers through the moments that shaped your brand, one milestone at a time.</p>",
-                "paragraph_size": "vt-paragraph-medium",
+                "paragraph_size": "vt-paragraph-large",
+                "enable_max_width": true,
+                "paragraph_max_width": 460,
                 "paragraph_alignment": "text-inherit",
                 "paragraph_width": "fill",
                 "animation_type": "slide",
