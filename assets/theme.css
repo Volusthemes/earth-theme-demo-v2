@@ -441,6 +441,38 @@ body {
   padding-inline: var(--vt-page-padding);
 }
 
+/* Underlined text links: links that are underlined at rest, inside rich text
+   (.vt-rte, store policies) or inside an element with .vt-underline-links (form
+   notes, Powered by Shopify...). The underline is a background rather than
+   text-decoration, so it can move: on hover it draws back to the start of the
+   link, and runs out again when the pointer leaves. It follows each line of a
+   link that wraps. Links around an image are left alone. */
+:is(.vt-underline-links, .vt-rte, :where(.shopify-policy__body .rte)) a:not(:has(img)) {
+  color: inherit;
+  text-decoration: none;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size 0.3s ease-in-out;
+}
+
+[dir='rtl'] :is(.vt-underline-links, .vt-rte, :where(.shopify-policy__body .rte)) a:not(:has(img)) {
+  background-position: 100% 100%;
+}
+
+@media (hover: hover) {
+  :is(.vt-underline-links, .vt-rte, :where(.shopify-policy__body .rte)) a:not(:has(img)):hover {
+    background-size: 0 1px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.vt-underline-links, .vt-rte, :where(.shopify-policy__body .rte)) a:not(:has(img)) {
+    transition: none;
+  }
+}
+
 /* Button style */
 
 .vt-buttons {
@@ -1835,16 +1867,7 @@ textarea.vt-input {
   margin-block-start: 0.35em;
 }
 
-:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) a {
-  color: inherit;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-}
-
-:is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) a:hover {
-  text-decoration-thickness: 2px;
-}
+/* Links take the shared underlined link style (Underlined text links, above) */
 
 :is(.vt-rte, :where(.shopify-policy__body .rte, .shopify-policy__body .rte > div:only-child)) img {
   display: block;

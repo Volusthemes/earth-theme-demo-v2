@@ -199,7 +199,7 @@
           </div>
 
           {%- if section.settings.form_note != blank -%}
-            <div class="vt-contact-form__note">{{ section.settings.form_note }}</div>
+            <div class="vt-contact-form__note vt-underline-links">{{ section.settings.form_note }}</div>
           {%- endif -%}
 
           <div class="vt-contact-form__actions">
@@ -344,18 +344,6 @@
 
   .vt-contact-form__note p {
     margin: 0;
-  }
-
-  .vt-contact-form__note a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  @media (hover: hover) {
-    .vt-contact-form__note a:hover {
-      text-decoration-thickness: 2px;
-    }
   }
 
   .vt-contact-form__actions {

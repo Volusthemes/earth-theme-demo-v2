@@ -20,7 +20,7 @@
     {%- endif -%}
   {%- endunless -%}
 
-  {%- assign heading_class = 'vt-heading ' | append: block.settings.heading_size -%}
+  {%- assign heading_class = 'vt-heading vt-underline-links ' | append: block.settings.heading_size -%}
   {%- if block.settings.uppercase -%}
     {%- assign heading_class = heading_class | append: ' uppercase!' -%}
   {%- endif -%}

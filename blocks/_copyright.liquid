@@ -28,7 +28,7 @@
     {%- if block.settings.text != blank %} {{ block.settings.text }}{% endif -%}
   </span>
   {%- if block.settings.show_powered_by %}
-    <span class="vt-copyright__powered{% unless block.settings.underline_powered_by %} vt-link-wrap{% endunless %}">{{ powered_by_link }}</span>
+    <span class="vt-copyright__powered {% if block.settings.underline_powered_by %}vt-underline-links{% else %}vt-link-wrap{% endif %}">{{ powered_by_link }}</span>
   {%- endif %}
 </p>
 
@@ -51,16 +51,6 @@
   .vt-copyright__powered a {
     color: inherit;
     text-decoration: none;
-  }
-
-  .vt-copyright--underline .vt-copyright__powered a {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.2em;
-  }
-
-  .vt-copyright--underline .vt-copyright__powered a:hover {
-    text-decoration-thickness: 2px;
   }
 {% endstylesheet %}
 

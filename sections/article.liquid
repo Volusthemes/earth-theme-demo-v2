@@ -143,7 +143,7 @@
         {%- assign article_admin_url = '/admin/articles/' | append: article.id -%}
         <div class="vt-article__media vt-article__media--{{ section.settings.image_width }} vt-article__media--placeholder">
           {{ 'image' | placeholder_svg_tag: 'vt-article__placeholder' }}
-          <p class="vt-article__placeholder-note vt-paragraph-small">
+          <p class="vt-article__placeholder-note vt-underline-links vt-paragraph-small">
             {{ 'blog.image_missing_editor_html' | t: url: article_admin_url }}
           </p>
         </div>
@@ -272,7 +272,7 @@
               {%- form 'new_comment', article, id: form_id, class: 'vt-article__comment-form' -%}
                 <h2 class="vt-article__form-title vt-heading vt-heading-h4">{{ 'blog.comment_form_title' | t }}</h2>
                 {%- if blog.moderated? -%}
-                  <p class="vt-article__form-note vt-paragraph-small">{{ 'blog.comment_moderated' | t }}</p>
+                  <p class="vt-article__form-note vt-underline-links vt-paragraph-small">{{ 'blog.comment_moderated' | t }}</p>
                 {%- endif -%}
 
                 {%- if form.posted_successfully? -%}
@@ -350,7 +350,7 @@
                 </div>
 
                 {%- if section.settings.comment_note != blank -%}
-                  <div class="vt-article__form-note vt-paragraph-small">{{ section.settings.comment_note }}</div>
+                  <div class="vt-article__form-note vt-underline-links vt-paragraph-small">{{ section.settings.comment_note }}</div>
                 {%- endif -%}
               {%- endform -%}
             </div>
@@ -446,12 +446,6 @@
     padding: 0.75rem 1rem;
     background-color: var(--vt-background-color);
     text-align: center;
-  }
-
-  .vt-article__placeholder-note a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .vt-article__media--column {
@@ -745,12 +739,6 @@
 
   .vt-article__form-title + .vt-article__form-note {
     margin-block-start: -0.75rem;
-  }
-
-  .vt-article__form-note a {
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .vt-article__fields {

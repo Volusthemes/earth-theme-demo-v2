@@ -43,7 +43,7 @@
   # -----------------------------------------------------------------------
   # Class list (built with assign + append, no capture needed)
   # -----------------------------------------------------------------------
-  assign vt_class_list = 'vt-paragraph ' | append: block.settings.paragraph_size | append: ' ' | append: block.settings.paragraph_alignment | append: ' vt-paragraph--width-' | append: block.settings.paragraph_width
+  assign vt_class_list = 'vt-paragraph vt-underline-links ' | append: block.settings.paragraph_size | append: ' ' | append: block.settings.paragraph_alignment | append: ' vt-paragraph--width-' | append: block.settings.paragraph_width
 
   if vt_anim_classes != blank
     assign vt_class_list = vt_class_list | append: ' ' | append: vt_anim_classes
